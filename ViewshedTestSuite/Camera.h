@@ -21,5 +21,6 @@ private:
 	glm::vec3 up{ 0.0, 1.0, 0.0 };
 	glm::vec3 look; // This one needs to be defined once we know the camera position, i.e. in constructor
 
+	// Test
 };
 
