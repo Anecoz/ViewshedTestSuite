@@ -11,7 +11,7 @@ public:
 	Camera(const glm::vec3 initPos);
 	~Camera() = default; // Nothing special needs to be taken care of in here
 
-	// Initializes things like mouse listening functions
+	// Initializes
 	void init();
 
 	// Should be called once every frame
@@ -20,7 +20,8 @@ public:
 	// Returns a camera matrix to be used in shaders
 	glm::mat4 getCameraMatrix();
 
-	void onMouse(GLint, GLint); // Needed for listening to mouse movements. Static is needed
+	// Needed for listening to mouse movements. glutPassiveMotionFunc must be set from a global context
+	void onMouse(GLint, GLint); 
 
 private:
 
