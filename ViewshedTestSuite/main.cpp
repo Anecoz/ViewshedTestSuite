@@ -5,6 +5,8 @@
 #include <GL\freeglut.h>
 #include <iostream>
 
+#include "Camera.h"
+
 extern "C" //Ingemar's (useful) C headers
 {
 #include "GL_utilities.h"
@@ -43,6 +45,9 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 	printf("Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+
+	Camera cam(glm::vec3(1, 0, 0));
+	glutPassiveMotionFunc(cam.onMouse);
 
 	init();
 	glutMainLoop();

@@ -13,7 +13,46 @@ Camera::Camera(const glm::vec3 initPos)
 	this->tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 }
 
-// Handles updating of the camera, should be called once every frame draw
+void Camera::init() {
+	//glutPassiveMotionFunc(Camera::onMouse);
+}
+
+void Camera::onMouse(GLint x, GLint y) {
+	GLfloat xdiff = ((GLfloat)200.0 - x) / 400.0; //Using offsets where mouse is warped everytime
+	GLfloat ydiff = ((GLfloat)200.0 - y) / 400.0;
+
+	// Rotate l point----------------
+	//Y-axis----------------------
+	glm::mat4 camtrans = glm::translate(glm::vec3(-pos.x, -pos.y, -pos.z));
+	glm::mat4 camRotY = glm::rotate(xdiff, glm::vec3(0, 1, 0));
+	glm::mat4 invcamtrans = glm::translate(glm::vec3(pos.x, pos.y, pos.z));
+	glm::mat4 yTot = invcamtrans * camRotY * camtrans;
+	look = glm::vec3(yTot * glm::vec4(look, 1.0));
+
+	//X-axis (or whatever)-------------
+	//needs check for if l is on up (y-axis)
+	glm::mat4 camRotX = glm::mat4(1.0f);
+
+	look = glm::vec3(camtrans * glm::vec4(look, 1.0));
+	glm::vec3 axis = glm::cross(look, up);
+	camRotX = glm::rotate(ydiff, axis);
+	look = glm::vec3(camRotX * glm::vec4(look, 1.0));
+	glm::vec3 axisAfter = glm::cross(look, up);
+	if (axisAfter.x < 0.05 && axisAfter.x > -0.05
+		&& axisAfter.z < 0.05 && axisAfter.z > -0.05
+		&& axisAfter.y < 0.05 && axisAfter.y > -0.05)
+	{
+		camRotX = glm::rotate(-ydiff, axis);
+		look = glm::vec3(camRotX * glm::vec4(look, 1.0));
+	}
+	look = glm::vec3(invcamtrans * glm::vec4(look, 1.0));
+}
+
+glm::mat4 Camera::getCameraMatrix() {
+	// Glm provides a nice look-at implementation here
+	return glm::lookAt(this->pos, this->look, this->up);
+}
+
 void Camera::update(bool keyStates[256])
 {
 	// I did the maths for this a loooooong 
