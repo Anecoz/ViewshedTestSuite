@@ -1,4 +1,6 @@
 #pragma once
+#include <GL\glew.h>
+#include <GL\freeglut.h>
 #include <glm\glm.hpp> // Required for positions and such
 
 /*
@@ -14,18 +16,19 @@ public:
 	// Initializes
 	void init();
 
+	// Needed for listening to mouse movements. glutPassiveMotionFunc must be set from a global context
+	void handleMouseMovement(GLint, GLint);
+
 	// Should be called once every frame
 	void update(bool keyStates[256]);
 
 	// Returns a camera matrix to be used in shaders
-	glm::mat4 getCameraMatrix();
-
-	// Needed for listening to mouse movements. glutPassiveMotionFunc must be set from a global context
-	void onMouse(GLint, GLint); 
+	glm::mat4 getCameraMatrix();	
 
 private:
 
 	// MEMBER VARIABLES
+
 	glm::vec3 pos; // Position of the camera
 	GLfloat tSinceLast; // Elapsed time since last time update was called
 
@@ -34,6 +37,6 @@ private:
 	glm::vec3 look; // This one needs to be defined once we know the camera position, i.e. in constructor
 
 	// MEMBER METHODS
-	
+
 };
 

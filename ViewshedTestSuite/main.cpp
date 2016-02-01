@@ -3,6 +3,7 @@
 
 #include <GL\glew.h>
 #include <GL\freeglut.h>
+#include <glm\glm.hpp>
 #include <iostream>
 
 #include "Camera.h"
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
 	printf("Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
 
 	Camera cam(glm::vec3(1, 0, 0));
-	glutPassiveMotionFunc(cam.onMouse);
+	//glutPassiveMotionFunc(&cam.onMouse);
 
 	init();
 	glutMainLoop();

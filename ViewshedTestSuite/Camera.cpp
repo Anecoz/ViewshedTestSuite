@@ -3,21 +3,33 @@
 #include <GL\freeglut.h>
 #include <glm/gtx/transform.hpp>
 
+// GLOBALS, they are needed in order for OpenGL to play nicely with us
+Camera *camInstance;
+
+extern "C"
+void onMouse(GLint x, GLint y) {
+	camInstance->handleMouseMovement(x, y);
+}
+
+// end GLOBALS
+
 Camera::Camera(const glm::vec3 initPos)
 {
 	// Initialize to some position provided in constructor
 	this->pos = initPos;
 	this->look = { pos.x + 1, pos.y, pos.z };
 
-	// Initialize the tSinceLast to something
-	this->tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+	// Initialize state stuff
+	init();	
 }
 
 void Camera::init() {
-	//glutPassiveMotionFunc(Camera::onMouse);
+	::camInstance = this;
+	glutPassiveMotionFunc(::onMouse);
+	this->tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 }
 
-void Camera::onMouse(GLint x, GLint y) {
+void Camera::handleMouseMovement(GLint x, GLint y) {
 	GLfloat xdiff = ((GLfloat)200.0 - x) / 400.0; //Using offsets where mouse is warped everytime
 	GLfloat ydiff = ((GLfloat)200.0 - y) / 400.0;
 
