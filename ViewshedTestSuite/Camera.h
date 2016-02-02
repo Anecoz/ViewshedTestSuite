@@ -11,19 +11,16 @@ class Camera
 {
 public:
 	Camera(const glm::vec3 initPos);
-	~Camera() = default; // Nothing special needs to be taken care of in here
-
-	// Initializes
-	void init();
+	~Camera(); // Needs to handle the cam instance pointer	
 
 	// Needed for listening to mouse movements. glutPassiveMotionFunc must be set from a global context
 	void handleMouseMovement(GLint, GLint);
 
 	// Should be called once every frame
-	void update(bool keyStates[256]);
+	void update(bool const keyStates[256]);
 
 	// Returns a camera matrix to be used in shaders
-	glm::mat4 getCameraMatrix();	
+	glm::mat4 getCameraMatrix() const;	
 
 private:
 
@@ -37,6 +34,6 @@ private:
 	glm::vec3 look; // This one needs to be defined once we know the camera position, i.e. in constructor
 
 	// MEMBER METHODS
-
+	void init();
 };
 

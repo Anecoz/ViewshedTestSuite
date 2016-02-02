@@ -23,6 +23,11 @@ Camera::Camera(const glm::vec3 initPos)
 	init();	
 }
 
+Camera::~Camera() {
+	// Handle the global instance variable
+	camInstance = nullptr;
+}
+
 void Camera::init() {
 	::camInstance = this;
 	glutPassiveMotionFunc(::onMouse);
@@ -60,12 +65,12 @@ void Camera::handleMouseMovement(GLint x, GLint y) {
 	look = glm::vec3(invcamtrans * glm::vec4(look, 1.0));
 }
 
-glm::mat4 Camera::getCameraMatrix() {
+glm::mat4 Camera::getCameraMatrix() const {
 	// Glm provides a nice look-at implementation here
 	return glm::lookAt(this->pos, this->look, this->up);
 }
 
-void Camera::update(bool keyStates[256])
+void Camera::update(bool const keyStates[256])
 {
 	// I did the maths for this a loooooong 
 	// time ago and sadly didn't comment anything.
