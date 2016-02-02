@@ -8,6 +8,7 @@
 
 #include "Camera.h"
 #include "KeyboardHandler.h"
+#include "Shader.h"
 
 extern "C" //Ingemar's (useful) C headers
 {
