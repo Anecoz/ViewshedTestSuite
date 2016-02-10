@@ -10,9 +10,6 @@ public:
 	~Renderer() = default;
 
 private:
-	//Camera camera; // Needed for getting camera matrices and the likes
-	//KeyboardHandler keyHandler; // In order to handle keypresses
-
 
 };
 

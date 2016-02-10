@@ -22,7 +22,7 @@ extern "C" {
 // end GLOBALS
 
 Game::Game() {
-	
+	// Do nothing, should call Game::run later on
 }
 
 Game::~Game() {
@@ -49,7 +49,6 @@ void Game::init(int& argc, char **argv) {
 	glutDisplayFunc(::display);
 	glutTimerFunc(DISPLAY_UPDATE_RATE, ::timer, 0);
 
-	// Test comment
 	glewExperimental = GL_TRUE; // A very tragic fix for things
 	if (GLEW_OK != glewInit())
 	{
@@ -79,6 +78,7 @@ void Game::tick() {
 
 	// Do keyboard checks
 	keyHandler->tick();
+
 	// Update camera
 	camera->update(keyHandler);
 
