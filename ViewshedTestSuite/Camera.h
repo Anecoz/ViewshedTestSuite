@@ -2,6 +2,7 @@
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 #include <glm\glm.hpp> // Required for positions and such
+#include "KeyboardHandler.h"
 
 /*
 This class should handle actual camera position but also the "look"-vector that depends on mouse
@@ -10,6 +11,7 @@ movement. Basically anything that is needed to get the camera matrix out when ne
 class Camera
 {
 public:
+	Camera(); // Default constructor
 	Camera(const glm::vec3 initPos);
 	~Camera(); // Needs to handle the cam instance pointer	
 
@@ -17,10 +19,16 @@ public:
 	void handleMouseMovement(GLint, GLint);
 
 	// Should be called once every frame
-	void update(bool const keyStates[256]);
+	void update(const KeyboardHandler*);
 
 	// Returns a camera matrix to be used in shaders
 	glm::mat4 getCameraMatrix() const;	
+
+	// Where mouse is warped every warp
+	static const int MOUSE_WARP_X = 200;
+	static const int MOUSE_WARP_Y = 200;
+	// Refresh rate for warping
+	static const int WARP_REFRESH_RATE = 20;
 
 private:
 

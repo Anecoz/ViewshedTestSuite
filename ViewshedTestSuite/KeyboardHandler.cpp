@@ -21,8 +21,8 @@ KeyboardHandler::KeyboardHandler()
 
 void KeyboardHandler::init() {
 	::handlerInstance = this;
-	glutKeyboardFunc(::onKey);
-	glutKeyboardUpFunc(::onKeyUp);
+	::glutKeyboardFunc(::onKey);
+	::glutKeyboardUpFunc(::onKeyUp);
 }
 
 bool KeyboardHandler::isKeyDown(const unsigned char key) const {
@@ -35,4 +35,10 @@ void KeyboardHandler::keyPressed(unsigned char key) {
 
 void KeyboardHandler::keyUp(unsigned char key) {
 	keyStates[key] = false;
+}
+
+void KeyboardHandler::tick() {
+	// Check if we're pressing escape, and in that case gracefully exit
+	if (keyStates[27])
+		exit(2);
 }

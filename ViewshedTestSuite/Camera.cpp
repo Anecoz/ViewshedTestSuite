@@ -2,16 +2,31 @@
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 #include <glm/gtx/transform.hpp>
+#include <iostream>
 
 // GLOBALS, they are needed in order for OpenGL to play nicely with us
 Camera *camInstance;
 
-extern "C"
-void onMouse(GLint x, GLint y) {
-	camInstance->handleMouseMovement(x, y);
+extern "C" {
+	void onMouse(GLint x, GLint y) {
+		camInstance->handleMouseMovement(x, y);
+	}
+
+	void setPointer(GLint value) {
+		glutWarpPointer(Camera::MOUSE_WARP_X, Camera::MOUSE_WARP_Y);
+		glutTimerFunc(Camera::WARP_REFRESH_RATE, &setPointer, value);
+	}
 }
 
+
 // end GLOBALS
+
+Camera::Camera() {
+	this->pos = { 0, 0, 0 };
+	this->look = { pos.x + 1, pos.y, pos.z };
+
+	init();
+}
 
 Camera::Camera(const glm::vec3 initPos)
 {
@@ -30,13 +45,14 @@ Camera::~Camera() {
 
 void Camera::init() {
 	::camInstance = this;
-	glutPassiveMotionFunc(::onMouse);
+	::glutPassiveMotionFunc(::onMouse);
 	this->tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+	glutTimerFunc(WARP_REFRESH_RATE, ::setPointer, 0);
 }
 
 void Camera::handleMouseMovement(GLint x, GLint y) {
-	GLfloat xdiff = ((GLfloat)200.0 - x) / 400.0; //Using offsets where mouse is warped everytime
-	GLfloat ydiff = ((GLfloat)200.0 - y) / 400.0;
+	GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / (GLfloat) 2.0*MOUSE_WARP_X; //Using offsets where mouse is warped everytime
+	GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / (GLfloat) 2.0*MOUSE_WARP_Y;
 
 	// Rotate l point----------------
 	//Y-axis----------------------
@@ -70,7 +86,7 @@ glm::mat4 Camera::getCameraMatrix() const {
 	return glm::lookAt(this->pos, this->look, this->up);
 }
 
-void Camera::update(bool const keyStates[256])
+void Camera::update(const KeyboardHandler* handler)
 {
 	// I did the maths for this a loooooong 
 	// time ago and sadly didn't comment anything.
@@ -79,7 +95,7 @@ void Camera::update(bool const keyStates[256])
 	tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 	GLfloat speedModifier = 1.0;
 
-	if (keyStates[32])
+	if (handler->keyStates[32])
 		speedModifier = 3.0;
 
 	GLfloat speed = (speedModifier*timeElapsed)*100.0;
@@ -103,25 +119,25 @@ void Camera::update(bool const keyStates[256])
 	tmp2 = n;
 	tmp3 = axis;
 
-	if (keyStates['w'])
+	if (handler->keyStates['w'])
 	{
 		pos = tmp + tmp2;
 		look = look + n;
 	}
-	else if (keyStates['s'])
+	else if (handler->keyStates['s'])
 	{
 		pos = tmp - tmp2;
 		look = look - n;
 	}
-	else if (keyStates['a'])
+	else if (handler->keyStates['a'])
 	{
 		pos = tmp - tmp3;
 		look = look - axis;
 	}
-	else if (keyStates['d'])
+	else if (handler->keyStates['d'])
 	{
 		pos = tmp + tmp3;
 		look = look + axis;
 	}
-	//printf("Now looking towards: %f %f %f\n", l.x, l.y, l.z);
+	printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
 }

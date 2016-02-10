@@ -13,9 +13,12 @@ public:
 	void keyPressed(unsigned char); // Whenever a key gets pressed
 	void keyUp(unsigned char); // Whenever a key is depressed
 
-private:
-	// Member variables
+	void tick(); // Called every frame
+
 	bool keyStates[256] = { false }; // For keeping track of which keys are currently pressed 
+
+private:
+	// Member variables	
 
 	// Member functions
 	void init(); // set OpenGL listening functions etc
