@@ -30,6 +30,8 @@ public:
 	// Refresh rate for warping
 	static const int WARP_REFRESH_RATE = 20;
 
+	void updateTSinceLast();
+
 private:
 
 	// MEMBER VARIABLES

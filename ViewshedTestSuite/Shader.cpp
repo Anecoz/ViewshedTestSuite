@@ -31,9 +31,19 @@ void Shader::deactivate() const {
 	glUseProgram(0);
 }
 
+void Shader::setAndEnableVertexAttrib(const std::string name) {
+	GLint loc = glGetAttribLocation(id, name.c_str());
+
+	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(loc);
+	printf("Enabled attrib %s, loc is %d\n", name.c_str(), loc);
+}
+
 // -------------UPLOADS------------
 void Shader::uploadMatrix(glm::mat4 matrix, std::string name) const {
-	glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
+	GLint loc = glGetUniformLocation(id, name.c_str());
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &matrix[0][0]);
+	//printf("Uploaded matrix with name %s, loc is %d\n", name.c_str(), loc);
 }
 
 void Shader::uploadMatrix(glm::mat3 matrix, std::string name) const {

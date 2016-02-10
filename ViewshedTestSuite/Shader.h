@@ -9,7 +9,7 @@ class Shader
 {
 public:
 	Shader();
-	Shader(const std::string, const std::string); // Constructor that directly takes vs + fs strings
+	Shader(const std::string VS, const std::string FS); // Constructor that directly takes vs + fs strings
 	~Shader() = default; // Nothing worth overriding the compiler-generated destructor for
 
 	void loadFromFile(const std::string, const std::string); // Load vertex + frag shader from a string and sets it
@@ -18,6 +18,8 @@ public:
 
 	void uploadMatrix(glm::mat4, std::string) const; // Upload a matrix to the shader
 	void uploadMatrix(glm::mat3, std::string) const; // Overload of above method
+
+	void setAndEnableVertexAttrib(const std::string);
 
 private:
 	// Member variables

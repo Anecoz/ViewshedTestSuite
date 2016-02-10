@@ -22,8 +22,8 @@ extern "C" {
 // end GLOBALS
 
 Camera::Camera() {
-	this->pos = { 0, 0, 0 };
-	this->look = { pos.x + 1, pos.y, pos.z };
+	this->pos = { -1, 10, 0 };
+	this->look = { pos.x + 1, 0, pos.z };
 
 	init();
 }
@@ -86,13 +86,17 @@ glm::mat4 Camera::getCameraMatrix() const {
 	return glm::lookAt(this->pos, this->look, this->up);
 }
 
+void Camera::updateTSinceLast() {
+	tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+}
+
 void Camera::update(const KeyboardHandler* handler)
 {
 	// I did the maths for this a loooooong 
 	// time ago and sadly didn't comment anything.
 	// It is what it is, move along.
 	GLfloat timeElapsed = abs((GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0 - tSinceLast);
-	tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+	//tSinceLast = (GLfloat)glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 	GLfloat speedModifier = 1.0;
 
 	if (handler->keyStates[32])
@@ -139,5 +143,5 @@ void Camera::update(const KeyboardHandler* handler)
 		pos = tmp + tmp3;
 		look = look + axis;
 	}
-	printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
+	//printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
 }

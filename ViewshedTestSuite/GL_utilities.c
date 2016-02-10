@@ -162,9 +162,12 @@ GLuint loadShadersGT(const char *vertFileName, const char *fragFileName, const c
 	
 	vs = readFile((char *)vertFileName);
 	fs = readFile((char *)fragFileName);
-	gs = readFile((char *)geomFileName);
-	tcs = readFile((char *)tcFileName);
-	tes = readFile((char *)teFileName);
+	gs = NULL;
+	tcs = NULL;
+	tes = NULL;
+	//gs = readFile((char *)geomFileName);
+	//tcs = readFile((char *)tcFileName);
+	//tes = readFile((char *)teFileName);
 	if (vs==NULL)
 		fprintf(stderr, "Failed to read %s from disk.\n", vertFileName);
 	if (fs==NULL)
