@@ -61,10 +61,10 @@ void Game::init(int& argc, char **argv) {
 	// GL inits
 	dumpInfo(); // From ingemar, prints vendor and version number etc
 	glClearColor(0.2, 0.2, 0.5, 0);
-	//glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	//glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_CULL_FACE);
 	printError("GL inits");
 
 	// Set the cam and keyhandler

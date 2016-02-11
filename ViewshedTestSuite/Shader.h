@@ -20,6 +20,7 @@ public:
 	void uploadMatrix(glm::mat3, std::string) const; // Overload of above method
 
 	void setAndEnableVertexAttrib(const std::string);
+	void setAndEnableNormalAttrib(const std::string);
 
 private:
 	// Member variables

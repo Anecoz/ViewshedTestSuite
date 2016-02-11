@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Shader.h"
+#include "TerrainGenerator.h"
 
 // Used to represent terrain, should have its own shader and all that jazz
 // Also has own unique VAO and VBOs to store stuff
@@ -23,19 +24,29 @@ private:
 	// MEMBER VARIABLES
 	Shader shader;
 
-	GLuint vao, vertexVBO, indexVBO;
+	GLuint vao, vertexVBO, normalVBO, indexVBO;
 
 	// These two hold raw data for the terrain. Free them using free()
 	GLfloat *vertexArray;
-	GLuint *indexArray; 
+	GLfloat *normalArray;
+	GLuint *indexArray;
 
 	const GLfloat TILE_SIZE = 512.0;
 	const GLint VERTEX_COUNT = TILE_SIZE * TILE_SIZE;
 	const GLuint TRIANGLE_COUNT = 2 * (TILE_SIZE - 1) * (TILE_SIZE - 1);
 
 	const std::string VERTEX_IN_NAME = "inPosition";
+	const std::string NORMAL_IN_NAME = "inNormal";
+
+	const std::string VERTEX_FILE_NAME = "terrainvert.dat";
+	const std::string NORMAL_FILE_NAME = "terrainnorm.dat";
+	const std::string INDEX_FILE_NAME = "terrainind.dat";
+
+	// MEMBER OBJECTS
+	TerrainGenerator generator;
 
 	// MEMBER METHODS
 	void setupVAO();
+	glm::vec3 calcNormal(GLfloat x, GLfloat y, GLfloat z); // Calculates a normal given a x,z position
 };
 

@@ -36,7 +36,15 @@ void Shader::setAndEnableVertexAttrib(const std::string name) {
 
 	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(loc);
-	printf("Enabled attrib %s, loc is %d\n", name.c_str(), loc);
+	//printf("Enabled attrib %s, loc is %d\n", name.c_str(), loc);
+}
+
+void Shader::setAndEnableNormalAttrib(const std::string name) {
+	GLint loc = glGetAttribLocation(id, name.c_str());
+
+	glVertexAttribPointer(loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(loc);
+	//printf("Enabled attrib %s, loc is %d\n", name.c_str(), loc);
 }
 
 // -------------UPLOADS------------

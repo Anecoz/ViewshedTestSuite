@@ -28,13 +28,14 @@ public:
 	static const int MOUSE_WARP_X = 200;
 	static const int MOUSE_WARP_Y = 200;
 	// Refresh rate for warping
-	static const int WARP_REFRESH_RATE = 20;
+	static const int WARP_REFRESH_RATE = 50;
 
 	void updateTSinceLast();
 
 private:
 
 	// MEMBER VARIABLES
+	GLfloat sensitivity = 4.0f; // Higher value -> lower sensitivty....
 
 	glm::vec3 pos; // Position of the camera
 	GLfloat tSinceLast; // Elapsed time since last time update was called

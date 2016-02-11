@@ -51,8 +51,8 @@ void Camera::init() {
 }
 
 void Camera::handleMouseMovement(GLint x, GLint y) {
-	GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / (GLfloat) 2.0*MOUSE_WARP_X; //Using offsets where mouse is warped everytime
-	GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / (GLfloat) 2.0*MOUSE_WARP_Y;
+	GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / ((GLfloat) sensitivity*MOUSE_WARP_X); //Using offsets where mouse is warped everytime
+	GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / ((GLfloat) sensitivity*MOUSE_WARP_Y);
 
 	// Rotate l point----------------
 	//Y-axis----------------------
