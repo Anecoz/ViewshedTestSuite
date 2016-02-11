@@ -30,10 +30,12 @@ vec3 calcLight() {
 	vec3 total = vec3(0.0);
 
 	float ambient = 0.7;
-	vec3 lightPos = mat3(camMatrix)*lightDir;
+	//vec3 lightPos = mat3(camMatrix)*lightDir;
+	vec3 lightPos = lightDir;
 	vec3 lightColor = normalize(lightCol);
 	vec3 L = normalize(lightPos);
-	vec3 N = mat3(camMatrix)*fragNormal;
+	//vec3 N = mat3(camMatrix)*fragNormal;
+	vec3 N = fragNormal;
 
 	//Diffuse
 	float diffInt = max(dot(L, N), 0.01);

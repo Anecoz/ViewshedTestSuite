@@ -49,19 +49,12 @@ void SphericShadowmapViewshed::render() {
 	glBindVertexArray(vao);
 	
 	//glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
 	shader.uploadMatrix(lightSpaceMatrix, "lightSpaceMatrix");
 	glDrawElements(GL_TRIANGLES, terrain->getTriangleCount() * 3, GL_UNSIGNED_INT, 0L);
 
-	// TESTING, read the pixels from depth component
-	//GLfloat* depths = new GLfloat[1024 * 1024];
-	//glReadPixels(0, 0, 1024, 1024, GL_DEPTH_COMPONENT, GL_FLOAT, &depths[0]);
-	/*glBindTexture(GL_TEXTURE_2D, depthMap);
-	glGetTexImage(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GL_FLOAT, depths);
-	for (int x = 0; x < 1024*1024; x++) {
-		printf("Depths at %d is %f\n", x, depths[x]);
-	}*/
-	glEnable(GL_CULL_FACE);
+
+	//glEnable(GL_CULL_FACE);
 	shader.deactivate();
 	glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
