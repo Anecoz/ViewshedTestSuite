@@ -2,6 +2,7 @@
 #include "Camera.h"
 #include "KeyboardHandler.h"
 #include "Terrain.h"
+#include "SphericShadowmapViewshed.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <string>
@@ -20,6 +21,9 @@ public:
 
 	void tick(); // per-frame tick.
 
+	static const GLint WINDOW_SIZE_X = 800;
+	static const GLint WINDOW_SIZE_Y = 600;
+
 private:
 	// MEMBER OBJECTS
 	Camera *camera;
@@ -28,14 +32,15 @@ private:
 	// Temporary terrain object
 	Terrain terrain;
 
+	// VIEWSHED
+	SphericShadowmapViewshed viewshed;
+
 	// Projection matrix
 	const glm::mat4 projMatrix = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 2000.0f);
 
-	// MEMBER VARIABLES
-	const GLint WINDOW_SIZE_X = 800;
-	const GLint WINDOW_SIZE_Y = 600;
+	// MEMBER VARIABLES	
 	const std::string WINDOW_TITLE = "Viewshed test suite";
-	const GLint INIT_WINDOW_POS = 400;
+	const GLint INIT_WINDOW_POS = 300;
 
 	// MEMBER METHODS
 	void init(int&, char**); // handles all necessary initializations		

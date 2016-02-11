@@ -73,6 +73,7 @@ void Game::init(int& argc, char **argv) {
 
 	terrain.init();
 	terrain.generate();
+	viewshed.init(&terrain);
 
 	glutMainLoop();
 }
@@ -88,8 +89,11 @@ void Game::tick() {
 	camera->update(keyHandler);
 	camera->updateTSinceLast();
 
+	// Get the shadow map
+	GLuint depthMap = viewshed.getDepthMap();	
+
 	// Draw terrain
-	terrain.render(camera->getCameraMatrix(), projMatrix);
+	terrain.render(camera->getCameraMatrix(), projMatrix, viewshed.getLightSpaceMatrix(), depthMap);
 
 	// Swap buffers
 	glutSwapBuffers();

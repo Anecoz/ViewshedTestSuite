@@ -19,6 +19,8 @@ public:
 	void uploadMatrix(glm::mat4, std::string) const; // Upload a matrix to the shader
 	void uploadMatrix(glm::mat3, std::string) const; // Overload of above method
 
+	void uploadTexture(GLuint, std::string) const;
+
 	void setAndEnableVertexAttrib(const std::string);
 	void setAndEnableNormalAttrib(const std::string);
 

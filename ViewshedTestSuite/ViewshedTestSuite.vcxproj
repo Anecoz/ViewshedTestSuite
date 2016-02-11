@@ -158,6 +158,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SphericShadowmapViewshed.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
   </ItemGroup>
@@ -169,10 +170,13 @@
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SphericShadowmapViewshed.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainGenerator.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shadowmap.frag" />
+    <None Include="shadowmap.vert" />
     <None Include="terrain.frag" />
     <None Include="terrain.vert" />
   </ItemGroup>

@@ -45,6 +45,9 @@
     <ClCompile Include="FileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SphericShadowmapViewshed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GL_utilities.h">
@@ -74,12 +77,21 @@
     <ClInclude Include="FileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SphericShadowmapViewshed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="terrain.vert">
       <Filter>Source Files</Filter>
     </None>
     <None Include="terrain.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shadowmap.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shadowmap.frag">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

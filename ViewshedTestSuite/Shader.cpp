@@ -48,6 +48,11 @@ void Shader::setAndEnableNormalAttrib(const std::string name) {
 }
 
 // -------------UPLOADS------------
+void Shader::uploadTexture(GLuint texUnit, std::string name) const {
+	GLint loc = glGetUniformLocation(id, name.c_str());
+	glUniform1i(loc, texUnit);
+}
+
 void Shader::uploadMatrix(glm::mat4 matrix, std::string name) const {
 	GLint loc = glGetUniformLocation(id, name.c_str());
 	glUniformMatrix4fv(loc, 1, GL_FALSE, &matrix[0][0]);

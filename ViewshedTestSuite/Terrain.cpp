@@ -22,26 +22,47 @@ Terrain::~Terrain()
 	free(indexArray);
 }
 
+GLuint* Terrain::getVertexVBO() {
+	return &vertexVBO;
+}
+
+GLuint* Terrain::getIndexVBO() {
+	return &indexVBO;
+}
+
+const GLuint Terrain::getTriangleCount() {
+	return TRIANGLE_COUNT;
+}
+
 void Terrain::init() {
 	shader = Shader("terrain.vert", "terrain.frag");
 }
 
-void Terrain::render(glm::mat4 camMatrix, glm::mat4 projMatrix) {
+void Terrain::render(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
 	shader.activate();
-
 	glBindVertexArray(vao);
+
+	// Bind texture
+	activateDepthTexture();
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	shader.uploadTexture(0, "depthMap");
 
 	// matrix uploads
 	shader.uploadMatrix(camMatrix, "camMatrix");
 	shader.uploadMatrix(projMatrix, "projMatrix");
+	shader.uploadMatrix(lightSpaceMatrix, "lightSpaceMatrix");
 	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT*3, GL_UNSIGNED_INT, 0L);
 
 	shader.deactivate();
 }
 
+void Terrain::activateDepthTexture() {
+	glActiveTexture(GL_TEXTURE0);
+}
+
 void Terrain::generate() {
 	// Check first if terrain already exists on file
-	if (FileHandler::checkIfExists(VERTEX_FILE_NAME)) {
+	/*if (FileHandler::checkIfExists(VERTEX_FILE_NAME)) {
 		printf("Terrain is on file, loading...\n");
 
 		// Load vertices, indices and normals from file
@@ -59,7 +80,7 @@ void Terrain::generate() {
 			exit(4);
 		}	
 	}
-	else {
+	else {*/
 		printf("Terrain is not on file, generating on CPU\n");
 
 		// Start with setting some constants
@@ -99,9 +120,9 @@ void Terrain::generate() {
 				indexArray[(x + z * (width - 1)) * 6 + 5] = x + 1 + (z + 1) * width;
 			}
 
-		printf("Generation done! Saving to file... \n");
+		//printf("Generation done! Saving to file... \n");
 
-		bool vertSaveRes = FileHandler::saveToFile(VERTEX_FILE_NAME, vertexArray, VERTEX_COUNT * 3);
+		/*bool vertSaveRes = FileHandler::saveToFile(VERTEX_FILE_NAME, vertexArray, VERTEX_COUNT * 3);
 		bool normSaveRes = FileHandler::saveToFile(NORMAL_FILE_NAME, normalArray, VERTEX_COUNT * 3);
 		bool indSaveRes = FileHandler::saveToFile(INDEX_FILE_NAME, indexArray, TRIANGLE_COUNT * 3);
 
@@ -111,8 +132,8 @@ void Terrain::generate() {
 		else {
 			printf("Could not save terrain to file, exiting\n");
 			exit(3);
-		}
-	}
+		}*/
+	//}
 
 	// Now construct a VAO from this data.
 	setupVAO();

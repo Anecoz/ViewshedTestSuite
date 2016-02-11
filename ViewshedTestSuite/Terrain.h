@@ -15,10 +15,15 @@ public:
 	Terrain();
 	~Terrain(); // Destructor needs to take care of freeing all VBOs
 
-	void render(glm::mat4 camMatrix, glm::mat4 projMatrix); // Takes camera matrix
+	void render(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap); // Takes camera matrix
 
 	void init(); // Sets up shaders etc
 	void generate(); // Generates new terrain
+
+	GLuint* getVertexVBO();
+	GLuint* getIndexVBO();
+
+	const GLuint getTriangleCount();
 
 private:
 	// MEMBER VARIABLES
@@ -48,5 +53,6 @@ private:
 	// MEMBER METHODS
 	void setupVAO();
 	glm::vec3 calcNormal(GLfloat x, GLfloat y, GLfloat z); // Calculates a normal given a x,z position
+	void activateDepthTexture();
 };
 
