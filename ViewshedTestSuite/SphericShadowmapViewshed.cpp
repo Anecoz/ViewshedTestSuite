@@ -48,14 +48,15 @@ void SphericShadowmapViewshed::render() {
 	shader.activate();
 	glBindVertexArray(vao);
 	
-	//glDisable(GL_DEPTH_TEST);
-	//glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_FRONT);
 	shader.uploadMatrix(lightSpaceMatrix, "lightSpaceMatrix");
 	glDrawElements(GL_TRIANGLES, terrain->getTriangleCount() * 3, GL_UNSIGNED_INT, 0L);
 
-
-	//glEnable(GL_CULL_FACE);
 	shader.deactivate();
+	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_CULL_FACE);
 	glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

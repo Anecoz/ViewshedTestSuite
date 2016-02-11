@@ -41,6 +41,9 @@ void Terrain::init() {
 void Terrain::render(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
 	shader.activate();
 	glBindVertexArray(vao);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	// Bind texture
 	activateDepthTexture();
@@ -53,6 +56,8 @@ void Terrain::render(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightS
 	shader.uploadMatrix(lightSpaceMatrix, "lightSpaceMatrix");
 	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT*3, GL_UNSIGNED_INT, 0L);
 
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 	shader.deactivate();
 }
 

@@ -21,8 +21,8 @@ public:
 
 	void tick(); // per-frame tick.
 
-	static const GLint WINDOW_SIZE_X = 800;
-	static const GLint WINDOW_SIZE_Y = 600;
+	static const GLint WINDOW_SIZE_X = 1024;
+	static const GLint WINDOW_SIZE_Y = 1024;
 
 private:
 	// MEMBER OBJECTS
@@ -36,11 +36,12 @@ private:
 	SphericShadowmapViewshed viewshed;
 
 	// Projection matrix
-	const glm::mat4 projMatrix = glm::perspective(45.0f, 4.0f / 3.0f, 0.1f, 2000.0f);
+	const glm::mat4 projMatrix = glm::perspective(45.0f, 1.0f / 1.0f, 0.1f, 2000.0f);
 
 	// MEMBER VARIABLES	
 	const std::string WINDOW_TITLE = "Viewshed test suite";
-	const GLint INIT_WINDOW_POS = 300;
+	const GLint INIT_WINDOW_POS_X = 500;
+	const GLint INIT_WINDOW_POS_Y = 0;
 
 	// MEMBER METHODS
 	void init(int&, char**); // handles all necessary initializations		

@@ -43,7 +43,7 @@ void Game::init(int& argc, char **argv) {
 	// Loads of boilerplate
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowPosition(INIT_WINDOW_POS, INIT_WINDOW_POS);
+	glutInitWindowPosition(INIT_WINDOW_POS_X, INIT_WINDOW_POS_Y);
 	glutInitWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);
 	glutCreateWindow(WINDOW_TITLE.c_str());
 	glutDisplayFunc(::display);
@@ -61,10 +61,6 @@ void Game::init(int& argc, char **argv) {
 	// GL inits
 	dumpInfo(); // From ingemar, prints vendor and version number etc
 	glClearColor(0.2, 0.2, 0.5, 0);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	//glDisable(GL_DEPTH_TEST);
-	//glDisable(GL_CULL_FACE);
 	printError("GL inits");
 
 	// Set the cam and keyhandler
