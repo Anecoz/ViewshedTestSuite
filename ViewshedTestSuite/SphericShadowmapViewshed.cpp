@@ -106,7 +106,7 @@ void SphericShadowmapViewshed::doRenderBoilerplate() {
 	// Start with setting the viewport (since shadow map is not necessarily same resolution as window)
 	// After that, bind FBO
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
 	// Now we can do the render
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -118,7 +118,7 @@ void SphericShadowmapViewshed::doRenderBoilerplate() {
 void SphericShadowmapViewshed::doPostRenderBoilerplate() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// reset the viewport out of courtesy. 
 	// And also because it will otherwise lead to ridiculously strange things outside of this class

@@ -30,8 +30,8 @@ private:
 	// MEMBER VARIABLES
 	GLuint vao, modelVAO;
 	glm::vec3 pos;
-	const GLuint SHADOW_WIDTH = 4096;
-	const GLuint SHADOW_HEIGHT = 4096;
+	const GLuint SHADOW_WIDTH = 1024;
+	const GLuint SHADOW_HEIGHT = 1024;
 	GLuint depthMap, depthMapFBO;
 
 	// For the orthogonal projection
