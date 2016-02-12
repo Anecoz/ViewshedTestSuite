@@ -28,8 +28,7 @@ public:
 	void setAndEnableVertexAttrib(const std::string);
 	void setAndEnableNormalAttrib(const std::string);
 
-private:
 	// Member variables
-	GLuint id; // The OpenGL context shader id of this particular shader
+	GLuint id; // The OpenGL context shader id of this particular shader	
 };
 

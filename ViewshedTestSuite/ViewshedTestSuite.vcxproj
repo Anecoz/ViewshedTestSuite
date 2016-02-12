@@ -178,6 +178,8 @@
     <None Include="shadowmapOrtho.frag" />
     <None Include="shadowmapOrtho.vert" />
     <None Include="shadowmapSpherical.vert" />
+    <None Include="shadowModel.frag" />
+    <None Include="shadowModel.vert" />
     <None Include="terrainOrtho.frag" />
     <None Include="terrainOrtho.vert" />
     <None Include="terrainSpherical.frag" />

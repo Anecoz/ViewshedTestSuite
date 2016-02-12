@@ -91,7 +91,7 @@ void Game::tick() {
 
 	// Get the shadow map
 	//GLuint depthMap = viewshed.getDepthMapOrtho();
-	GLuint depthMap = viewshed.getDepthMapSpherical();
+	GLuint depthMap = viewshed.getDepthMapSpherical(projMatrix, camera->getCameraMatrix());
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, viewshed.getOrthoLightSpaceMatrix(), depthMap);

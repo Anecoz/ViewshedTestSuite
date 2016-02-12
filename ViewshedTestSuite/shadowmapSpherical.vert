@@ -16,7 +16,7 @@ vec2 StereographicProjection(vec3 sphericalCoords) {
 
 void main() {
 	vec3 sphericalCoords = normalize(inPosition - lightPos);
-	vec3 outPos = vec3(StereographicProjection(sphericalCoords), distance(inPosition, lightPos)/256.0);
+	vec3 outPos = vec3(StereographicProjection(sphericalCoords), distance(inPosition, lightPos)/128.0);
 
 	gl_Position = vec4(outPos, 1.0);
 }

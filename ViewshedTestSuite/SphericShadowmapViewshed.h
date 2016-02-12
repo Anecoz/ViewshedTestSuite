@@ -20,7 +20,7 @@ public:
 	glm::vec3 getPos();
 
 	GLuint& getDepthMapOrtho();
-	GLuint& getDepthMapSpherical();
+	GLuint& getDepthMapSpherical(glm::mat4, glm::mat4);
 
 	const glm::mat4 getOrthoLightSpaceMatrix();
 
@@ -28,10 +28,10 @@ public:
 
 private:
 	// MEMBER VARIABLES
-	GLuint vao;
+	GLuint vao, modelVAO;
 	glm::vec3 pos;
-	const GLuint SHADOW_WIDTH = 1024;
-	const GLuint SHADOW_HEIGHT = 1024;
+	const GLuint SHADOW_WIDTH = 4096;
+	const GLuint SHADOW_HEIGHT = 4096;
 	GLuint depthMap, depthMapFBO;
 
 	// For the orthogonal projection
@@ -39,16 +39,24 @@ private:
 	const glm::mat4 orthoLightView = glm::lookAt(glm::vec3(-430.0f, 256.0f, 256.0f), glm::vec3(256.0f, 0.0f, 256.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	const glm::mat4 orthoLightSpaceMatrix = orthoProjMatrix * orthoLightView;
 
-	// MEMBER OBEJCTS
-	Shader shader; // Special shader for getting depth map etc
+	// For the model
+	GLfloat* vertexArray;
+	GLuint* indexArray;
+	GLuint modelVertexVBO, modelIndexVBO;
+	const GLint MODEL_VERTEX_COUNT = 4;
+	const GLint MODEL_TRIANGLE_COUNT = 2;
+
+	// MEMBER OBJECTS
+	Shader shader, modelShader; // Special shader for getting depth map etc
 	Terrain* terrain;
 
 	// MEMBER METHODS
+	void setupModel();
 	void setupVAO();
 	void setupFBO();
 
 	void renderOrtho(); // Make this private, because only getDepthMap is needed from outside
-	void renderSpherical(); // ditto
+	void renderSpherical(glm::mat4, glm::mat4); // ditto
 	void doRenderBoilerplate(); // Some generic code that must be done either way
 	void doPostRenderBoilerplate(); // ditto but post-render
 };

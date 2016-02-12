@@ -25,8 +25,8 @@ vec2 StereographicProjection(vec3 sphericalCoords) {
 
 float shadowCalculation(vec3 fragPosLightSpace) {
 	vec2 projCoords = StereographicProjection(fragPosLightSpace);
-	float closestDepth = texture(depthMap, projCoords).r; 
-	float currentDepth = distance(fragPosition, lightPos)/256.0;
+	float closestDepth = texture(depthMap, projCoords*0.5 + 0.5).r; 
+	float currentDepth = distance(fragPosition, lightPos)/128.0;
 	//float bias = 0.005; // To get rid of "shadow acne"
 	
 	float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
