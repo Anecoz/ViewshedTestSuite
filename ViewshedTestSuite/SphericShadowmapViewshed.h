@@ -56,7 +56,7 @@ private:
 	void setupFBO();
 
 	void renderOrtho(); // Make this private, because only getDepthMap is needed from outside
-	void renderSpherical(glm::mat4, glm::mat4); // ditto
+	void renderSpherical(glm::mat4, glm::mat4); // ditto, also needs proj and cam matrix for rendering the model
 	void doRenderBoilerplate(); // Some generic code that must be done either way
 	void doPostRenderBoilerplate(); // ditto but post-render
 };
