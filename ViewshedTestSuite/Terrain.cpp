@@ -35,30 +35,53 @@ const GLuint Terrain::getTriangleCount() {
 }
 
 void Terrain::init() {
-	shader = Shader("terrain.vert", "terrain.frag");
+	orthoShader = Shader("terrainOrtho.vert", "terrainOrtho.frag");
+	sphericalShader = Shader("terrainSpherical.vert", "terrainSpherical.frag");
 }
 
-void Terrain::render(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
-	shader.activate();
-	glBindVertexArray(vao);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
+	orthoShader.activate();
+	doRenderBoilerplate();
 
 	// Bind texture
 	activateDepthTexture();
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	shader.uploadTexture(0, "depthMap");
+	orthoShader.uploadTexture(0, "depthMap");
 
 	// matrix uploads
-	shader.uploadMatrix(camMatrix, "camMatrix");
-	shader.uploadMatrix(projMatrix, "projMatrix");
-	shader.uploadMatrix(lightSpaceMatrix, "lightSpaceMatrix");
+	orthoShader.uploadMatrix(camMatrix, "camMatrix");
+	orthoShader.uploadMatrix(projMatrix, "projMatrix");
+	orthoShader.uploadMatrix(lightSpaceMatrix, "lightSpaceMatrix");
 	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT*3, GL_UNSIGNED_INT, 0L);
 
+	orthoShader.deactivate();
+	doPostRenderBoilerplate();
+}
+
+void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap, glm::vec3 lightPos) {
+	sphericalShader.activate();
+	doRenderBoilerplate();
+
+	sphericalShader.uploadMatrix(camMatrix, "camMatrix");
+	sphericalShader.uploadMatrix(projMatrix, "projMatrix");
+	sphericalShader.uploadVec(lightPos, "lightPos");
+	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
+
+	sphericalShader.deactivate();
+	doPostRenderBoilerplate();
+}
+
+void Terrain::doRenderBoilerplate() {
+	glBindVertexArray(vao);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);	
+}
+
+void Terrain::doPostRenderBoilerplate() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	shader.deactivate();
+	glBindVertexArray(0);
 }
 
 void Terrain::activateDepthTexture() {
@@ -163,24 +186,35 @@ void Terrain::setupVAO() {
 	glGenBuffers(1, &vertexVBO);
 	glGenBuffers(1, &normalVBO);
 	glGenBuffers(1, &indexVBO);
-	
-	shader.activate();
 
 	// Vertex VBO
 	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
 	glBufferData(GL_ARRAY_BUFFER, VERTEX_COUNT * 3 * sizeof(GLfloat), vertexArray, GL_STATIC_DRAW);
-	shader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
+
+	orthoShader.activate();
+	orthoShader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
+	orthoShader.deactivate();
+	
+	sphericalShader.activate();
+	sphericalShader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
+	sphericalShader.deactivate();
 
 	// Normal VBO
 	glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 	glBufferData(GL_ARRAY_BUFFER, VERTEX_COUNT * 3 * sizeof(GLfloat), normalArray, GL_STATIC_DRAW);
-	shader.setAndEnableNormalAttrib(NORMAL_IN_NAME);	
+	
+	orthoShader.activate();
+	orthoShader.setAndEnableNormalAttrib(NORMAL_IN_NAME);
+	orthoShader.deactivate();
+
+	sphericalShader.activate();
+	sphericalShader.setAndEnableNormalAttrib(NORMAL_IN_NAME);
+	sphericalShader.deactivate();
 
 	// Index VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, TRIANGLE_COUNT*sizeof(GLuint)*3, indexArray, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
-	shader.deactivate();
 	printf("VAO setup done! vao is %d\n", vao);
 }

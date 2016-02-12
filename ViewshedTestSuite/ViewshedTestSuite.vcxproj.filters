@@ -82,16 +82,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="terrain.vert">
+    <None Include="shadowmapOrtho.vert">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="terrain.frag">
+    <None Include="shadowmapOrtho.frag">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="shadowmap.vert">
+    <None Include="terrainOrtho.frag">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="shadowmap.frag">
+    <None Include="terrainOrtho.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shadowmapSpherical.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="terrainSpherical.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="terrainSpherical.frag">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

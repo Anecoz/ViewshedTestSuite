@@ -12,7 +12,6 @@ uniform mat4 camMatrix;
 uniform sampler2D depthMap;
 
 const vec3 lightDir = vec3(0.0, 30.0, 256.0);
-//const vec3 lightDir = vec3(0.5, 0.5, 0.5);
 const vec3 lightCol = vec3(1.0, 1.0, 1.0);
 
 float shadowCalculation(vec4 fragPosLightSpace) {
@@ -31,11 +30,9 @@ vec3 calcLight() {
 	vec3 total = vec3(0.0);
 
 	float ambient = 0.7;
-	//vec3 lightPos = mat3(camMatrix)*lightDir;
 	vec3 lightPos = lightDir;
 	vec3 lightColor = normalize(lightCol);
 	vec3 L = normalize(lightPos);
-	//vec3 N = mat3(camMatrix)*fragNormal;
 	vec3 N = fragNormal;
 
 	//Diffuse

@@ -15,7 +15,8 @@ public:
 	Terrain();
 	~Terrain(); // Destructor needs to take care of freeing all VBOs
 
-	void render(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap); // Takes camera matrix
+	void renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap);
+	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3);
 
 	void init(); // Sets up shaders etc
 	void generate(); // Generates new terrain
@@ -27,7 +28,7 @@ public:
 
 private:
 	// MEMBER VARIABLES
-	Shader shader;
+	Shader orthoShader, sphericalShader;
 
 	GLuint vao, vertexVBO, normalVBO, indexVBO;
 
@@ -53,6 +54,9 @@ private:
 	// MEMBER METHODS
 	void setupVAO();
 	glm::vec3 calcNormal(GLfloat x, GLfloat y, GLfloat z); // Calculates a normal given a x,z position
+
 	void activateDepthTexture();
+	void doRenderBoilerplate();
+	void doPostRenderBoilerplate();
 };
 

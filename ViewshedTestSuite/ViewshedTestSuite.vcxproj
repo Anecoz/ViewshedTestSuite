@@ -175,10 +175,13 @@
     <ClInclude Include="TerrainGenerator.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shadowmap.frag" />
-    <None Include="shadowmap.vert" />
-    <None Include="terrain.frag" />
-    <None Include="terrain.vert" />
+    <None Include="shadowmapOrtho.frag" />
+    <None Include="shadowmapOrtho.vert" />
+    <None Include="shadowmapSpherical.vert" />
+    <None Include="terrainOrtho.frag" />
+    <None Include="terrainOrtho.vert" />
+    <None Include="terrainSpherical.frag" />
+    <None Include="terrainSpherical.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

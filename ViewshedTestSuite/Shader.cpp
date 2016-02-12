@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include <glm/gtc/type_ptr.hpp>
 
 // Use the GL_utilities by Ingemar to perform shader loading
 extern "C" //Ingemar's (useful) C headers
@@ -48,6 +49,17 @@ void Shader::setAndEnableNormalAttrib(const std::string name) {
 }
 
 // -------------UPLOADS------------
+void Shader::uploadVec(glm::vec3 vec, std::string name) const {
+	GLint loc = glGetUniformLocation(id, name.c_str());
+	glUniform3fv(loc, 1, glm::value_ptr(vec));
+	//printf("Uploaded vec (%f, %f, %f) to shader. loc is %d\n", vec.x, vec.y, vec.z, loc);
+}
+
+void Shader::uploadBool(GLboolean val, std::string name) const {
+	GLint loc = glGetUniformLocation(id, name.c_str());
+	glUniform1i(loc, val);
+}
+
 void Shader::uploadTexture(GLuint texUnit, std::string name) const {
 	GLint loc = glGetUniformLocation(id, name.c_str());
 	glUniform1i(loc, texUnit);

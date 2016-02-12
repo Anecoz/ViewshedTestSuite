@@ -21,6 +21,10 @@ public:
 
 	void uploadTexture(GLuint, std::string) const;
 
+	void uploadBool(GLboolean, std::string) const;
+
+	void uploadVec(glm::vec3, std::string) const;
+
 	void setAndEnableVertexAttrib(const std::string);
 	void setAndEnableNormalAttrib(const std::string);
 

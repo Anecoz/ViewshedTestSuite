@@ -69,7 +69,8 @@ void Game::init(int& argc, char **argv) {
 
 	terrain.init();
 	terrain.generate();
-	viewshed.init(&terrain);
+	//viewshed.initOrtho(&terrain);
+	viewshed.initSpherical(&terrain);
 
 	glutMainLoop();
 }
@@ -85,11 +86,16 @@ void Game::tick() {
 	camera->update(keyHandler);
 	camera->updateTSinceLast();
 
+	// Update the viewshed (steerable position)
+	viewshed.tick(keyHandler);
+
 	// Get the shadow map
-	GLuint depthMap = viewshed.getDepthMap();	
+	//GLuint depthMap = viewshed.getDepthMapOrtho();
+	GLuint depthMap = viewshed.getDepthMapSpherical();
 
 	// Draw terrain
-	terrain.render(camera->getCameraMatrix(), projMatrix, viewshed.getLightSpaceMatrix(), depthMap);
+	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, viewshed.getOrthoLightSpaceMatrix(), depthMap);
+	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, viewshed.getPos());
 
 	// Swap buffers
 	glutSwapBuffers();

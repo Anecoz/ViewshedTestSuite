@@ -143,6 +143,6 @@ void Camera::update(const KeyboardHandler* handler)
 		pos = tmp + tmp3;
 		look = look + axis;
 	}
-	printf("We are now at: %f, %f, %f\n", pos.x, pos.y, pos.z);
+	//printf("We are now at: %f, %f, %f\n", pos.x, pos.y, pos.z);
 	//printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
 }
