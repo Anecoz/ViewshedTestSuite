@@ -28,8 +28,9 @@ float shadowCalculation(vec3 fragPosLightSpace) {
 	vec2 projCoords = StereographicProjection(fragPosLightSpace);
 	float closestDepth = texture(depthMap, projCoords*0.5 + 0.5).r; 
 	float currentDepth = distance(fragPosition, lightPos)/maxDist;
+	float bias = 0.005; // To get rid of shadow acne
 	
-	float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
+	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 	return shadow;
 }
 
@@ -74,9 +75,9 @@ vec3 calcLight() {
 void main(void) {
 	// Calculate lighting
 	vec3 light = calcLight();
-	//outColor = vec4(light*0.3, 1.0);
+	outColor = vec4(light*0.3, 1.0);
 	//outColor = vec4(vec3(distance(fragPosition, lightPos)/maxDist), 1.0);
-	outColor = vec4( vec3(fragPosition.x/512.0), 1.0);
+	//outColor = vec4( vec3(fragPosition.x/512.0), 1.0);
 
 	//vec3 projCoords = fragPositionLightSpace.xyz / fragPositionLightSpace.w;
 	//projCoords = projCoords*0.5 + 0.5;

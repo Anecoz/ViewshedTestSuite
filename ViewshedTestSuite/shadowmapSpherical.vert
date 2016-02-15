@@ -20,8 +20,8 @@ vec2 StereographicProjection(vec3 sphericalCoords) {
 void main() {
 	vec3 vertPos = vec3( modelMatrix * vec4(inPosition, 1.0));
 	vec3 sphericalCoords = normalize(vertPos - lightPos);
-	//vec3 outPos = vec3(StereographicProjection(sphericalCoords), distance(vertPos, lightPos)/maxDist);
-	vec3 outPos = vec3(StereographicProjection(sphericalCoords), vertPos.x/512.0);
+	outPos = vec3(StereographicProjection(sphericalCoords), distance(vertPos, lightPos)/maxDist);
+	//outPos = vec3(StereographicProjection(sphericalCoords), vertPos.x/512.0);
 
 	gl_Position = vec4(outPos, 1.0);
 }
