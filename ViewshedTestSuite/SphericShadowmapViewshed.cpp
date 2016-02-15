@@ -65,10 +65,14 @@ GLuint& SphericShadowmapViewshed::getDepthMapSpherical(glm::mat4 projMatrix, Cam
 
 void SphericShadowmapViewshed::renderOrtho() {
 	doRenderBoilerplate();
+	glBindVertexArray(vao);
+	shader.activate();
 
 	shader.uploadMatrix(orthoLightSpaceMatrix, "lightSpaceMatrix");
 	glDrawElements(GL_TRIANGLES, terrain->getTriangleCount() * 3, GL_UNSIGNED_INT, 0L);
 
+	shader.deactivate();
+	glBindVertexArray(0);
 	doPostRenderBoilerplate();
 }
 
@@ -143,7 +147,7 @@ void SphericShadowmapViewshed::setupFBO() {
 	// Setup the depth map texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -179,7 +183,9 @@ void SphericShadowmapViewshed::setupVAO() {
 	shader.deactivate();
 
 	// Also init our model and its vao
-	setupModel();
+	if (modelShader.id != -1) {
+		setupModel();
+	}
 }
 
 void SphericShadowmapViewshed::setupModel() {
