@@ -21,8 +21,8 @@ public:
 
 	void tick(); // per-frame tick.
 
-	static const GLint WINDOW_SIZE_X = 1024;
-	static const GLint WINDOW_SIZE_Y = 1024;
+	static const GLint WINDOW_SIZE_X = 1600;
+	static const GLint WINDOW_SIZE_Y = 900;
 
 private:
 	// MEMBER OBJECTS

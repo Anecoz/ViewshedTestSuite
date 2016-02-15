@@ -50,6 +50,10 @@ void Camera::init() {
 	glutTimerFunc(WARP_REFRESH_RATE, ::setPointer, 0);
 }
 
+glm::vec3 Camera::getPos() {
+	return this->pos;
+}
+
 void Camera::handleMouseMovement(GLint x, GLint y) {
 	GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / ((GLfloat) sensitivity*MOUSE_WARP_X); //Using offsets where mouse is warped everytime
 	GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / ((GLfloat) sensitivity*MOUSE_WARP_Y);
@@ -145,4 +149,5 @@ void Camera::update(const KeyboardHandler* handler)
 	}
 	//printf("We are now at: %f, %f, %f\n", pos.x, pos.y, pos.z);
 	//printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
+	updateTSinceLast();
 }

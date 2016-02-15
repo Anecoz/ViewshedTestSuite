@@ -5,6 +5,8 @@
 in vec3 inPosition;
 
 uniform vec3 lightPos; // World coordinates
+uniform float maxDist; // max distance for the viewshed;
+uniform mat4 modelMatrix; // unit for terrain, but not for camera quad
 
 // Performs conformal conic projection, i.e. maps spherical coords to a 2D surface
 vec2 StereographicProjection(vec3 sphericalCoords) {
@@ -15,8 +17,9 @@ vec2 StereographicProjection(vec3 sphericalCoords) {
 }
 
 void main() {
-	vec3 sphericalCoords = normalize(inPosition - lightPos);
-	vec3 outPos = vec3(StereographicProjection(sphericalCoords), distance(inPosition, lightPos)/128.0);
+	vec3 vertPos = vec3( modelMatrix * vec4(inPosition, 1.0));
+	vec3 sphericalCoords = normalize(vertPos - lightPos);
+	vec3 outPos = vec3(StereographicProjection(sphericalCoords), distance(vertPos, lightPos)/maxDist);
 
 	gl_Position = vec4(outPos, 1.0);
 }

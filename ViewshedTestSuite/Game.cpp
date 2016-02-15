@@ -84,18 +84,17 @@ void Game::tick() {
 
 	// Update camera
 	camera->update(keyHandler);
-	camera->updateTSinceLast();
 
 	// Update the viewshed (steerable position)
 	viewshed.tick(keyHandler);
 
 	// Get the shadow map
 	//GLuint depthMap = viewshed.getDepthMapOrtho();
-	GLuint depthMap = viewshed.getDepthMapSpherical(projMatrix, camera->getCameraMatrix());
+	GLuint depthMap = viewshed.getDepthMapSpherical(projMatrix, camera);
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, viewshed.getOrthoLightSpaceMatrix(), depthMap);
-	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, viewshed.getPos());
+	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, viewshed.getPos());
 
 	// Swap buffers
 	glutSwapBuffers();

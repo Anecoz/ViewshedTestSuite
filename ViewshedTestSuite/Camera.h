@@ -32,6 +32,8 @@ public:
 
 	void updateTSinceLast();
 
+	glm::vec3 getPos();
+
 private:
 
 	// MEMBER VARIABLES

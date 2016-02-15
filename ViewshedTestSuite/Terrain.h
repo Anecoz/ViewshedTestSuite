@@ -28,18 +28,21 @@ public:
 
 private:
 	// MEMBER VARIABLES
-	Shader orthoShader, sphericalShader;
+	Shader orthoShader, sphericalShader, modelShader;
 
 	GLuint vao, vertexVBO, normalVBO, indexVBO;
+	GLuint modelVAO, modelVertexVBO, modelIndexVBO;
 
 	// These two hold raw data for the terrain. Free them using free()
-	GLfloat *vertexArray;
+	GLfloat *vertexArray, *modelVertexArray;
 	GLfloat *normalArray;
-	GLuint *indexArray;
+	GLuint *indexArray, *modelIndexArray;
 
 	const GLfloat TILE_SIZE = 512.0;
 	const GLint VERTEX_COUNT = TILE_SIZE * TILE_SIZE;
 	const GLuint TRIANGLE_COUNT = 2 * (TILE_SIZE - 1) * (TILE_SIZE - 1);
+	const GLint MODEL_VERTEX_COUNT = 4;
+	const GLuint MODEL_TRIANGLE_COUNT = 2;
 
 	const std::string VERTEX_IN_NAME = "inPosition";
 	const std::string NORMAL_IN_NAME = "inNormal";
@@ -53,6 +56,7 @@ private:
 
 	// MEMBER METHODS
 	void setupVAO();
+	void setupModel();
 	glm::vec3 calcNormal(GLfloat x, GLfloat y, GLfloat z); // Calculates a normal given a x,z position
 
 	void activateDepthTexture();

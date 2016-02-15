@@ -56,9 +56,9 @@ GLuint& SphericShadowmapViewshed::getDepthMapOrtho() {
 	return depthMap;
 }
 
-GLuint& SphericShadowmapViewshed::getDepthMapSpherical(glm::mat4 projMatrix, glm::mat4 camMatrix) {
+GLuint& SphericShadowmapViewshed::getDepthMapSpherical(glm::mat4 projMatrix, Camera* camera) {
 	// render scene using the spherical pipeline
-	renderSpherical(projMatrix, camMatrix);
+	renderSpherical(projMatrix, camera);
 	// Then return the now-updated depthMap
 	return depthMap;
 }
@@ -72,16 +72,22 @@ void SphericShadowmapViewshed::renderOrtho() {
 	doPostRenderBoilerplate();
 }
 
-void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, glm::mat4 camMatrix) {
+void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, Camera* camera) {
 	doRenderBoilerplate();
 	glBindVertexArray(vao);
 	shader.activate();
 
 	shader.uploadVec(this->pos, "lightPos");
+	shader.uploadFloat((GLfloat)VIEWSHED_MAX_DIST, "maxDist");
+	shader.uploadMatrix(glm::mat4(1.0f), "modelMatrix");
 	glDrawElements(GL_TRIANGLES, terrain->getTriangleCount() * 3, GL_UNSIGNED_INT, 0L);
-	glBindVertexArray(0);
-	shader.deactivate();
+	// Render the camera as a quad
+	glBindVertexArray(modelVAO);
+	shader.uploadMatrix(glm::translate(glm::mat4(1.0f), camera->getPos()), "modelMatrix");
+	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
+	shader.deactivate();
+	glBindVertexArray(0);
 	doPostRenderBoilerplate();
 
 	// Also render a representation of the viewshed object
@@ -90,13 +96,14 @@ void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, glm::mat4 c
 	modelShader.activate();
 
 	modelShader.uploadMatrix(projMatrix, "projMatrix");
-	modelShader.uploadMatrix(camMatrix, "camMatrix");
+	modelShader.uploadMatrix(camera->getCameraMatrix(), "camMatrix");
 	// Transformation matrix
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), this->pos);
 	modelShader.uploadMatrix(translationMatrix, "modelMatrix");
 	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
 	glBindVertexArray(0);
+	glDisable(GL_DEPTH_TEST);
 	modelShader.deactivate();
 	
 }
@@ -106,19 +113,19 @@ void SphericShadowmapViewshed::doRenderBoilerplate() {
 	// Start with setting the viewport (since shadow map is not necessarily same resolution as window)
 	// After that, bind FBO
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
 	// Now we can do the render
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 }
 
 void SphericShadowmapViewshed::doPostRenderBoilerplate() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// reset the viewport out of courtesy. 
 	// And also because it will otherwise lead to ridiculously strange things outside of this class
@@ -218,11 +225,14 @@ void SphericShadowmapViewshed::setupModel() {
 	glBindBuffer(GL_ARRAY_BUFFER, modelVertexVBO);
 	glBufferData(GL_ARRAY_BUFFER, MODEL_VERTEX_COUNT * 3 * sizeof(GLfloat), vertexArray, GL_STATIC_DRAW);
 	modelShader.setAndEnableVertexAttrib("inPosition");
+	modelShader.deactivate();
+	shader.activate();
+	shader.setAndEnableVertexAttrib("inPosition");
+	shader.deactivate();
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, modelIndexVBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, MODEL_TRIANGLE_COUNT * 3 * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
 	
-	modelShader.deactivate();
 	glBindVertexArray(0);
 }
 

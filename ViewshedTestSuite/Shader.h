@@ -25,6 +25,8 @@ public:
 
 	void uploadVec(glm::vec3, std::string) const;
 
+	void uploadFloat(GLfloat, std::string) const;
+
 	void setAndEnableVertexAttrib(const std::string);
 	void setAndEnableNormalAttrib(const std::string);
 

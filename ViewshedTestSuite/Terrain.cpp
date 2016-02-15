@@ -1,5 +1,7 @@
 #include "Terrain.h"
 #include "FileHandler.h"
+#include "SphericShadowmapViewshed.h"
+#include "Game.h"
 #include <vector>
 
 using namespace std;
@@ -37,6 +39,7 @@ const GLuint Terrain::getTriangleCount() {
 void Terrain::init() {
 	orthoShader = Shader("terrainOrtho.vert", "terrainOrtho.frag");
 	sphericalShader = Shader("terrainSpherical.vert", "terrainSpherical.frag");
+	modelShader = Shader("terrainShadowmap.vert", "terrainShadowmap.frag");
 }
 
 void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
@@ -62,13 +65,36 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	sphericalShader.activate();
 	doRenderBoilerplate();
 
+	// Bind texture
+	activateDepthTexture();
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	orthoShader.uploadTexture(0, "depthMap");
+
+	// Matrix uploads
 	sphericalShader.uploadMatrix(camMatrix, "camMatrix");
 	sphericalShader.uploadMatrix(projMatrix, "projMatrix");
 	sphericalShader.uploadVec(lightPos, "lightPos");
+	sphericalShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
 	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
 	sphericalShader.deactivate();
 	doPostRenderBoilerplate();
+
+	// After this, render only the depth map to top right quarter of the screen
+	GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
+	GLint hpos = Game::WINDOW_SIZE_Y - Game::WINDOW_SIZE_Y / 3.0;
+	glViewport(wpos, hpos, Game::WINDOW_SIZE_X / 3.0, Game::WINDOW_SIZE_Y / 3.0);
+	modelShader.activate();
+	glBindVertexArray(modelVAO);
+
+	// Upload texture
+	modelShader.uploadTexture(0, "depthMap");
+	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
+
+	glBindVertexArray(0);
+	modelShader.deactivate();
+	// Reset viewport
+	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
 }
 
 void Terrain::doRenderBoilerplate() {
@@ -217,4 +243,56 @@ void Terrain::setupVAO() {
 
 	glBindVertexArray(0);
 	printf("VAO setup done! vao is %d\n", vao);
+	setupModel();
+}
+
+void Terrain::setupModel() {
+	// Start with filling the arrays
+
+	modelVertexArray = (GLfloat*)malloc(MODEL_VERTEX_COUNT * 3 * sizeof(GLfloat));
+	modelIndexArray = (GLuint*)malloc(MODEL_TRIANGLE_COUNT * 3 * sizeof(GLuint));
+
+	// 4 vertices
+	modelVertexArray[0] = -1.0;
+	modelVertexArray[1] = 1.0;
+	modelVertexArray[2] = 0.0;
+
+	modelVertexArray[3] = -1.0;
+	modelVertexArray[4] = -1.0;
+	modelVertexArray[5] = 0.0;
+
+	modelVertexArray[6] = 1.0;
+	modelVertexArray[7] = 1.0;
+	modelVertexArray[8] = 0.0;
+
+	modelVertexArray[9] = 1.0;
+	modelVertexArray[10] = -1.0;
+	modelVertexArray[11] = 0.0;
+
+	// Indices, triangle 1
+	modelIndexArray[0] = 0;
+	modelIndexArray[1] = 1;
+	modelIndexArray[2] = 2;
+
+	// Triangle 2
+	modelIndexArray[3] = 2;
+	modelIndexArray[4] = 1;
+	modelIndexArray[5] = 3;
+
+	// Fill up the VAO
+	modelShader.activate();
+	glGenVertexArrays(1, &modelVAO);
+	glBindVertexArray(modelVAO);
+	glGenBuffers(1, &modelVertexVBO);
+	glGenBuffers(1, &modelIndexVBO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, modelVertexVBO);
+	glBufferData(GL_ARRAY_BUFFER, MODEL_VERTEX_COUNT * 3 * sizeof(GLfloat), modelVertexArray, GL_STATIC_DRAW);
+	modelShader.setAndEnableVertexAttrib("inPosition");
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, modelIndexVBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, MODEL_TRIANGLE_COUNT * 3 * sizeof(GLuint), modelIndexArray, GL_STATIC_DRAW);
+
+	modelShader.deactivate();
+	glBindVertexArray(0);
 }

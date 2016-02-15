@@ -182,6 +182,8 @@
     <None Include="shadowModel.vert" />
     <None Include="terrainOrtho.frag" />
     <None Include="terrainOrtho.vert" />
+    <None Include="terrainShadowmap.frag" />
+    <None Include="terrainShadowmap.vert" />
     <None Include="terrainSpherical.frag" />
     <None Include="terrainSpherical.vert" />
   </ItemGroup>

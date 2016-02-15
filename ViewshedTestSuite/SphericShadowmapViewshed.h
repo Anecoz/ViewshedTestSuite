@@ -2,6 +2,7 @@
 #include "Shader.h"
 #include "Terrain.h"
 #include "KeyboardHandler.h"
+#include "Camera.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 
@@ -20,18 +21,21 @@ public:
 	glm::vec3 getPos();
 
 	GLuint& getDepthMapOrtho();
-	GLuint& getDepthMapSpherical(glm::mat4, glm::mat4);
+	GLuint& getDepthMapSpherical(glm::mat4, Camera*);
 
 	const glm::mat4 getOrthoLightSpaceMatrix();
 
 	void tick(KeyboardHandler*);
 
+	// Maximum "view" distance for the viewshed
+	static const GLint VIEWSHED_MAX_DIST = 128;
+
 private:
 	// MEMBER VARIABLES
 	GLuint vao, modelVAO;
 	glm::vec3 pos;
-	const GLuint SHADOW_WIDTH = 1024;
-	const GLuint SHADOW_HEIGHT = 1024;
+	const GLuint SHADOW_WIDTH = 4096;
+	const GLuint SHADOW_HEIGHT = 4096;
 	GLuint depthMap, depthMapFBO;
 
 	// For the orthogonal projection
@@ -56,7 +60,7 @@ private:
 	void setupFBO();
 
 	void renderOrtho(); // Make this private, because only getDepthMap is needed from outside
-	void renderSpherical(glm::mat4, glm::mat4); // ditto, also needs proj and cam matrix for rendering the model
+	void renderSpherical(glm::mat4, Camera*); // ditto, also needs proj and cam matrix for rendering the model
 	void doRenderBoilerplate(); // Some generic code that must be done either way
 	void doPostRenderBoilerplate(); // ditto but post-render
 };

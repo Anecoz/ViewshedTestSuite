@@ -109,5 +109,11 @@
     <None Include="shadowModel.frag">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="terrainShadowmap.vert">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="terrainShadowmap.frag">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
