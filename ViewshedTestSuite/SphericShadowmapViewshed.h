@@ -28,7 +28,7 @@ public:
 	void tick(KeyboardHandler*);
 
 	// Maximum "view" distance for the viewshed
-	static const GLint VIEWSHED_MAX_DIST = 128;
+	static const GLint VIEWSHED_MAX_DIST = 256;
 
 private:
 	// MEMBER VARIABLES

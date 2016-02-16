@@ -43,6 +43,7 @@ GLfloat TerrainGenerator::calcNeutral(GLfloat x, GLfloat z) const {
 }
 
 GLfloat TerrainGenerator::getHeight(const GLfloat x, const GLfloat z) const {
+	//return 0.0;
 	return calcNeutral(x, z);
 }
 
