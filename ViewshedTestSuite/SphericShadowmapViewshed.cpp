@@ -147,7 +147,7 @@ void SphericShadowmapViewshed::setupFBO() {
 	// Setup the depth map texture
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -258,4 +258,6 @@ void SphericShadowmapViewshed::tick(KeyboardHandler* handler) {
 		this->pos.y += velocity;
 	else if (handler->keyStates['u'])
 		this->pos.y -= velocity;
+
+	printf("Pos is now %f %f %f\n", this->pos.x, this->pos.y, this->pos.z);
 }
