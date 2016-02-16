@@ -70,8 +70,8 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 	theta = 2.0*theta - 1.0;
 	phi = phi / PI;
 	phi = phi - 1.0;*/
-	float theta = acos(y);
-	float phi = atan(x, z);
+	float theta = acos(z);
+	float phi = atan(y, x);
 
 	// Scale to -1,1
 	theta = theta/PI;
