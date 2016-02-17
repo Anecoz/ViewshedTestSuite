@@ -16,12 +16,20 @@ Terrain::~Terrain()
 {
 	// Take care of all VBOs in here, freeing them
 	glDeleteVertexArrays(1, &vao);
+	glDeleteVertexArrays(1, &modelVAO);
+
+	glDeleteBuffers(1, &modelVertexVBO);
+	glDeleteBuffers(1, &modelIndexVBO);
+
 	glDeleteBuffers(1, &vertexVBO);
 	glDeleteBuffers(1, &indexVBO);
 	glDeleteBuffers(1, &normalVBO);
 
 	free(vertexArray);
 	free(indexArray);
+	free(normalArray);
+	free(modelVertexArray);
+	free(modelIndexArray);
 }
 
 GLuint* Terrain::getVertexVBO() {

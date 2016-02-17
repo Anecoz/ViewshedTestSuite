@@ -29,47 +29,6 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 	float y = sphericalCoords.y;
 	float z = sphericalCoords.z;
 
-	// theta
-	/*float theta;
-	if (y > 0.0) {
-		theta = atan(y,abs(x)) + PI/2.0;
-	}
-	else if (y < 0.0) {
-		theta = PI/2.0 - atan(abs(y), abs(x));
-	}
-	else {
-		theta = 0.0;
-	}
-
-	// Phi
-	float phi;
-	if (x > 0.0 && z > 0.0) {
-		phi = atan(z,x);
-	}
-	else if (x < 0.0 && z > 0.0) {
-		phi = PI - atan(z, abs(x));
-	}
-	else if (x < 0.0 && z < 0.0) {
-		phi = PI + atan(abs(z), abs(x));
-	}
-	else if (x > 0.0 && z < 0.0) {
-		phi = 2.0*PI - atan(abs(z), x);
-	}
-	else if (x == 0.0 && z == 0.0) {
-		phi = 0.0;
-	}
-	else if (x == 0.0) {
-		phi = PI/2.0;
-	}
-	else {
-		phi = 0.0;
-	}
-
-	// Should be mapped between -1,1 in both directions
-	theta = theta / PI;
-	theta = 2.0*theta - 1.0;
-	phi = phi / PI;
-	phi = phi - 1.0;*/
 	float theta = acos(z);
 	float phi = atan(y, x);
 
@@ -86,7 +45,7 @@ vec2 StereographicProjectionCon(vec3 sphericalCoords) {
 
 	//float eps = 0.00000005;
 	float oneSubZ = 1.0f - sphericalCoords.z;// + eps;
-	return vec2(sphericalCoords.x/oneSubZ, sphericalCoords.y/oneSubZ) * 0.5f;
+	return vec2(sphericalCoords.x/oneSubZ, sphericalCoords.y/oneSubZ) * 0.05f;
 }
 
 float shadowCalculation(vec3 fragPosLightSpace) {
