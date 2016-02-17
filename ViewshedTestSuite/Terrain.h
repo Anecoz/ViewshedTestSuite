@@ -16,7 +16,7 @@ public:
 	~Terrain(); // Destructor needs to take care of freeing all VBOs
 
 	void renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap);
-	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3);
+	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3, GLfloat);
 
 	void init(); // Sets up shaders etc
 	void generate(); // Generates new terrain

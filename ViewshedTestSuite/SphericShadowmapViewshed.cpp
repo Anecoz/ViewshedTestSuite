@@ -7,6 +7,7 @@
 SphericShadowmapViewshed::SphericShadowmapViewshed()
 {	
 	this->pos = glm::vec3(256, 20, 256);
+	this->observerHeight = 0.0;
 }
 
 void SphericShadowmapViewshed::setPos(glm::vec3 newPos) {
@@ -15,6 +16,10 @@ void SphericShadowmapViewshed::setPos(glm::vec3 newPos) {
 
 glm::vec3 SphericShadowmapViewshed::getPos() {
 	return this->pos;
+}
+
+GLfloat SphericShadowmapViewshed::getObserverHeight() const {
+	return this->observerHeight;
 }
 
 SphericShadowmapViewshed::~SphericShadowmapViewshed() {
@@ -258,6 +263,11 @@ void SphericShadowmapViewshed::tick(KeyboardHandler* handler) {
 		this->pos.y += velocity;
 	else if (handler->keyStates['u'])
 		this->pos.y -= velocity;
+	else if (handler->keyStates['m'])
+		this->observerHeight += 0.2;
+	else if (handler->keyStates['n'])
+		this->observerHeight -= 0.2;
 
-	printf("Pos is now %f %f %f\n", this->pos.x, this->pos.y, this->pos.z);
+	//printf("Pos is now %f %f %f\n", this->pos.x, this->pos.y, this->pos.z);
+	printf("Observer height: %f\n", this->observerHeight);
 }

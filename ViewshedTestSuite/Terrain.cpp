@@ -69,7 +69,7 @@ void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 l
 	doPostRenderBoilerplate();
 }
 
-void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap, glm::vec3 lightPos) {
+void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap, glm::vec3 lightPos, GLfloat obsHeight) {
 	sphericalShader.activate();
 	doRenderBoilerplate();
 
@@ -83,6 +83,7 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	sphericalShader.uploadMatrix(projMatrix, "projMatrix");
 	sphericalShader.uploadVec(lightPos, "lightPos");
 	sphericalShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
+	sphericalShader.uploadFloat(obsHeight, "observerHeight");
 	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
 	sphericalShader.deactivate();

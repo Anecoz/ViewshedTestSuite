@@ -94,7 +94,7 @@ void Game::tick() {
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, viewshed.getOrthoLightSpaceMatrix(), depthMap);
-	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, viewshed.getPos());
+	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, viewshed.getPos(), viewshed.getObserverHeight());
 
 	// Swap buffers
 	glutSwapBuffers();

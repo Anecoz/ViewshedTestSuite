@@ -13,6 +13,7 @@ uniform mat4 camMatrix;
 uniform sampler2D depthMap;
 uniform vec3 lightPos; // World coordinates
 uniform float maxDist; // Max distance for the viewshed
+uniform float observerHeight; // The height of the observer above ground
 
 const vec3 lightDir = vec3(0.0, 30.0, 256.0);
 const vec3 lightCol = vec3(1.0, 1.0, 1.0);
@@ -80,7 +81,7 @@ vec3 calcLight() {
 	// Calculate the shadow, but only if we are within the maximum distance of it
 	float shadow;
 	if (distance(fragPosition, lightPos) < maxDist) {
-		shadow = shadowCalculation(normalize(fragPositionLightSpace.xyz));
+		shadow = shadowCalculation(normalize(fragPositionLightSpace.xyz + vec3(0.0, observerHeight, 0.0)));
 	}
 	else {
 		shadow = 0.0;

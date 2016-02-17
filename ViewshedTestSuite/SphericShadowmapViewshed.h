@@ -27,6 +27,8 @@ public:
 
 	void tick(KeyboardHandler*);
 
+	GLfloat getObserverHeight() const;
+
 	// Maximum "view" distance for the viewshed
 	static const GLint VIEWSHED_MAX_DIST = 256;
 
@@ -37,6 +39,8 @@ private:
 	const GLuint SHADOW_WIDTH = 4096;
 	const GLuint SHADOW_HEIGHT = 4096;
 	GLuint depthMap, depthMapFBO;
+
+	GLfloat observerHeight;
 
 	// For the orthogonal projection
 	const glm::mat4 orthoProjMatrix = glm::ortho(-512.0f, 512.0f, -400.0f, 400.0f, 0.0f, 942.0f);
