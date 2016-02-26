@@ -69,8 +69,12 @@ void Game::init(int& argc, char **argv) {
 
 	terrain.init();
 	terrain.generate();
-	//viewshed.initOrtho(&terrain);
-	viewshed.initSpherical(&terrain);
+	//shadowViewshed.initOrtho(&terrain);
+	//shadowViewshed.initSpherical(&terrain);
+	voxelViewshed.init();
+	printError("after voxel init");
+	voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
+	printError("after voxel get text");
 
 	glutMainLoop();
 }
@@ -86,15 +90,22 @@ void Game::tick() {
 	camera->update(keyHandler);
 
 	// Update the viewshed (steerable position)
-	viewshed.tick(keyHandler);
+	//shadowViewshed.tick(keyHandler);
+	voxelViewshed.tick(keyHandler);
+	printError("after voxel tick");
 
 	// Get the shadow map
-	//GLuint depthMap = viewshed.getDepthMapOrtho();
-	GLuint depthMap = viewshed.getDepthMapSpherical(projMatrix, camera);
+	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
+	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
+	
+	// Render observers
+	voxelViewshed.render(projMatrix, camera);
+	printError("after voxel draw");
 
 	// Draw terrain
-	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, viewshed.getOrthoLightSpaceMatrix(), depthMap);
-	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, viewshed.getPos(), viewshed.getObserverHeight());
+	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, shadowViewshed.getOrthoLightSpaceMatrix(), depthMap);
+	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, shadowViewshed.getPos(), shadowViewshed.getTargetHeight());
+	terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
 
 	// Swap buffers
 	glutSwapBuffers();

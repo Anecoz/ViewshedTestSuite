@@ -186,6 +186,7 @@ GLuint loadShadersGT(const char *vertFileName, const char *fragFileName, const c
 	if (tcs != NULL) free(tcs);
 	if (tes != NULL) free(tes);
 	return p;
+	printError("inside loadshadersGT");
 }
 
 // End of Shader loader

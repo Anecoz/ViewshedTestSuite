@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Shaders">
+      <UniqueIdentifier>{daff101a-a7e5-456a-9900-5f1867ec1eab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -30,9 +33,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,6 +48,15 @@
     <ClCompile Include="SphericShadowmapViewshed.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Observer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxelContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VoxelViewshed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GL_utilities.h">
@@ -60,9 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
@@ -80,40 +86,55 @@
     <ClInclude Include="SphericShadowmapViewshed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelViewshed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shadowmapOrtho.vert">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="shadowmapOrtho.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="terrainOrtho.frag">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="terrainOrtho.vert">
-      <Filter>Source Files</Filter>
+    <None Include="shadowmapOrtho.vert">
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="shadowmapSpherical.vert">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="terrainSpherical.vert">
-      <Filter>Source Files</Filter>
+    <None Include="terrainOrtho.frag">
+      <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="terrainSpherical.frag">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shadowModel.vert">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shadowModel.frag">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="terrainShadowmap.vert">
-      <Filter>Source Files</Filter>
+    <None Include="terrainOrtho.vert">
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="terrainShadowmap.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="terrainShadowmap.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="terrainSpherical.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="terrainSpherical.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="observer.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="observer.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="terrainVoxel.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="terrainVoxel.frag">
+      <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

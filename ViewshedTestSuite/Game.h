@@ -3,6 +3,7 @@
 #include "KeyboardHandler.h"
 #include "Terrain.h"
 #include "SphericShadowmapViewshed.h"
+#include "VoxelViewshed.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <string>
@@ -21,8 +22,8 @@ public:
 
 	void tick(); // per-frame tick.
 
-	static const GLint WINDOW_SIZE_X = 1280;
-	static const GLint WINDOW_SIZE_Y = 1280;
+	static const GLint WINDOW_SIZE_X = 600;
+	static const GLint WINDOW_SIZE_Y = 600;
 
 private:
 	// MEMBER OBJECTS
@@ -33,7 +34,9 @@ private:
 	Terrain terrain;
 
 	// VIEWSHED
-	SphericShadowmapViewshed viewshed;
+	SphericShadowmapViewshed shadowViewshed;
+	VoxelViewshed voxelViewshed;
+	GLuint voxTex; // Get this once, and not every frame
 
 	// Projection matrix
 	const glm::mat4 projMatrix = glm::perspective(45.0f, 1.0f / 1.0f, 0.1f, 2000.0f);

@@ -44,10 +44,15 @@ const GLuint Terrain::getTriangleCount() {
 	return TRIANGLE_COUNT;
 }
 
+VoxelContainer& Terrain::getVoxels() {
+	return voxels;
+}
+
 void Terrain::init() {
 	orthoShader = Shader("terrainOrtho.vert", "terrainOrtho.frag");
 	sphericalShader = Shader("terrainSpherical.vert", "terrainSpherical.frag");
 	modelShader = Shader("terrainShadowmap.vert", "terrainShadowmap.frag");
+	voxelShader = Shader("terrainVoxel.vert", "terrainVoxel.frag");
 }
 
 void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
@@ -67,6 +72,29 @@ void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 l
 
 	orthoShader.deactivate();
 	doPostRenderBoilerplate();
+}
+
+void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, glm::vec3 lightPos) {
+	doRenderBoilerplate();
+	voxelShader.activate();
+
+	// Bind and upload 3d texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_3D, voxTex);
+	voxelShader.uploadTexture(0, "voxTex");	
+
+	// Matrix uploads
+	voxelShader.uploadMatrix(camMatrix, "camMatrix");
+	voxelShader.uploadMatrix(projMatrix, "projMatrix");
+	voxelShader.uploadVec(lightPos, "lightPos");
+	voxelShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
+
+	// Draw
+	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
+
+	//glBindTexture(GL_TEXTURE_3D, 0);
+	doPostRenderBoilerplate();
+	voxelShader.deactivate();
 }
 
 void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap, glm::vec3 lightPos, GLfloat obsHeight) {
@@ -89,7 +117,7 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	sphericalShader.deactivate();
 	doPostRenderBoilerplate();
 
-	// After this, render only the depth map to top right quarter of the screen
+	// After this, render only the depth map to top right of the screen
 	GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
 	GLint hpos = Game::WINDOW_SIZE_Y - Game::WINDOW_SIZE_Y / 3.0;
 	glViewport(wpos, hpos, Game::WINDOW_SIZE_X / 3.0, Game::WINDOW_SIZE_Y / 3.0);
@@ -155,6 +183,11 @@ void Terrain::generate() {
 		vertexArray = (GLfloat *)malloc(sizeof(GLfloat) * VERTEX_COUNT * 3);
 		normalArray = (GLfloat *)malloc(sizeof(GLfloat) * VERTEX_COUNT * 3);
 
+		// Start with initializing voxelarray to 0's
+		printf("Initializing voxelarray to 0...\n");
+		voxels.init();
+		printf("Initialization of voxelarray done, generating terrain...\n");
+
 		// Now loop over both x and z and set the vertices +  normals
 		for (int x = 0; x < width; x++)
 			for (int z = 0; z < height; z++) {
@@ -162,6 +195,9 @@ void Terrain::generate() {
 				vertexArray[(x + z * width) * 3 + 0] = (GLfloat)x;
 				vertexArray[(x + z * width) * 3 + 1] = height; // Height (this is 2.5D)
 				vertexArray[(x + z * width) * 3 + 2] = (GLfloat)z;
+
+				// Update the voxels
+				voxels.setValue(x, floor(height), z, 1.0);
 
 				glm::vec3 normal = calcNormal((GLfloat)x, height, (GLfloat)z);
 				// Set this in the array
@@ -182,6 +218,14 @@ void Terrain::generate() {
 				indexArray[(x + z * (width - 1)) * 6 + 4] = x + (z + 1) * width;
 				indexArray[(x + z * (width - 1)) * 6 + 5] = x + 1 + (z + 1) * width;
 			}
+
+		// DEBUG
+		/*
+		for (int x = 0; x < 512; x++)
+			for (int y = 0; y < 128; y++)
+				for (int z = 0; z < 512; z++) {
+					printf("voxel at %d, %d, %d is %d\n", x, y, z, voxels.getValue(x, y, z));
+				}*/
 
 		//printf("Generation done! Saving to file... \n");
 
@@ -234,6 +278,10 @@ void Terrain::setupVAO() {
 	sphericalShader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
 	sphericalShader.deactivate();
 
+	voxelShader.activate();
+	voxelShader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
+	voxelShader.deactivate();
+
 	// Normal VBO
 	glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 	glBufferData(GL_ARRAY_BUFFER, VERTEX_COUNT * 3 * sizeof(GLfloat), normalArray, GL_STATIC_DRAW);
@@ -245,6 +293,10 @@ void Terrain::setupVAO() {
 	sphericalShader.activate();
 	sphericalShader.setAndEnableNormalAttrib(NORMAL_IN_NAME);
 	sphericalShader.deactivate();
+
+	voxelShader.activate();
+	voxelShader.setAndEnableNormalAttrib(NORMAL_IN_NAME);
+	voxelShader.deactivate();
 
 	// Index VBO
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVBO);

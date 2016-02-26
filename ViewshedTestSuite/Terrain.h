@@ -6,6 +6,7 @@
 
 #include "Shader.h"
 #include "TerrainGenerator.h"
+#include "VoxelContainer.h"
 
 // Used to represent terrain, should have its own shader and all that jazz
 // Also has own unique VAO and VBOs to store stuff
@@ -17,6 +18,7 @@ public:
 
 	void renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap);
 	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3, GLfloat);
+	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, glm::vec3 lightPos);
 
 	void init(); // Sets up shaders etc
 	void generate(); // Generates new terrain
@@ -25,10 +27,11 @@ public:
 	GLuint* getIndexVBO();
 
 	const GLuint getTriangleCount();
+	VoxelContainer& getVoxels();
 
 private:
 	// MEMBER VARIABLES
-	Shader orthoShader, sphericalShader, modelShader;
+	Shader orthoShader, sphericalShader, modelShader, voxelShader;
 
 	GLuint vao, vertexVBO, normalVBO, indexVBO;
 	GLuint modelVAO, modelVertexVBO, modelIndexVBO;
@@ -37,6 +40,8 @@ private:
 	GLfloat *vertexArray, *modelVertexArray;
 	GLfloat *normalArray;
 	GLuint *indexArray, *modelIndexArray;
+
+	VoxelContainer voxels;
 
 	const GLfloat TILE_SIZE = 512.0;
 	const GLint VERTEX_COUNT = TILE_SIZE * TILE_SIZE;

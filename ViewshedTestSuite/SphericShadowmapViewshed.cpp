@@ -6,27 +6,20 @@
 
 SphericShadowmapViewshed::SphericShadowmapViewshed()
 {	
-	this->pos = glm::vec3(256, 20, 256);
-	this->observerHeight = 0.0;
-}
-
-void SphericShadowmapViewshed::setPos(glm::vec3 newPos) {
-	this->pos = newPos;
+	this->observer.setPos(glm::vec3(256, 20, 256));
+	this->targetHeight = 0.0;
 }
 
 glm::vec3 SphericShadowmapViewshed::getPos() {
-	return this->pos;
+	return observer.getPos();
 }
 
-GLfloat SphericShadowmapViewshed::getObserverHeight() const {
-	return this->observerHeight;
+GLfloat SphericShadowmapViewshed::getTargetHeight() const {
+	return this->targetHeight;
 }
 
 SphericShadowmapViewshed::~SphericShadowmapViewshed() {
 	glDeleteVertexArrays(1, &vao);
-	glDeleteVertexArrays(1, &modelVAO);
-	glDeleteBuffers(1, &modelVertexVBO);
-	glDeleteBuffers(1, &modelIndexVBO);
 	glDeleteFramebuffers(1, &depthMapFBO);
 	glDeleteTextures(1, &depthMap);
 
@@ -36,7 +29,6 @@ SphericShadowmapViewshed::~SphericShadowmapViewshed() {
 
 void SphericShadowmapViewshed::initOrtho(Terrain* terrain) {
 	shader = Shader("shadowmapOrtho.vert", "shadowmapOrtho.frag");
-	modelShader.id = -1;
 	this->terrain = terrain;
 	setupVAO();
 	setupFBO();
@@ -44,8 +36,8 @@ void SphericShadowmapViewshed::initOrtho(Terrain* terrain) {
 
 void SphericShadowmapViewshed::initSpherical(Terrain* terrain) {
 	shader = Shader("shadowmapSpherical.vert", "shadowmapOrtho.frag");
-	modelShader = Shader("shadowModel.vert", "shadowModel.frag");
 	this->terrain = terrain;
+	observer.init();
 	setupVAO();
 	setupFBO();
 }
@@ -86,35 +78,17 @@ void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, Camera* cam
 	glBindVertexArray(vao);
 	shader.activate();
 
-	shader.uploadVec(this->pos, "lightPos");
+	shader.uploadVec(this->observer.getPos(), "lightPos");
 	shader.uploadFloat((GLfloat)VIEWSHED_MAX_DIST, "maxDist");
 	shader.uploadMatrix(glm::mat4(1.0f), "modelMatrix");
 	glDrawElements(GL_TRIANGLES, terrain->getTriangleCount() * 3, GL_UNSIGNED_INT, 0L);
-	// Render the camera as a quad
-	glBindVertexArray(modelVAO);
-	shader.uploadMatrix(glm::translate(glm::mat4(1.0f), camera->getPos()), "modelMatrix");
-	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
 	shader.deactivate();
 	glBindVertexArray(0);
 	doPostRenderBoilerplate();
 
-	// Also render a representation of the viewshed object
-	glBindVertexArray(modelVAO);
-	glEnable(GL_DEPTH_TEST);
-	modelShader.activate();
-
-	modelShader.uploadMatrix(projMatrix, "projMatrix");
-	modelShader.uploadMatrix(camera->getCameraMatrix(), "camMatrix");
-	// Transformation matrix
-	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), this->pos);
-	modelShader.uploadMatrix(translationMatrix, "modelMatrix");
-	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
-
-	glBindVertexArray(0);
-	glDisable(GL_DEPTH_TEST);
-	modelShader.deactivate();
-	
+	// Also render observer
+	observer.render(projMatrix, camera);
 }
 
 void SphericShadowmapViewshed::doRenderBoilerplate() {
@@ -186,88 +160,17 @@ void SphericShadowmapViewshed::setupVAO() {
 
 	glBindVertexArray(0);
 	shader.deactivate();
-
-	// Also init our model and its vao
-	if (modelShader.id != -1) {
-		setupModel();
-	}
-}
-
-void SphericShadowmapViewshed::setupModel() {
-	// Start with filling the arrays
-
-	vertexArray = (GLfloat*)malloc(MODEL_VERTEX_COUNT * 3 * sizeof(GLfloat));
-	indexArray = (GLuint*)malloc(MODEL_TRIANGLE_COUNT * 3 * sizeof(GLuint));
-
-	// 4 vertices
-	vertexArray[0] = -1.0;
-	vertexArray[1] = 1.0;
-	vertexArray[2] = 0.0;
-
-	vertexArray[3] = -1.0;
-	vertexArray[4] = -1.0;
-	vertexArray[5] = 0.0;
-
-	vertexArray[6] = 1.0;
-	vertexArray[7] = 1.0;
-	vertexArray[8] = 0.0;
-
-	vertexArray[9] = 1.0;
-	vertexArray[10] = -1.0;
-	vertexArray[11] = 0.0;
-
-	// Indices, triangle 1
-	indexArray[0] = 0;
-	indexArray[1] = 1;
-	indexArray[2] = 2;
-
-	// Triangle 2
-	indexArray[3] = 2;
-	indexArray[4] = 1;
-	indexArray[5] = 3;
-
-	// Fill up the VAO
-	modelShader.activate();
-	glGenVertexArrays(1, &modelVAO);
-	glBindVertexArray(modelVAO);
-	glGenBuffers(1, &modelVertexVBO);
-	glGenBuffers(1, &modelIndexVBO);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, modelVertexVBO);
-	glBufferData(GL_ARRAY_BUFFER, MODEL_VERTEX_COUNT * 3 * sizeof(GLfloat), vertexArray, GL_STATIC_DRAW);
-	modelShader.setAndEnableVertexAttrib("inPosition");
-	modelShader.deactivate();
-	shader.activate();
-	shader.setAndEnableVertexAttrib("inPosition");
-	shader.deactivate();
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, modelIndexVBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, MODEL_TRIANGLE_COUNT * 3 * sizeof(GLuint), indexArray, GL_STATIC_DRAW);
-	
-	glBindVertexArray(0);
 }
 
 void SphericShadowmapViewshed::tick(KeyboardHandler* handler) {
-	// Update the position of the light based on input
-	GLfloat velocity = 1.0;
+	// Update the observer
+	observer.tick(handler);
 
-	if (handler->keyStates['i'])
-		this->pos.x += velocity;
-	else if (handler->keyStates['k'])
-		this->pos.x -= velocity;
-	else if (handler->keyStates['j'])
-		this->pos.z += velocity;
-	else if (handler->keyStates['l'])
-		this->pos.z -= velocity;
-	else if (handler->keyStates['o'])
-		this->pos.y += velocity;
-	else if (handler->keyStates['u'])
-		this->pos.y -= velocity;
-	else if (handler->keyStates['m'])
-		this->observerHeight += 0.2;
+	if (handler->keyStates['m'])
+		this->targetHeight += 0.2;
 	else if (handler->keyStates['n'])
-		this->observerHeight -= 0.2;
+		this->targetHeight -= 0.2;
 
 	//printf("Pos is now %f %f %f\n", this->pos.x, this->pos.y, this->pos.z);
-	printf("Observer height: %f\n", this->observerHeight);
+	//printf("Observer height: %f\n", this->observerHeight);
 }

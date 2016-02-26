@@ -156,11 +156,13 @@
     <ClCompile Include="GL_utilities.c" />
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Observer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SphericShadowmapViewshed.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
+    <ClCompile Include="VoxelContainer.cpp" />
+    <ClCompile Include="VoxelViewshed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -168,24 +170,28 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GL_utilities.h" />
     <ClInclude Include="KeyboardHandler.h" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SphericShadowmapViewshed.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainGenerator.h" />
+    <ClInclude Include="VoxelContainer.h" />
+    <ClInclude Include="VoxelViewshed.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shadowmapOrtho.frag" />
     <None Include="shadowmapOrtho.vert" />
     <None Include="shadowmapSpherical.vert" />
-    <None Include="shadowModel.frag" />
-    <None Include="shadowModel.vert" />
+    <None Include="observer.frag" />
+    <None Include="observer.vert" />
     <None Include="terrainOrtho.frag" />
     <None Include="terrainOrtho.vert" />
     <None Include="terrainShadowmap.frag" />
     <None Include="terrainShadowmap.vert" />
     <None Include="terrainSpherical.frag" />
     <None Include="terrainSpherical.vert" />
+    <None Include="terrainVoxel.frag" />
+    <None Include="terrainVoxel.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

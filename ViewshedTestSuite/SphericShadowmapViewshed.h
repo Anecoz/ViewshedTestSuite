@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include "Observer.h"
 
 // Handles everything to do with viewshed implemented using spherical shadow mapping
 // Also features an implementation of using orthographic shadow mapping (directional)
@@ -17,7 +18,6 @@ public:
 	void initOrtho(Terrain* terrain);
 	void initSpherical(Terrain* terrain);
 
-	void setPos(glm::vec3);
 	glm::vec3 getPos();
 
 	GLuint& getDepthMapOrtho();
@@ -27,20 +27,19 @@ public:
 
 	void tick(KeyboardHandler*);
 
-	GLfloat getObserverHeight() const;
+	GLfloat getTargetHeight() const;
 
 	// Maximum "view" distance for the viewshed
 	static const GLint VIEWSHED_MAX_DIST = 256;
 
 private:
 	// MEMBER VARIABLES
-	GLuint vao, modelVAO;
-	glm::vec3 pos;
+	GLuint vao;
 	const GLuint SHADOW_WIDTH = 4096;
 	const GLuint SHADOW_HEIGHT = 4096;
 	GLuint depthMap, depthMapFBO;
 
-	GLfloat observerHeight;
+	GLfloat targetHeight;
 
 	// For the orthogonal projection
 	const glm::mat4 orthoProjMatrix = glm::ortho(-512.0f, 512.0f, -400.0f, 400.0f, 0.0f, 942.0f);
@@ -50,16 +49,13 @@ private:
 	// For the model
 	GLfloat* vertexArray;
 	GLuint* indexArray;
-	GLuint modelVertexVBO, modelIndexVBO;
-	const GLint MODEL_VERTEX_COUNT = 4;
-	const GLint MODEL_TRIANGLE_COUNT = 2;
 
 	// MEMBER OBJECTS
-	Shader shader, modelShader; // Special shader for getting depth map etc
+	Shader shader; // Special shader for getting depth map etc
 	Terrain* terrain;
+	Observer observer;
 
 	// MEMBER METHODS
-	void setupModel();
 	void setupVAO();
 	void setupFBO();
 
