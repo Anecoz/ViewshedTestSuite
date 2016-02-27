@@ -70,6 +70,29 @@ float rayMarch(vec3 lightPos) {
 	return 1.0;
 }
 
+// For mapping from grayscale to a jet colorspace
+float interpolate( float val, float y0, float x0, float y1, float x1 ) {
+    return (val-x0)*(y1-y0)/(x1-x0) + y0;
+}
+
+float base( float val ) {
+    if ( val <= -0.75 ) return 0;
+    else if ( val <= -0.25 ) return interpolate( val, 0.0, -0.75, 1.0, -0.25 );
+    else if ( val <= 0.25 ) return 1.0;
+    else if ( val <= 0.75 ) return interpolate( val, 1.0, 0.25, 0.0, 0.75 );
+    else return 0.0;
+}
+
+float red( float gray ) {
+    return base( gray - 0.5 );
+}
+float green( float gray ) {
+    return base( gray );
+}
+float blue( float gray ) {
+    return base( gray + 0.5 );
+}
+
 void main(void) {
 	// Calculate lighting
 	vec3 light = calcLight();
@@ -84,7 +107,12 @@ void main(void) {
 	visibility /= 10.0;
 
 	if (distance(fragPosition, lightArr[4]) < maxDist) {
-		outColor = vec4(vec3(visibility), 1.0);
+		// map to -1,1
+		visibility = visibility*2.0 -1.0;
+		float r = red(visibility);
+		float g = green(visibility);
+		float b = blue(visibility);
+		outColor = vec4(vec3(r, g, b), 1.0);
 	}
 	else {
 		outColor = vec4(light*0.3, 1.0);
