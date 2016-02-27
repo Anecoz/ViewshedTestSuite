@@ -18,12 +18,12 @@ public:
 
 	void run(int&, char**);
 
-	static const int DISPLAY_UPDATE_RATE = 20;
+	static const int DISPLAY_UPDATE_RATE = 10;
 
 	void tick(); // per-frame tick.
 
-	static const GLint WINDOW_SIZE_X = 600;
-	static const GLint WINDOW_SIZE_Y = 600;
+	static const GLint WINDOW_SIZE_X = 800;
+	static const GLint WINDOW_SIZE_Y = 800;
 
 private:
 	// MEMBER OBJECTS
@@ -34,7 +34,7 @@ private:
 	Terrain terrain;
 
 	// VIEWSHED
-	SphericShadowmapViewshed shadowViewshed;
+	//SphericShadowmapViewshed shadowViewshed;
 	VoxelViewshed voxelViewshed;
 	GLuint voxTex; // Get this once, and not every frame
 

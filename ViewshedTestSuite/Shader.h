@@ -3,6 +3,9 @@
 #include <GL\freeglut.h>
 #include <glm\glm.hpp>
 #include<string>
+#include <vector>
+
+typedef std::vector<glm::vec3> VecList;
 
 // Abstraction for using shaders, handles compiling, using etc
 class Shader
@@ -24,6 +27,7 @@ public:
 	void uploadBool(GLboolean, std::string) const;
 
 	void uploadVec(glm::vec3, std::string) const;
+	void uploadVecArr(VecList, std::string) const;
 
 	void uploadFloat(GLfloat, std::string) const;
 

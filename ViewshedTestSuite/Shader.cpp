@@ -60,6 +60,12 @@ void Shader::uploadVec(glm::vec3 vec, std::string name) const {
 	//printf("Uploaded vec (%f, %f, %f) to shader. loc is %d\n", vec.x, vec.y, vec.z, loc);
 }
 
+void Shader::uploadVecArr(VecList arr, std::string name) const {
+	GLint loc = glGetUniformLocation(id, name.c_str());
+	GLint size = arr.size();
+	glUniform3fv(loc, size, &arr[0].x);
+}
+
 void Shader::uploadBool(GLboolean val, std::string name) const {
 	GLint loc = glGetUniformLocation(id, name.c_str());
 	glUniform1i(loc, val);

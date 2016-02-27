@@ -7,18 +7,55 @@ extern "C" {
 
 Observer::Observer() {
 	this->pos = glm::vec3(0, 0, 0);
+	vertexArray = nullptr;
+	indexArray = nullptr;
+	vao = 0;
+	vertexVBO = 0;
+	indexVBO = 0;
+	init();
 }
 
 Observer::Observer(glm::vec3 pos) {
 	this->pos = pos;
+	vertexArray = nullptr;
+	indexArray = nullptr;
+	vao = 0;
+	vertexVBO = 0;
+	indexVBO = 0;
+	init();
+}
+
+Observer::Observer(const Observer &other) {
+	// Must create its own VAO and VBOs
+	vertexArray = nullptr;
+	indexArray = nullptr;
+	vao = 0;
+	vertexVBO = 0;
+	indexVBO = 0;
+	this->pos = other.pos;
+	init();
+}
+
+Observer& Observer::operator=(Observer other) {
+	vertexArray = nullptr;
+	indexArray = nullptr;
+	this->pos = other.pos;
+	init();
+
+	return *this;
 }
 
 Observer::~Observer() {
-	free(vertexArray);
-	free(indexArray);
-	glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vertexVBO);
-	glDeleteBuffers(1, &indexVBO);
+	if (vertexArray != nullptr)
+		free(vertexArray);
+	if (indexArray != nullptr)
+		free(indexArray);
+	if (vao != 0)
+		glDeleteVertexArrays(1, &vao);
+	if (vertexVBO != 0)
+		glDeleteBuffers(1, &vertexVBO);
+	if (indexVBO != 0)
+		glDeleteBuffers(1, &indexVBO);
 }
 
 void Observer::init() {

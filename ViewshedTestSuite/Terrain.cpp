@@ -74,7 +74,7 @@ void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 l
 	doPostRenderBoilerplate();
 }
 
-void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, glm::vec3 lightPos) {
+void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr) {
 	doRenderBoilerplate();
 	voxelShader.activate();
 
@@ -86,7 +86,7 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	// Matrix uploads
 	voxelShader.uploadMatrix(camMatrix, "camMatrix");
 	voxelShader.uploadMatrix(projMatrix, "projMatrix");
-	voxelShader.uploadVec(lightPos, "lightPos");
+	voxelShader.uploadVecArr(lightArr, "lightArr");
 	voxelShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
 
 	// Draw

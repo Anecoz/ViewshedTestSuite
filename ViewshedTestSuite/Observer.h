@@ -13,6 +13,8 @@ public:
 	Observer(glm::vec3 pos);
 	Observer();
 	~Observer();
+	Observer(const Observer&); // Copy constructor
+	Observer& operator=(Observer other); // Copy assignment operator
 
 	void render(glm::mat4 proj, Camera*);
 	void init();

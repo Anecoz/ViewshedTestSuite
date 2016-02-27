@@ -3,10 +3,13 @@
 #include <GL\freeglut.h>
 #include <glm\glm.hpp>
 #include <string>
+#include <vector>
 
 #include "Shader.h"
 #include "TerrainGenerator.h"
 #include "VoxelContainer.h"
+
+typedef std::vector<glm::vec3> VecList;
 
 // Used to represent terrain, should have its own shader and all that jazz
 // Also has own unique VAO and VBOs to store stuff
@@ -18,7 +21,7 @@ public:
 
 	void renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap);
 	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3, GLfloat);
-	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, glm::vec3 lightPos);
+	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr);
 
 	void init(); // Sets up shaders etc
 	void generate(); // Generates new terrain

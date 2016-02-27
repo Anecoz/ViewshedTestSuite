@@ -1,9 +1,8 @@
 #include "VoxelViewshed.h"
 
-
 VoxelViewshed::VoxelViewshed()
 {
-	this->observer.setPos(glm::vec3(256, 20, 256));
+	// call init
 }
 
 VoxelViewshed::~VoxelViewshed()
@@ -12,15 +11,31 @@ VoxelViewshed::~VoxelViewshed()
 }
 
 void VoxelViewshed::init() {
-	observer.init();
+
+	// Fill the observer list with observers
+	int n = 10;
+	glm::vec3 startPos = { 256, 20, 256 };
+	int counter = 0;
+	for (int i = 0; i < n; i++) {
+		Observer currObs(startPos + glm::vec3(counter, 0, 0));
+		obsList.push_back(currObs);
+		counter += 10;
+	}
 }
 
 void VoxelViewshed::render(glm::mat4 projMatrix, Camera* camera) {
-	observer.render(projMatrix, camera);
+	for (Observer &obs : obsList) {
+		obs.render(projMatrix, camera);
+	}
 }
 
-glm::vec3 VoxelViewshed::getPos() {
-	return observer.getPos();
+VecList VoxelViewshed::getPos() {
+	//return observer.getPos();
+	VecList output;
+	for (Observer &obs : obsList) {
+		output.push_back(obs.getPos());
+	}
+	return output;
 }
 
 GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
@@ -60,5 +75,7 @@ GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
 }
 
 void VoxelViewshed::tick(KeyboardHandler* handler) {
-	observer.tick(handler);
+	for (Observer &obs : obsList) {
+		obs.tick(handler);
+	}
 }
