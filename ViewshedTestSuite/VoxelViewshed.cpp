@@ -13,7 +13,7 @@ VoxelViewshed::~VoxelViewshed()
 void VoxelViewshed::init() {
 
 	// Fill the observer list with observers
-	int n = 10;
+	int n = 20;
 	glm::vec3 startPos = { 256, 20, 256 };
 	int counter = 0;
 	for (int i = 0; i < n; i++) {

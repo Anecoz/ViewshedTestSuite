@@ -37,7 +37,7 @@ public:
 private:
 
 	// MEMBER VARIABLES
-	GLfloat sensitivity = 4.0f; // Higher value -> lower sensitivty....
+	GLfloat sensitivity = 5.0f; // Higher value -> lower sensitivty....
 
 	glm::vec3 pos; // Position of the camera
 	GLfloat tSinceLast; // Elapsed time since last time update was called

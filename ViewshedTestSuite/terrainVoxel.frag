@@ -108,11 +108,12 @@ void main(void) {
 
 	if (distance(fragPosition, lightArr[4]) < maxDist) {
 		// map to -1,1
-		visibility = visibility*2.0 -1.0;
-		float r = red(visibility);
-		float g = green(visibility);
-		float b = blue(visibility);
-		outColor = vec4(vec3(r, g, b), 1.0);
+		//visibility = visibility*2.0 -1.0;
+		//float r = red(visibility);
+		//float g = green(visibility);
+		//float b = blue(visibility);
+		//outColor = vec4(vec3(r, g, b), 1.0);
+		outColor = vec4(vec3(visibility), 1.0);
 	}
 	else {
 		outColor = vec4(light*0.3, 1.0);

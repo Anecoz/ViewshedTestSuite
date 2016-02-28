@@ -55,6 +55,7 @@ glm::vec3 Camera::getPos() {
 }
 
 void Camera::handleMouseMovement(GLint x, GLint y) {
+
 	GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / ((GLfloat) sensitivity*MOUSE_WARP_X); //Using offsets where mouse is warped everytime
 	GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / ((GLfloat) sensitivity*MOUSE_WARP_Y);
 
