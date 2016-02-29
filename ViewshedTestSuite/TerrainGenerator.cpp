@@ -39,7 +39,7 @@ GLfloat TerrainGenerator::calcNeutral(GLfloat x, GLfloat z) const {
 	float ff = Noise1(x*.002, z*.002);
 	f += pow(abs(ff), 5.0)*275.;
 
-	return f;
+	return f+12.0;
 }
 
 GLfloat TerrainGenerator::getHeight(const GLfloat x, const GLfloat z) const {

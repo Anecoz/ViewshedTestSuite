@@ -11,15 +11,15 @@ VoxelContainer::~VoxelContainer() {
 
 void VoxelContainer::init() {
 	// Loop through array and set to 0
-	arr = (GLfloat *)malloc(sizeof(GLfloat) * DIM * DIM * HEIGHT);
+	arr = (GLubyte *)malloc(sizeof(GLfloat) * DIM * DIM * HEIGHT);
 	for (int x = 0; x < DIM; x++)
 		for (int z = 0; z < DIM; z++)
 			for (int y = 0; y < HEIGHT; y++) {
-				arr[HEIGHT*DIM*z + DIM*y + x] = 0.0;
+				arr[HEIGHT*DIM*z + DIM*y + x] = 0;
 			}
 }
 
-void VoxelContainer::setValue(GLuint x, GLuint y, GLuint z, GLfloat value) {
+void VoxelContainer::setValue(GLuint x, GLuint y, GLuint z, GLubyte value) {
 	arr[HEIGHT*DIM*z + DIM*y + x] = value;
 }
 
@@ -30,6 +30,6 @@ GLfloat VoxelContainer::getValue(GLuint x, GLuint y, GLuint z) {
 GLuint VoxelContainer::getDim() { return DIM; };
 GLuint VoxelContainer::getHeight() { return HEIGHT; };
 
-GLfloat *VoxelContainer::getArray() {
+GLubyte *VoxelContainer::getArray() {
 	return arr;
 }

@@ -6,6 +6,7 @@
 in vec3 fragPosition;
 in vec3 fragNormal;
 in vec4 fragPositionLightSpace;
+//flat in float depth;
 
 out vec4 outColor;
 
@@ -101,6 +102,8 @@ void main(void) {
 	// Calculate lighting
 	vec3 light = calcLight();
 	outColor = vec4(light*0.3, 1.0);
+	//outColor = vec4(vec3(depth), 1.0);
+
 	//outColor = vec4(vec3(distance(fragPosition, lightPos)/maxDist), 1.0);
 	//outColor = vec4( vec3(fragPosition.x/512.0), 1.0);
 

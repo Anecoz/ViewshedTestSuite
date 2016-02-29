@@ -197,7 +197,7 @@ void Terrain::generate() {
 				vertexArray[(x + z * width) * 3 + 2] = (GLfloat)z;
 
 				// Update the voxels
-				voxels.setValue(x, floor(height), z, 1.0);
+				voxels.setValue(x, floor(height), z, 1);
 
 				glm::vec3 normal = calcNormal((GLfloat)x, height, (GLfloat)z);
 				// Set this in the array

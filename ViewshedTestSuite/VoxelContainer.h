@@ -9,9 +9,9 @@ public:
 	~VoxelContainer();
 
 	void init(); // sets all values to 0
-	void setValue(GLuint, GLuint, GLuint, GLfloat);
+	void setValue(GLuint, GLuint, GLuint, GLubyte);
 	GLfloat getValue(GLuint, GLuint, GLuint);
-	GLfloat* getArray();
+	GLubyte* getArray();
 
 	GLuint getDim();
 	GLuint getHeight();
@@ -20,6 +20,6 @@ private:
 	const GLuint DIM = 512;
 	const GLuint HEIGHT = 128;
 
-	GLfloat *arr;
+	GLubyte *arr;
 };
 

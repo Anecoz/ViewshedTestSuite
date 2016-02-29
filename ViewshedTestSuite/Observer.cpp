@@ -12,7 +12,7 @@ Observer::Observer() {
 	vao = 0;
 	vertexVBO = 0;
 	indexVBO = 0;
-	init();
+	//init();
 }
 
 Observer::Observer(glm::vec3 pos) {
@@ -22,7 +22,7 @@ Observer::Observer(glm::vec3 pos) {
 	vao = 0;
 	vertexVBO = 0;
 	indexVBO = 0;
-	init();
+	//init();
 }
 
 Observer::Observer(const Observer &other) {

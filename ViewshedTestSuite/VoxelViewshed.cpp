@@ -13,7 +13,7 @@ VoxelViewshed::~VoxelViewshed()
 void VoxelViewshed::init() {
 
 	// Fill the observer list with observers
-	int n = 20;
+	int n = 5;
 	glm::vec3 startPos = { 256, 20, 256 };
 	int counter = 0;
 	for (int i = 0; i < n; i++) {
@@ -39,7 +39,7 @@ VecList VoxelViewshed::getPos() {
 }
 
 GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
-	GLfloat *arr = voxels.getArray();
+	GLubyte *arr = voxels.getArray();
 
 	const GLuint WIDTH = voxels.getDim();
 	const GLuint HEIGHT = voxels.getHeight();
@@ -52,13 +52,13 @@ GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_3D, voxTex);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, WIDTH, HEIGHT, DEPTH, 0, GL_RED,
-		GL_FLOAT, arr);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8UI, WIDTH, HEIGHT, DEPTH, 0, GL_RED_INTEGER,
+		GL_UNSIGNED_BYTE, arr);
 
 	// DEBUG
 	/*GLubyte *testArr = (GLubyte *)malloc(sizeof(GLubyte) * WIDTH * DEPTH * HEIGHT);
