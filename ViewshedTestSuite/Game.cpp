@@ -28,6 +28,8 @@ Game::Game() {
 Game::~Game() {
 	delete camera;
 	delete keyHandler;
+	delete roadSelector;
+	roadSelector = nullptr;
 	camera = nullptr;
 	keyHandler = nullptr;
 }
@@ -63,12 +65,15 @@ void Game::init(int& argc, char **argv) {
 	glClearColor(0.2, 0.2, 0.5, 0);
 	printError("GL inits");
 
-	// Set the cam and keyhandler
+	// Set the objects
+	roadSelector = new RoadSelector();
 	keyHandler = new KeyboardHandler();
 	camera = new Camera();
 
 	terrain.init();
 	terrain.generate();
+	roadSelector->init(&terrain);
+	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix));
 	//shadowViewshed.initOrtho(&terrain);
 	//shadowViewshed.initSpherical(&terrain);
 	voxelViewshed.init();
@@ -97,6 +102,9 @@ void Game::tick() {
 	// Get the shadow map
 	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
 	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
+
+	// Get the encoded position texture to be used in the roadselector
+	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix);
 	
 	// Render observers
 	voxelViewshed.render(projMatrix, camera);

@@ -4,6 +4,7 @@
 #include "Terrain.h"
 #include "SphericShadowmapViewshed.h"
 #include "VoxelViewshed.h"
+#include "RoadSelector.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <string>
@@ -29,6 +30,7 @@ private:
 	// MEMBER OBJECTS
 	Camera *camera;
 	KeyboardHandler *keyHandler;
+	RoadSelector *roadSelector;
 
 	// Temporary terrain object
 	Terrain terrain;
@@ -39,7 +41,7 @@ private:
 	GLuint voxTex; // Get this once, and not every frame
 
 	// Projection matrix
-	const glm::mat4 projMatrix = glm::perspective(45.0f, 1.0f / 1.0f, 0.1f, 2000.0f);
+	glm::mat4 projMatrix = glm::perspective(45.0f, 1.0f / 1.0f, 0.1f, 2000.0f);
 
 	// MEMBER VARIABLES	
 	const std::string WINDOW_TITLE = "Viewshed test suite";

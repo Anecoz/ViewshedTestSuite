@@ -29,15 +29,19 @@ public:
 	GLuint* getVertexVBO();
 	GLuint* getIndexVBO();
 
+	GLuint& getEncodedPosTex(glm::mat4&, glm::mat4&);
+
 	const GLuint getTriangleCount();
 	VoxelContainer& getVoxels();
 
 private:
 	// MEMBER VARIABLES
-	Shader orthoShader, sphericalShader, modelShader, voxelShader;
+	Shader orthoShader, sphericalShader, modelShader, voxelShader, encodePosShader;
 
 	GLuint vao, vertexVBO, normalVBO, indexVBO;
 	GLuint modelVAO, modelVertexVBO, modelIndexVBO;
+
+	GLuint posFBO, posTex, depthBuffer;
 
 	// These two hold raw data for the terrain. Free them using free()
 	GLfloat *vertexArray, *modelVertexArray;
@@ -64,8 +68,11 @@ private:
 
 	// MEMBER METHODS
 	void setupVAO();
+	void setupFBO();
 	void setupModel();
 	glm::vec3 calcNormal(GLfloat x, GLfloat y, GLfloat z); // Calculates a normal given a x,z position
+
+	void renderPositionEncoding(glm::mat4&, glm::mat4&);
 
 	void activateDepthTexture();
 	void doRenderBoilerplate();

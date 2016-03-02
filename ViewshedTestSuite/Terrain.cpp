@@ -53,6 +53,31 @@ void Terrain::init() {
 	sphericalShader = Shader("terrainSpherical.vert", "terrainSpherical.frag");
 	modelShader = Shader("terrainShadowmap.vert", "terrainShadowmap.frag");
 	voxelShader = Shader("terrainVoxel.vert", "terrainVoxel.frag");
+	encodePosShader = Shader("encodePosition.vert", "encodePosition.frag");
+}
+
+GLuint& Terrain::getEncodedPosTex(glm::mat4& camMatrix, glm::mat4& projMatrix) {
+	// Render to texture first, then return the texture handle
+	renderPositionEncoding(camMatrix, projMatrix);
+
+	return posTex;
+}
+
+void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix) {
+	glBindFramebuffer(GL_FRAMEBUFFER, posFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Only clears this FBO
+	doRenderBoilerplate();
+	encodePosShader.activate();	
+
+	encodePosShader.uploadMatrix(camMatrix, "camMatrix");
+	encodePosShader.uploadMatrix(projMatrix, "projMatrix");
+
+	// Do the draw call, will render to the texture posTex
+	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
+
+	doPostRenderBoilerplate();
+	encodePosShader.deactivate();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthMap) {
@@ -92,9 +117,41 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	// Draw
 	glDrawElements(GL_TRIANGLES, TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
-	//glBindTexture(GL_TEXTURE_3D, 0);
-	doPostRenderBoilerplate();
 	voxelShader.deactivate();
+
+	// DEBUG
+	/*glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, posTex);
+	GLfloat *pixels;
+	pixels = (GLfloat*) malloc(sizeof(GLfloat) * Game::WINDOW_SIZE_X * Game::WINDOW_SIZE_Y*3);
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, pixels);*/
+
+	/*GLfloat currMax = 0.0;
+	for (int x = 0; x < Game::WINDOW_SIZE_X*Game::WINDOW_SIZE_Y*3; x++) {
+		printf("texture: %f, currMax is: %f\n", pixels[x], currMax);
+		if (pixels[x] > currMax)
+			currMax = pixels[x];
+	}*/
+
+	// After this, render only the depth map to top right of the screen
+	GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
+	GLint hpos = Game::WINDOW_SIZE_Y - Game::WINDOW_SIZE_Y / 3.0;
+ 	glViewport(wpos, hpos, Game::WINDOW_SIZE_X / 3.0, Game::WINDOW_SIZE_Y / 3.0);
+	modelShader.activate();
+	glBindVertexArray(modelVAO);
+
+	// Upload texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, posTex);
+	modelShader.uploadBool(true, "isColor");
+	modelShader.uploadTexture(0, "depthMap");
+	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
+
+	glBindVertexArray(0);
+	modelShader.deactivate();
+	// Reset viewport
+	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
+	doPostRenderBoilerplate();
 }
 
 void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap, glm::vec3 lightPos, GLfloat obsHeight) {
@@ -125,6 +182,7 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	glBindVertexArray(modelVAO);
 
 	// Upload texture
+	modelShader.uploadBool(false, "isColor");
 	modelShader.uploadTexture(0, "depthMap");
 	glDrawElements(GL_TRIANGLES, MODEL_TRIANGLE_COUNT * 3, GL_UNSIGNED_INT, 0L);
 
@@ -244,6 +302,7 @@ void Terrain::generate() {
 
 	// Now construct a VAO from this data.
 	setupVAO();
+	setupFBO();
 }
 
 glm::vec3 Terrain::calcNormal(GLfloat x, GLfloat y, GLfloat z) {
@@ -305,6 +364,45 @@ void Terrain::setupVAO() {
 	glBindVertexArray(0);
 	printf("VAO setup done! vao is %d\n", vao);
 	setupModel();
+}
+
+void Terrain::setupFBO() {
+	// Generate framebuffer object
+	glGenFramebuffers(1, &posFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, posFBO);
+
+	// Generate depth map
+	glGenTextures(1, &posTex);
+
+	// Setup the position encoding texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, posTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	// Attach depth map texture to the FBO
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+	
+	// Bind the color texture
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, posTex, 0);
+	GLenum DrawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, DrawBuffers);
+
+	// Error checking
+	GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+	if (Status != GL_FRAMEBUFFER_COMPLETE) {
+		printf("FB error, status: 0x%x\n", Status);
+	}
+
+	// Unbind FBO
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Terrain::setupModel() {

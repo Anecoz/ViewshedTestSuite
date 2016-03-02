@@ -6,6 +6,7 @@
 
 // GLOBALS, they are needed in order for OpenGL to play nicely with us
 Camera *camInstance;
+bool shouldMoveCamera = true;
 
 extern "C" {
 	void onMouse(GLint x, GLint y) {
@@ -13,8 +14,10 @@ extern "C" {
 	}
 
 	void setPointer(GLint value) {
-		glutWarpPointer(Camera::MOUSE_WARP_X, Camera::MOUSE_WARP_Y);
-		glutTimerFunc(Camera::WARP_REFRESH_RATE, &setPointer, value);
+		if (shouldMoveCamera) {
+			glutWarpPointer(Camera::MOUSE_WARP_X, Camera::MOUSE_WARP_Y);
+			glutTimerFunc(Camera::WARP_REFRESH_RATE, &setPointer, value);
+		}		
 	}
 }
 
@@ -56,34 +59,36 @@ glm::vec3 Camera::getPos() {
 
 void Camera::handleMouseMovement(GLint x, GLint y) {
 
-	GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / ((GLfloat) sensitivity*MOUSE_WARP_X); //Using offsets where mouse is warped everytime
-	GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / ((GLfloat) sensitivity*MOUSE_WARP_Y);
+	if (shouldMoveCamera) {
+		GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / ((GLfloat)sensitivity*MOUSE_WARP_X); //Using offsets where mouse is warped everytime
+		GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / ((GLfloat)sensitivity*MOUSE_WARP_Y);
 
-	// Rotate l point----------------
-	//Y-axis----------------------
-	glm::mat4 camtrans = glm::translate(glm::vec3(-pos.x, -pos.y, -pos.z));
-	glm::mat4 camRotY = glm::rotate(xdiff, glm::vec3(0, 1, 0));
-	glm::mat4 invcamtrans = glm::translate(glm::vec3(pos.x, pos.y, pos.z));
-	glm::mat4 yTot = invcamtrans * camRotY * camtrans;
-	look = glm::vec3(yTot * glm::vec4(look, 1.0));
+		// Rotate l point----------------
+		//Y-axis----------------------
+		glm::mat4 camtrans = glm::translate(glm::vec3(-pos.x, -pos.y, -pos.z));
+		glm::mat4 camRotY = glm::rotate(xdiff, glm::vec3(0, 1, 0));
+		glm::mat4 invcamtrans = glm::translate(glm::vec3(pos.x, pos.y, pos.z));
+		glm::mat4 yTot = invcamtrans * camRotY * camtrans;
+		look = glm::vec3(yTot * glm::vec4(look, 1.0));
 
-	//X-axis (or whatever)-------------
-	//needs check for if l is on up (y-axis)
-	glm::mat4 camRotX = glm::mat4(1.0f);
+		//X-axis (or whatever)-------------
+		//needs check for if l is on up (y-axis)
+		glm::mat4 camRotX = glm::mat4(1.0f);
 
-	look = glm::vec3(camtrans * glm::vec4(look, 1.0));
-	glm::vec3 axis = glm::cross(look, up);
-	camRotX = glm::rotate(ydiff, axis);
-	look = glm::vec3(camRotX * glm::vec4(look, 1.0));
-	glm::vec3 axisAfter = glm::cross(look, up);
-	if (axisAfter.x < 0.05 && axisAfter.x > -0.05
-		&& axisAfter.z < 0.05 && axisAfter.z > -0.05
-		&& axisAfter.y < 0.05 && axisAfter.y > -0.05)
-	{
-		camRotX = glm::rotate(-ydiff, axis);
+		look = glm::vec3(camtrans * glm::vec4(look, 1.0));
+		glm::vec3 axis = glm::cross(look, up);
+		camRotX = glm::rotate(ydiff, axis);
 		look = glm::vec3(camRotX * glm::vec4(look, 1.0));
-	}
-	look = glm::vec3(invcamtrans * glm::vec4(look, 1.0));
+		glm::vec3 axisAfter = glm::cross(look, up);
+		if (axisAfter.x < 0.05 && axisAfter.x > -0.05
+			&& axisAfter.z < 0.05 && axisAfter.z > -0.05
+			&& axisAfter.y < 0.05 && axisAfter.y > -0.05)
+		{
+			camRotX = glm::rotate(-ydiff, axis);
+			look = glm::vec3(camRotX * glm::vec4(look, 1.0));
+		}
+		look = glm::vec3(invcamtrans * glm::vec4(look, 1.0));
+	}	
 }
 
 glm::mat4 Camera::getCameraMatrix() const {
@@ -147,6 +152,14 @@ void Camera::update(const KeyboardHandler* handler)
 	{
 		pos = tmp + tmp3;
 		look = look + axis;
+	}
+	else if (handler->keyStates['t'])
+	{
+		// Set the bool, and also check if we should turn off/on the warp pointer
+		shouldMoveCamera = !shouldMoveCamera;
+		if (shouldMoveCamera)
+			glutTimerFunc(WARP_REFRESH_RATE, ::setPointer, 0);
+		printf("Camera control is now %d\n", shouldMoveCamera);
 	}
 	//printf("We are now at: %f, %f, %f\n", pos.x, pos.y, pos.z);
 	//printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
