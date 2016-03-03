@@ -71,7 +71,6 @@ void Game::init(int& argc, char **argv) {
 	camera = new Camera();
 
 	terrain.init();
-	terrain.generate();
 	roadSelector->init(&terrain);
 	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix));
 	//shadowViewshed.initOrtho(&terrain);

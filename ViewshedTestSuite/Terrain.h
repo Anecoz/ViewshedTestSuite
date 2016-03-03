@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "TerrainGenerator.h"
 #include "VoxelContainer.h"
+#include "DrawableModel.h"
 
 typedef std::vector<glm::vec3> VecList;
 
@@ -24,10 +25,8 @@ public:
 	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr);
 
 	void init(); // Sets up shaders etc
-	void generate(); // Generates new terrain
 
-	GLuint* getVertexVBO();
-	GLuint* getIndexVBO();
+	DrawableModel *getTerrainModel();
 
 	GLuint& getEncodedPosTex(glm::mat4&, glm::mat4&);
 
@@ -37,40 +36,23 @@ public:
 private:
 	// MEMBER VARIABLES
 	Shader orthoShader, sphericalShader, modelShader, voxelShader, encodePosShader;
-
-	GLuint vao, vertexVBO, normalVBO, indexVBO;
-	GLuint modelVAO, modelVertexVBO, modelIndexVBO;
-
+	
 	GLuint posFBO, posTex, depthBuffer;
-
-	// These two hold raw data for the terrain. Free them using free()
-	GLfloat *vertexArray, *modelVertexArray;
-	GLfloat *normalArray;
-	GLuint *indexArray, *modelIndexArray;
 
 	VoxelContainer voxels;
 
 	const GLfloat TILE_SIZE = 512.0;
 	const GLint VERTEX_COUNT = TILE_SIZE * TILE_SIZE;
 	const GLuint TRIANGLE_COUNT = 2 * (TILE_SIZE - 1) * (TILE_SIZE - 1);
-	const GLint MODEL_VERTEX_COUNT = 4;
-	const GLuint MODEL_TRIANGLE_COUNT = 2;
-
-	const std::string VERTEX_IN_NAME = "inPosition";
-	const std::string NORMAL_IN_NAME = "inNormal";
-
-	const std::string VERTEX_FILE_NAME = "terrainvert.dat";
-	const std::string NORMAL_FILE_NAME = "terrainnorm.dat";
-	const std::string INDEX_FILE_NAME = "terrainind.dat";
 
 	// MEMBER OBJECTS
 	TerrainGenerator generator;
+	DrawableModel *terrainModel;
+	DrawableModel *minimapModel;
 
 	// MEMBER METHODS
-	void setupVAO();
 	void setupFBO();
-	void setupModel();
-	glm::vec3 calcNormal(GLfloat x, GLfloat y, GLfloat z); // Calculates a normal given a x,z position
+	void setupModels();
 
 	void renderPositionEncoding(glm::mat4&, glm::mat4&);
 

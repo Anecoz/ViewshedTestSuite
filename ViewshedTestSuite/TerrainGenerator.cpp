@@ -13,6 +13,64 @@ TerrainGenerator::TerrainGenerator()
 	MOD3z = 4.998784;
 }
 
+void TerrainGenerator::generate(VoxelContainer *voxels, GLfloat *vertexArray, GLfloat *normalArray, GLuint *indexArray, GLint tileSize, GLuint triCount, GLuint vertCount) {
+
+	// Start with setting some constants
+	GLint width = tileSize;
+	GLint height = tileSize;
+
+	// Vectors to hold vertex data as well as indices
+	//indexArray = (GLuint *)malloc(sizeof(GLuint) * triCount * 3);
+	//vertexArray = (GLfloat *)malloc(sizeof(GLfloat) * vertCount * 3);
+	//normalArray = (GLfloat *)malloc(sizeof(GLfloat) * vertCount * 3);
+
+	// Start with initializing voxelarray to 0's
+	voxels->init();
+
+	// Now loop over both x and z and set the vertices +  normals
+	for (int x = 0; x < width; x++)
+		for (int z = 0; z < height; z++) {
+			GLfloat height = getHeight((GLfloat)x, (GLfloat)z);
+			vertexArray[(x + z * width) * 3 + 0] = (GLfloat)x;
+			vertexArray[(x + z * width) * 3 + 1] = height; // Height (this is 2.5D)
+			vertexArray[(x + z * width) * 3 + 2] = (GLfloat)z;
+
+			// Update the voxels
+			voxels->setValue(x, floor(height), z, 1);
+
+			glm::vec3 normal = calcNormal((GLfloat)x, height, (GLfloat)z);
+			// Set this in the array
+			normalArray[(x + z * width) * 3 + 0] = normal.x;
+			normalArray[(x + z * width) * 3 + 1] = normal.y;
+			normalArray[(x + z * width) * 3 + 2] = normal.z;
+		}
+
+	// Same for indices
+	for (int x = 0; x < width - 1; x++)
+		for (int z = 0; z < height - 1; z++) {
+			// Triangle 1
+			indexArray[(x + z * (width - 1)) * 6 + 0] = x + z * width;
+			indexArray[(x + z * (width - 1)) * 6 + 1] = x + (z + 1) * width;
+			indexArray[(x + z * (width - 1)) * 6 + 2] = x + 1 + z * width;
+			// Triangle 2
+			indexArray[(x + z * (width - 1)) * 6 + 3] = x + 1 + z * width;
+			indexArray[(x + z * (width - 1)) * 6 + 4] = x + (z + 1) * width;
+			indexArray[(x + z * (width - 1)) * 6 + 5] = x + 1 + (z + 1) * width;
+		}
+}
+
+glm::vec3 TerrainGenerator::calcNormal(GLfloat x, GLfloat y, GLfloat z) {
+	GLfloat offset = 0.01;
+
+	glm::vec3 normal = { 0.0, y, 0.0 };
+	glm::vec3 v1 = normal - glm::vec3(offset, getHeight(x + offset, z), 0.0);
+	glm::vec3 v2 = normal - glm::vec3(0.0, getHeight(x, z - offset), -offset);
+	normal = glm::cross(v1, v2);
+	normal = glm::normalize(normal);
+
+	return normal;
+}
+
 void TerrainGenerator::setSeed(GLfloat seedIn) {
 	seed = seedIn;
 }

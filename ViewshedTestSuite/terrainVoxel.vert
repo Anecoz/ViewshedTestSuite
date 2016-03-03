@@ -77,7 +77,6 @@ void main(void) {
 	fragPosition = inPosition;
 	fragNormal = inNormal;
 
-
 	// Do a clipping check
 	if (any(lessThan(gl_Position.xyz, vec3(-gl_Position.w))) ||
     any(greaterThan(gl_Position.xyz, vec3(gl_Position.w))))

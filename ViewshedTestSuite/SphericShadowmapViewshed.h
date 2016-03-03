@@ -6,6 +6,7 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include "Observer.h"
+#include "DrawableModel.h"
 
 // Handles everything to do with viewshed implemented using spherical shadow mapping
 // Also features an implementation of using orthographic shadow mapping (directional)
@@ -46,17 +47,14 @@ private:
 	const glm::mat4 orthoLightView = glm::lookAt(glm::vec3(-430.0f, 256.0f, 256.0f), glm::vec3(256.0f, 0.0f, 256.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	const glm::mat4 orthoLightSpaceMatrix = orthoProjMatrix * orthoLightView;
 
-	// For the model
-	GLfloat* vertexArray;
-	GLuint* indexArray;
-
 	// MEMBER OBJECTS
 	Shader shader; // Special shader for getting depth map etc
 	Terrain* terrain;
 	Observer observer;
+	DrawableModel *terrainModel;
 
 	// MEMBER METHODS
-	void setupVAO();
+	void setupModel();
 	void setupFBO();
 
 	void renderOrtho(); // Make this private, because only getDepthMap is needed from outside

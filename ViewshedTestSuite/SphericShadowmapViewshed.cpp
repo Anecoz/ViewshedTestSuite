@@ -22,15 +22,12 @@ SphericShadowmapViewshed::~SphericShadowmapViewshed() {
 	glDeleteVertexArrays(1, &vao);
 	glDeleteFramebuffers(1, &depthMapFBO);
 	glDeleteTextures(1, &depthMap);
-
-	free(vertexArray);
-	free(indexArray);
 }
 
 void SphericShadowmapViewshed::initOrtho(Terrain* terrain) {
 	shader = Shader("shadowmapOrtho.vert", "shadowmapOrtho.frag");
 	this->terrain = terrain;
-	setupVAO();
+	setupModel();
 	setupFBO();
 }
 
@@ -38,7 +35,7 @@ void SphericShadowmapViewshed::initSpherical(Terrain* terrain) {
 	shader = Shader("shadowmapSpherical.vert", "shadowmapOrtho.frag");
 	this->terrain = terrain;
 	observer.init();
-	setupVAO();
+	setupModel();
 	setupFBO();
 }
 
@@ -75,16 +72,15 @@ void SphericShadowmapViewshed::renderOrtho() {
 
 void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, Camera* camera) {
 	doRenderBoilerplate();
-	glBindVertexArray(vao);
+	terrainModel->prepare();
 	shader.activate();
 
 	shader.uploadVec(this->observer.getPos(), "lightPos");
 	shader.uploadFloat((GLfloat)VIEWSHED_MAX_DIST, "maxDist");
 	shader.uploadMatrix(glm::mat4(1.0f), "modelMatrix");
-	glDrawElements(GL_TRIANGLES, terrain->getTriangleCount() * 3, GL_UNSIGNED_INT, 0L);
+	terrainModel->render();
 
 	shader.deactivate();
-	glBindVertexArray(0);
 	doPostRenderBoilerplate();
 
 	// Also render observer
@@ -147,19 +143,9 @@ void SphericShadowmapViewshed::setupFBO() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void SphericShadowmapViewshed::setupVAO() {
-	shader.activate();
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	// Get the VBOs from the terrain
-	glBindBuffer(GL_ARRAY_BUFFER, *terrain->getVertexVBO());
-	shader.setAndEnableVertexAttrib("inPosition");
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *terrain->getIndexVBO());
-
-	glBindVertexArray(0);
-	shader.deactivate();
+void SphericShadowmapViewshed::setupModel() {
+	terrainModel = terrain->getTerrainModel();
+	terrainModel->addShader(shader);
 }
 
 void SphericShadowmapViewshed::tick(KeyboardHandler* handler) {

@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "KeyboardHandler.h"
+#include "DrawableModel.h"
 
 // Abstraction for observer, includes a model and position and its own shader
 class Observer
@@ -29,14 +30,10 @@ private:
 	glm::vec3 pos;
 	Shader shader;
 
-	GLuint vao, vertexVBO, indexVBO;
-	GLfloat *vertexArray;
-	GLuint *indexArray;
-
-	const GLint VERTEX_COUNT = 4;
-	const GLint TRIANGLE_COUNT = 2;
+	// MEMBER OBJECTS
+	DrawableModel *model;
 
 	// MEMBER METHODS
-	void setupVAO();
+	void setupModel();
 };
 
