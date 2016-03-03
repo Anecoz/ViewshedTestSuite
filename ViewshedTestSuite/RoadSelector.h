@@ -1,6 +1,7 @@
 #pragma once
 #include "Observer.h"
 #include "Terrain.h"
+#include "DrawableModel.h"
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 #include <vector>
@@ -18,16 +19,20 @@ Maybe this class should then hold the viewshed? makes sense...
 class RoadSelector
 {
 public:
-	RoadSelector(Terrain*);
+	RoadSelector(Terrain*, DrawableModel*, Shader& shader);
 	RoadSelector();
 	~RoadSelector();
 
-	void init(Terrain*);
+	void init(Terrain*, DrawableModel*, Shader&);
 
 	void mouseDown(GLint button, GLint x, GLint y);
 	void mouseUp(GLint button, GLint x, GLint y);
 
 	void setPosTex(GLuint&);
+
+	void render(glm::mat4& proj, glm::mat4 &camMatrix);
+
+	PointList& getList();
 
 private:
 	// MEMBER OBJECTS
@@ -38,7 +43,9 @@ private:
 	GLuint posTex = -1;		// Texture that holds positional encoding in its RGB-values
 	GLfloat *posPixels;
 
-	// MEMBER VARIABLES
-	bool isSelecting = false;	// We need some state to know if we are currently selecting a road or not
+	DrawableModel *pointModel;
+	Shader shader;
+
+	// MEMBER METHODS
 };
 

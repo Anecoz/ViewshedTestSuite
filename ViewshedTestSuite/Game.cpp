@@ -29,6 +29,8 @@ Game::~Game() {
 	delete camera;
 	delete keyHandler;
 	delete roadSelector;
+	delete simpleModel;
+	simpleModel = nullptr;
 	roadSelector = nullptr;
 	camera = nullptr;
 	keyHandler = nullptr;
@@ -70,12 +72,16 @@ void Game::init(int& argc, char **argv) {
 	keyHandler = new KeyboardHandler();
 	camera = new Camera();
 
-	terrain.init();
-	roadSelector->init(&terrain);
-	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix));
+	simpleShader = Shader("observer.vert", "observer.frag");
+
+	initSimpleModel();
+
+	terrain.init(simpleModel);
+	roadSelector->init(&terrain, simpleModel, simpleShader);
+	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector));
 	//shadowViewshed.initOrtho(&terrain);
-	//shadowViewshed.initSpherical(&terrain);
-	voxelViewshed.init();
+	//shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
+	voxelViewshed.init(simpleModel, simpleShader);
 	printError("after voxel init");
 	voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
 	printError("after voxel get text");
@@ -103,7 +109,7 @@ void Game::tick() {
 	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
 
 	// Get the encoded position texture to be used in the roadselector
-	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix);
+	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
 	voxelViewshed.render(projMatrix, camera);
@@ -114,6 +120,48 @@ void Game::tick() {
 	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, shadowViewshed.getPos(), shadowViewshed.getTargetHeight());
 	terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
 
+	// Render roads
+	roadSelector->render(projMatrix, camera->getCameraMatrix());
+
 	// Swap buffers
 	glutSwapBuffers();
+}
+
+void Game::initSimpleModel() {
+
+	GLfloat *vertexArray = (GLfloat*)malloc(4 * 3 * sizeof(GLfloat));
+	GLuint *indexArray = (GLuint*)malloc(2 * 3 * sizeof(GLuint));
+
+	// 4 vertices
+	vertexArray[0] = -1.0;
+	vertexArray[1] = 1.0;
+	vertexArray[2] = 0.0;
+
+	vertexArray[3] = -1.0;
+	vertexArray[4] = -1.0;
+	vertexArray[5] = 0.0;
+
+	vertexArray[6] = 1.0;
+	vertexArray[7] = 1.0;
+	vertexArray[8] = 0.0;
+
+	vertexArray[9] = 1.0;
+	vertexArray[10] = -1.0;
+	vertexArray[11] = 0.0;
+
+	// Indices, triangle 1
+	indexArray[0] = 0;
+	indexArray[1] = 1;
+	indexArray[2] = 2;
+
+	// Triangle 2
+	indexArray[3] = 2;
+	indexArray[4] = 1;
+	indexArray[5] = 3;
+
+	// init the model
+	simpleModel = new DrawableModel(vertexArray, nullptr, indexArray);
+	ShaderList shaders;
+	shaders.push_back(simpleShader);
+	simpleModel->init(shaders, 4, 2);
 }

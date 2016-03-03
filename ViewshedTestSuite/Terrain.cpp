@@ -3,6 +3,7 @@
 #include "SphericShadowmapViewshed.h"
 #include "Game.h"
 #include <vector>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace std;
 
@@ -32,36 +33,55 @@ VoxelContainer& Terrain::getVoxels() {
 	return voxels;
 }
 
-void Terrain::init() {
+void Terrain::init(DrawableModel *simpleModel) {
 	orthoShader = Shader("terrainOrtho.vert", "terrainOrtho.frag");
 	sphericalShader = Shader("terrainSpherical.vert", "terrainSpherical.frag");
 	modelShader = Shader("terrainShadowmap.vert", "terrainShadowmap.frag");
 	voxelShader = Shader("terrainVoxel.vert", "terrainVoxel.frag");
-	encodePosShader = Shader("encodePosition.vert", "encodePosition.frag");
+	this->encodePosShader = Shader("encodePosition.vert", "encodePosition.frag");
+
+	this->simpleModel = simpleModel;
+	this->simpleModel->addShader(encodePosShader);
 
 	setupModels();
 	setupFBO();
 }
 
-GLuint& Terrain::getEncodedPosTex(glm::mat4& camMatrix, glm::mat4& projMatrix) {
+GLuint& Terrain::getEncodedPosTex(glm::mat4& camMatrix, glm::mat4& projMatrix, RoadSelector* roadSelector) {
 	// Render to texture first, then return the texture handle
-	renderPositionEncoding(camMatrix, projMatrix);
+	renderPositionEncoding(camMatrix, projMatrix, roadSelector);
 
 	return posTex;
 }
 
-void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix) {
+void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix, RoadSelector* roadSelector) {
 	glBindFramebuffer(GL_FRAMEBUFFER, posFBO);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Only clears this FBO
 	doRenderBoilerplate();
 	terrainModel->prepare();
-	encodePosShader.activate();	
+	encodePosShader.activate();
 
 	encodePosShader.uploadMatrix(camMatrix, "camMatrix");
 	encodePosShader.uploadMatrix(projMatrix, "projMatrix");
+	encodePosShader.uploadMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)), "modelMatrix");
 
 	// Do the draw call, will render to the texture posTex
 	terrainModel->render();
+
+	// Loop over all the road points, to get them encoded aswell
+	PointList pointList = roadSelector->getList();
+
+	glDisable(GL_CULL_FACE);
+	for (glm::vec3 &point : pointList) {
+		simpleModel->prepare();
+
+		encodePosShader.uploadMatrix(camMatrix, "camMatrix");
+		encodePosShader.uploadMatrix(projMatrix, "projMatrix");
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), point);
+		encodePosShader.uploadMatrix(translationMatrix, "modelMatrix");
+
+		simpleModel->render();
+	}
 
 	doPostRenderBoilerplate();
 	encodePosShader.deactivate();

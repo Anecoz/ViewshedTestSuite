@@ -11,6 +11,7 @@
 #include "DrawableModel.h"
 
 typedef std::vector<glm::vec3> VecList;
+class RoadSelector; // Forward declare
 
 // Used to represent terrain, should have its own shader and all that jazz
 // Also has own unique VAO and VBOs to store stuff
@@ -24,11 +25,11 @@ public:
 	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3, GLfloat);
 	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr);
 
-	void init(); // Sets up shaders etc
+	void init(DrawableModel*); // Sets up shaders etc
 
 	DrawableModel *getTerrainModel();
 
-	GLuint& getEncodedPosTex(glm::mat4&, glm::mat4&);
+	GLuint& getEncodedPosTex(glm::mat4&, glm::mat4&, RoadSelector*);
 
 	const GLuint getTriangleCount();
 	VoxelContainer& getVoxels();
@@ -49,14 +50,14 @@ private:
 	TerrainGenerator generator;
 	DrawableModel *terrainModel;
 	DrawableModel *minimapModel;
+	DrawableModel *simpleModel;
 
 	// MEMBER METHODS
 	void setupFBO();
 	void setupModels();
 
-	void renderPositionEncoding(glm::mat4&, glm::mat4&);
+	void renderPositionEncoding(glm::mat4&, glm::mat4&, RoadSelector*);
 
-	void activateDepthTexture();
 	void doRenderBoilerplate();
 	void doPostRenderBoilerplate();
 };

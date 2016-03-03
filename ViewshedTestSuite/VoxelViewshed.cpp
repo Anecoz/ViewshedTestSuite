@@ -10,14 +10,14 @@ VoxelViewshed::~VoxelViewshed()
 
 }
 
-void VoxelViewshed::init() {
+void VoxelViewshed::init(DrawableModel *simpleModel, Shader &simpleShader) {
 
 	// Fill the observer list with observers
 	int n = 5;
 	glm::vec3 startPos = { 256, 20, 256 };
 	int counter = 0;
 	for (int i = 0; i < n; i++) {
-		Observer currObs(startPos + glm::vec3(counter, 0, 0));
+		Observer currObs(startPos + glm::vec3(counter, 0, 0), simpleModel, simpleShader);
 		obsList.push_back(currObs);
 		counter += 10;
 	}

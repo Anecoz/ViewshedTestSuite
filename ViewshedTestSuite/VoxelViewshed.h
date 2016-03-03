@@ -3,6 +3,8 @@
 #include "KeyboardHandler.h"
 #include "VoxelContainer.h"
 #include "Camera.h"
+#include "DrawableModel.h"
+#include "Shader.h"
 #include <vector>
 #include <GL\glew.h>
 #include <GL\freeglut.h>
@@ -16,7 +18,7 @@ public:
 	VoxelViewshed();
 	~VoxelViewshed();
 
-	void init();
+	void init(DrawableModel *simpleModel, Shader &simpleShader);
 	void render(glm::mat4 projMatrix, Camera* cam);
 	VecList getPos();
 

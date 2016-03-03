@@ -1,5 +1,6 @@
 #include "RoadSelector.h"
 #include "Game.h"
+#include <glm/gtc/matrix_transform.hpp>
 #include <stdio.h>
 
 // GLOBALS
@@ -20,8 +21,8 @@ RoadSelector::RoadSelector()
 	terrain = nullptr;
 }
 
-RoadSelector::RoadSelector(Terrain* terrain) {
-	init(terrain);
+RoadSelector::RoadSelector(Terrain* terrain, DrawableModel *simpleModel, Shader &shader) {	
+	init(terrain, simpleModel, shader);
 }
 
 RoadSelector::~RoadSelector() {
@@ -35,11 +36,37 @@ void RoadSelector::setPosTex(GLuint& tex) {
 	posTex = tex;
 }
 
-void RoadSelector::init(Terrain* terrain) {
+void RoadSelector::init(Terrain* terrain, DrawableModel *simpleModel, Shader &shader) {
 	::instance = this;
 	glutMouseFunc(::mouseFunc);
 	this->terrain = terrain;
+	this->pointModel = simpleModel;
+	this->shader = shader;
 	posPixels = (GLfloat*)malloc(sizeof(GLfloat) * 4 * Game::WINDOW_SIZE_X * Game::WINDOW_SIZE_Y);
+}
+
+PointList& RoadSelector::getList() {
+	return pointList;
+}
+
+void RoadSelector::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
+	shader.activate();
+	glEnable(GL_DEPTH_TEST);
+
+	for (glm::vec3 &point : pointList) {		
+		pointModel->prepare();
+
+		// Shader uploads
+		shader.uploadMatrix(projMatrix, "projMatrix");
+		shader.uploadMatrix(camMatrix, "camMatrix");
+
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), point);
+		shader.uploadMatrix(translationMatrix, "modelMatrix");
+		pointModel->render();
+	}	
+
+	glDisable(GL_DEPTH_TEST);
+	shader.deactivate();
 }
 
 void RoadSelector::mouseDown(GLint button, GLint x, GLint y) {
@@ -60,14 +87,14 @@ void RoadSelector::mouseDown(GLint button, GLint x, GLint y) {
 	GLfloat posZ = b*512.0;
 
 	printf("Clicked! World position is %f, %f, %f\n", posX, posY, posZ);
-	//printf("Color at click is %f, %f, %f\n", r, g, b);
 
-	if (button == 0 && !isSelecting) {
-		isSelecting = true;
+	if (button == 0) {
+		// Add a point at the world position, just for testing for now
+		pointList.push_back(glm::vec3(posX, posY+3.0, posZ));
+
 	}
-	else if (button == 2 && isSelecting) {
-		isSelecting = false;
-		// Begin tessellation
+	else if (button == 2) {
+		
 	}
 }
 

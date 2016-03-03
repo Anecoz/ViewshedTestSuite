@@ -10,35 +10,19 @@ Observer::Observer() {
 	//init();
 }
 
-Observer::Observer(glm::vec3 pos) {
+Observer::Observer(glm::vec3 pos, DrawableModel *simpleModel, Shader &simpleShader) {
 	this->pos = pos;
+	this->model = simpleModel;
+	this->shader = simpleShader;
 	//init();
 }
 
-Observer::Observer(const Observer &other) {
-	// Must create its own VAO and VBOs
-	this->pos = other.pos;
-	init();
-}
-
-Observer& Observer::operator=(Observer other) {
-	this->pos = other.pos;
-	init();
-
-	return *this;
-}
-
 Observer::~Observer() {
-	delete model;
 	model = nullptr;
 }
 
 void Observer::init() {
-	// Initialize the shader and setup the vao
-	shader = Shader("observer.vert", "observer.frag");
-	printError("after observer shader init");
-	setupModel();
-	printError("after observer vao setup");
+
 }
 
 void Observer::setPos(glm::vec3 newPos) {
@@ -80,44 +64,4 @@ void Observer::render(glm::mat4 projMatrix, Camera *camera) {
 
 	glDisable(GL_DEPTH_TEST);
 	shader.deactivate();
-}
-
-void Observer::setupModel() {
-	// Start with filling the arrays
-
-	GLfloat *vertexArray = (GLfloat*)malloc(4 * 3 * sizeof(GLfloat));
-	GLuint *indexArray = (GLuint*)malloc(2 * 3 * sizeof(GLuint));
-
-	// 4 vertices
-	vertexArray[0] = -1.0;
-	vertexArray[1] = 1.0;
-	vertexArray[2] = 0.0;
-
-	vertexArray[3] = -1.0;
-	vertexArray[4] = -1.0;
-	vertexArray[5] = 0.0;
-
-	vertexArray[6] = 1.0;
-	vertexArray[7] = 1.0;
-	vertexArray[8] = 0.0;
-
-	vertexArray[9] = 1.0;
-	vertexArray[10] = -1.0;
-	vertexArray[11] = 0.0;
-
-	// Indices, triangle 1
-	indexArray[0] = 0;
-	indexArray[1] = 1;
-	indexArray[2] = 2;
-
-	// Triangle 2
-	indexArray[3] = 2;
-	indexArray[4] = 1;
-	indexArray[5] = 3;
-
-	// init the model
-	model = new DrawableModel(vertexArray, nullptr, indexArray);
-	ShaderList shaders;
-	shaders.push_back(shader);
-	model->init(shaders, 4, 2);
 }

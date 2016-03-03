@@ -48,8 +48,9 @@ void DrawableModel::render() {
 }
 
 void DrawableModel::addShader(Shader &shader) {
-	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
 	shader.activate();
+	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+	
 	shader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
 	
 	if (normalArray != nullptr) {

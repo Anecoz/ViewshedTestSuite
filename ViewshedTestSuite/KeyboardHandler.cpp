@@ -30,6 +30,8 @@ bool KeyboardHandler::isKeyDown(const unsigned char key) const {
 }
 
 void KeyboardHandler::keyPressed(unsigned char key) {
+	if (key == 't')
+		shouldMoveCamera = !shouldMoveCamera;
 	keyStates[key] = true;
 }
 

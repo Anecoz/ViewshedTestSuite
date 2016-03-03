@@ -6,6 +6,7 @@
 #include "VoxelViewshed.h"
 #include "RoadSelector.h"
 #include "DrawableModel.h"
+#include "Shader.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <string>
@@ -32,8 +33,10 @@ private:
 	Camera *camera;
 	KeyboardHandler *keyHandler;
 	RoadSelector *roadSelector;
+	DrawableModel *simpleModel;
+	Shader simpleShader;
 
-	// Temporary terrain object
+	// Terrain object
 	Terrain terrain;
 
 	// VIEWSHED
@@ -50,6 +53,8 @@ private:
 	const GLint INIT_WINDOW_POS_Y = 0;
 
 	// MEMBER METHODS
-	void init(int&, char**); // handles all necessary initializations		
+	void init(int&, char**); // handles all necessary initializations
+
+	void initSimpleModel();
 };
 

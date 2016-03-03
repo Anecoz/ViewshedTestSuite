@@ -11,11 +11,9 @@
 class Observer
 {
 public:
-	Observer(glm::vec3 pos);
+	Observer(glm::vec3 pos, DrawableModel *simpleModel, Shader &simpleShader);
 	Observer();
 	~Observer();
-	Observer(const Observer&); // Copy constructor
-	Observer& operator=(Observer other); // Copy assignment operator
 
 	void render(glm::mat4 proj, Camera*);
 	void init();
@@ -32,8 +30,5 @@ private:
 
 	// MEMBER OBJECTS
 	DrawableModel *model;
-
-	// MEMBER METHODS
-	void setupModel();
 };
 

@@ -31,10 +31,10 @@ void SphericShadowmapViewshed::initOrtho(Terrain* terrain) {
 	setupFBO();
 }
 
-void SphericShadowmapViewshed::initSpherical(Terrain* terrain) {
+void SphericShadowmapViewshed::initSpherical(Terrain* terrain, DrawableModel *simpleModel, Shader &simpleShader) {
 	shader = Shader("shadowmapSpherical.vert", "shadowmapOrtho.frag");
 	this->terrain = terrain;
-	observer.init();
+	observer = Observer(glm::vec3(0, 0, 0), simpleModel, simpleShader);
 	setupModel();
 	setupFBO();
 }

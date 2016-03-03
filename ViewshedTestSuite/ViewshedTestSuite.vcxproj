@@ -158,6 +158,7 @@
     <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Observer.cpp" />
+    <ClCompile Include="Road.cpp" />
     <ClCompile Include="RoadSelector.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SphericShadowmapViewshed.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="GL_utilities.h" />
     <ClInclude Include="KeyboardHandler.h" />
     <ClInclude Include="Observer.h" />
+    <ClInclude Include="Road.h" />
     <ClInclude Include="RoadSelector.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SphericShadowmapViewshed.h" />

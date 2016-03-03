@@ -17,7 +17,7 @@ public:
 	~SphericShadowmapViewshed();
 
 	void initOrtho(Terrain* terrain);
-	void initSpherical(Terrain* terrain);
+	void initSpherical(Terrain* terrain, DrawableModel*, Shader&);
 
 	glm::vec3 getPos();
 

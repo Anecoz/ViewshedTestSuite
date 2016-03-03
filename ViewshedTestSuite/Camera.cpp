@@ -153,14 +153,22 @@ void Camera::update(const KeyboardHandler* handler)
 		pos = tmp + tmp3;
 		look = look + axis;
 	}
-	else if (handler->keyStates['t'])
-	{
-		// Set the bool, and also check if we should turn off/on the warp pointer
-		shouldMoveCamera = !shouldMoveCamera;
-		if (shouldMoveCamera)
+
+	if (handler->shouldMoveCamera) {
+		if (!shouldMoveCamera) {
 			glutTimerFunc(WARP_REFRESH_RATE, ::setPointer, 0);
-		printf("Camera control is now %d\n", shouldMoveCamera);
+			printf("Camera control is now %d\n", 1);
+		}			
+
+		shouldMoveCamera = true;				
 	}
+	else {
+		if (shouldMoveCamera)
+			printf("Camera control is now %d\n", 0);
+		shouldMoveCamera = false;
+	}
+		
+	
 	//printf("We are now at: %f, %f, %f\n", pos.x, pos.y, pos.z);
 	//printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);
 	updateTSinceLast();
