@@ -31,6 +31,7 @@ public:
 	static const int WARP_REFRESH_RATE = 50;
 
 	void updateTSinceLast();
+	glm::vec2 getCurrMousePos();
 
 	glm::vec3 getPos();
 
@@ -38,6 +39,8 @@ private:
 
 	// MEMBER VARIABLES
 	GLfloat sensitivity = 5.0f; // Higher value -> lower sensitivty....
+
+	glm::vec2 currMousePos;
 
 	glm::vec3 pos; // Position of the camera
 	GLfloat tSinceLast; // Elapsed time since last time update was called

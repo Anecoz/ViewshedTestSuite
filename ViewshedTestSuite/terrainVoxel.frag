@@ -4,7 +4,7 @@
 
 in vec3 fragPosition;
 in vec3 fragNormal;
-flat in vec3 visibility;
+in vec3 visibility;
 
 out vec4 outColor;
 

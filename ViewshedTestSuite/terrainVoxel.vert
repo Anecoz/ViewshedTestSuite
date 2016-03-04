@@ -6,7 +6,7 @@ in vec3 inPosition;
 in vec3 inNormal;
 out vec3 fragPosition;
 out vec3 fragNormal;
-flat out vec3 visibility;
+out vec3 visibility;
 
 uniform mat4 projMatrix;
 uniform mat4 camMatrix;

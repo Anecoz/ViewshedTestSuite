@@ -1,5 +1,4 @@
 #pragma once
-#include "Observer.h"
 #include "Terrain.h"
 #include "DrawableModel.h"
 #include <GL\glew.h>
@@ -7,7 +6,6 @@
 #include <vector>
 #include <glm\glm.hpp>
 
-typedef std::vector<Observer> ObsList;
 typedef std::vector<glm::vec3> PointList;
 
 /*
@@ -32,11 +30,12 @@ public:
 
 	void render(glm::mat4& proj, glm::mat4 &camMatrix);
 
+	void 
+
 	PointList& getList();
 
 private:
 	// MEMBER OBJECTS
-	ObsList obsList;		// Container for all observers
 	PointList pointList;	// Container for the user selected road points (different from observers)
 	Terrain *terrain;		// So that we can get the height at the mouse click
 
@@ -46,6 +45,14 @@ private:
 	DrawableModel *pointModel;
 	Shader shader;
 
+	// MEMBER CONSTANTS
+	const GLfloat MAX_SELECTION_DIST = 5.0;
+	const GLfloat SCROLL_MOVE_DIST = 1.0;
+
 	// MEMBER METHODS
+	void movePointUp(glm::vec3&);
+	void movePointDown(glm::vec3&);
+
+	bool startDrag(glm::vec3&);		// Return true if we started to drag a point, false otherwise
 };
 

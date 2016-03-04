@@ -36,6 +36,7 @@ Camera::Camera(const glm::vec3 initPos)
 	// Initialize to some position provided in constructor
 	this->pos = initPos;
 	this->look = { pos.x + 1, pos.y, pos.z };
+	this->currMousePos = { 0, 0 };
 
 	// Initialize state stuff
 	init();	
@@ -57,8 +58,13 @@ glm::vec3 Camera::getPos() {
 	return this->pos;
 }
 
-void Camera::handleMouseMovement(GLint x, GLint y) {
+glm::vec2 Camera::getCurrMousePos() {
+	return currMousePos;
+}
 
+void Camera::handleMouseMovement(GLint x, GLint y) {
+	currMousePos.x = x;
+	currMousePos.y = y;
 	if (shouldMoveCamera) {
 		GLfloat xdiff = ((GLfloat)MOUSE_WARP_X - x) / ((GLfloat)sensitivity*MOUSE_WARP_X); //Using offsets where mouse is warped everytime
 		GLfloat ydiff = ((GLfloat)MOUSE_WARP_Y - y) / ((GLfloat)sensitivity*MOUSE_WARP_Y);

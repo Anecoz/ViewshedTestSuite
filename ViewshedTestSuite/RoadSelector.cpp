@@ -70,7 +70,13 @@ void RoadSelector::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 }
 
 void RoadSelector::mouseDown(GLint button, GLint x, GLint y) {
-	// Button 0 = left click, 2 = right click etc.
+	/*
+	0 = left click,
+	1 = scroll wheel click,
+	2 = right click,
+	3 = scroll up,
+	4 = scroll down
+	*/
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, posTex);
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, posPixels);
@@ -88,16 +94,64 @@ void RoadSelector::mouseDown(GLint button, GLint x, GLint y) {
 
 	printf("Clicked! World position is %f, %f, %f\n", posX, posY, posZ);
 
-	if (button == 0) {
-		// Add a point at the world position, just for testing for now
-		pointList.push_back(glm::vec3(posX, posY+3.0, posZ));
-
-	}
-	else if (button == 2) {
-		
+	switch (button) {
+	case 0:
+		// We want to be able to drag a point, check if any point is close to x,y,z
+		if (!startDrag(glm::vec3(posX, posY, posZ)))
+			pointList.push_back(glm::vec3(posX, posY + 3.0, posZ));
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		// Move any points that are at this world pos up
+		movePointUp(glm::vec3(posX, posY, posZ));
+		break;
+	case 4:
+		// Move any points that are at this world pos down
+		movePointDown(glm::vec3(posX, posY, posZ));
+		break;
+	default:
+		break;
 	}
 }
 
 void RoadSelector::mouseUp(GLint button, GLint x, GLint y) {
 	//printf("Mouse up! Button was %d, (x, y) = (%d, %d)\n", button, x, y);
+}
+
+bool RoadSelector::startDrag(glm::vec3 &posToCheck) {
+	// Loop through the point list and check if anything is close
+	for (glm::vec3 &point : pointList) {
+		if (glm::distance(posToCheck, point) < MAX_SELECTION_DIST) {
+			// Set this point to be dragging
+			// TODO
+			return true;
+		}
+	}
+	return false;
+}
+
+void RoadSelector::movePointUp(glm::vec3 &posToCheck) {
+	// First check if any point is close to the one where the user had the mouse
+	// Loop through the point list and check distance
+	for (glm::vec3 &point : pointList) {
+		if (glm::distance(posToCheck, point) < MAX_SELECTION_DIST) {
+			// Move the point
+			point.y += SCROLL_MOVE_DIST;
+			break;
+		}
+	}
+}
+
+void RoadSelector::movePointDown(glm::vec3 &posToCheck) {
+	// Do same as for movePointUp
+	for (glm::vec3 &point : pointList) {
+		if (glm::distance(posToCheck, point) < MAX_SELECTION_DIST) {
+			// Move the point
+			point.y -= SCROLL_MOVE_DIST;
+			break;
+		}
+	}
 }
