@@ -54,6 +54,11 @@ void Shader::uploadFloat(GLfloat val, std::string name) const {
 	glUniform1f(loc, val);
 }
 
+void Shader::uploadInt(GLint val, std::string name) const {
+	GLint loc = glGetUniformLocation(id, name.c_str());
+	glUniform1i(loc, val);
+}
+
 void Shader::uploadVec(glm::vec3 vec, std::string name) const {
 	GLint loc = glGetUniformLocation(id, name.c_str());
 	glUniform3fv(loc, 1, glm::value_ptr(vec));

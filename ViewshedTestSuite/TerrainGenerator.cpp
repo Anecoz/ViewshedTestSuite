@@ -19,11 +19,6 @@ void TerrainGenerator::generate(VoxelContainer *voxels, GLfloat *vertexArray, GL
 	GLint width = tileSize;
 	GLint height = tileSize;
 
-	// Vectors to hold vertex data as well as indices
-	//indexArray = (GLuint *)malloc(sizeof(GLuint) * triCount * 3);
-	//vertexArray = (GLfloat *)malloc(sizeof(GLfloat) * vertCount * 3);
-	//normalArray = (GLfloat *)malloc(sizeof(GLfloat) * vertCount * 3);
-
 	// Start with initializing voxelarray to 0's
 	voxels->init();
 

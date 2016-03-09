@@ -15,7 +15,7 @@ public:
 	Observer();
 	~Observer();
 
-	void render(glm::mat4 proj, Camera*);
+	void render(glm::mat4& proj, glm::mat4& camMatrix);
 	void init();
 
 	void setPos(glm::vec3);

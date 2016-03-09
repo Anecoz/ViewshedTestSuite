@@ -84,7 +84,7 @@ void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, Camera* cam
 	doPostRenderBoilerplate();
 
 	// Also render observer
-	observer.render(projMatrix, camera);
+	observer.render(projMatrix, camera->getCameraMatrix());
 }
 
 void SphericShadowmapViewshed::doRenderBoilerplate() {

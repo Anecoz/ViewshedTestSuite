@@ -11,11 +11,9 @@ out vec3 visibility;
 uniform mat4 projMatrix;
 uniform mat4 camMatrix;
 uniform usampler3D voxTex; // 3D-texture of the voxels
-uniform vec3 lightArr[5]; // Observer positions in world coordinates
+uniform vec3 lightArr[100]; // Observer positions in world coordinates
 uniform float maxDist; // Max distance for the viewshed
-
-const int NUM_OBS = 5; // Number of observers
-
+uniform int numObs;
 
 // For mapping from grayscale to a jet colorspace
 float interpolate( float val, float y0, float x0, float y1, float x1 ) {
@@ -43,7 +41,7 @@ float blue( float gray ) {
 // returns 1 if we are visible and 0 if we are invisible
 int rayMarch(vec3 lightPos) {	
 	// Calculate if this particular terrain fragment is visible from the observer
-	float increment = 2.0;
+	float increment = 2.;
 	vec3 direction = normalize(lightPos - inPosition);
 	vec3 currPos = inPosition;
 	float minDist = 3.0;
@@ -77,38 +75,34 @@ void main(void) {
 	fragPosition = inPosition;
 	fragNormal = inNormal;
 
-	// Do a clipping check
-	if (any(lessThan(gl_Position.xyz, vec3(-gl_Position.w))) ||
-    any(greaterThan(gl_Position.xyz, vec3(gl_Position.w))))
-	{
-		// vertex will be clipped
-		visibility = ivec3(0, 0, 0);
-	}
-	else {
-		if (distance(inPosition, lightArr[NUM_OBS/2]) < maxDist) {
-			// Do viewshed calculations for all observers
-			int totalVis = 0;
-			for (int i = 0; i < NUM_OBS; i++) {
-				totalVis += rayMarch(lightArr[i]);
-			}
-
-			float value = float(totalVis) / float(NUM_OBS);
-
-			// map to -1,1
-			value = value*2.0 -1.0;
-			float r = red(value);
-			float g = green(value);
-			float b = blue(value);
-			visibility = vec3(r, g, b);
+	if (numObs > 0) {
+		// Do a clipping check
+		if (any(lessThan(gl_Position.xyz, vec3(-gl_Position.w))) ||
+		any(greaterThan(gl_Position.xyz, vec3(gl_Position.w))))
+		{
+			// vertex will be clipped
+			visibility = ivec3(0, 0, 0);
 		}
 		else {
-			visibility = vec3(0, 0, 0);
-		}
-	}
+			if (distance(inPosition, lightArr[numObs/2]) < maxDist) {
+				// Do viewshed calculations for all observers
+				int totalVis = 0;
+				for (int i = 0; i < numObs; i++) {
+					totalVis += rayMarch(lightArr[i]);
+				}
 
-	/*float x = inPosition.x/512.0;
-	float y = inPosition.y/128.0;
-	float z = inPosition.z/512.0;
-	visibility = textureLod(voxTex, vec3(x,y,z), 0.0).r;
-	//ivec3 visibility = ivec3(voxel);*/	
+				float value = float(totalVis) / float(numObs);
+
+				// map to -1,1
+				value = value*2.0 -1.0;
+				float r = red(value);
+				float g = green(value);
+				float b = blue(value);
+				visibility = vec3(r, g, b);
+			}
+			else {
+				visibility = vec3(0, 0, 0);
+			}
+		}	
+	}	
 }

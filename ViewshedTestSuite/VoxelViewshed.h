@@ -9,6 +9,7 @@
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 
+typedef glm::vec3 Point;
 typedef std::vector<Observer> ObsList;
 typedef std::vector<glm::vec3> VecList;
 
@@ -19,17 +20,21 @@ public:
 	~VoxelViewshed();
 
 	void init(DrawableModel *simpleModel, Shader &simpleShader);
-	void render(glm::mat4 projMatrix, Camera* cam);
+	void render(glm::mat4& projMatrix, glm::mat4 &camMatrix);
 	VecList getPos();
+
+	void addObserver(Point);
+	void setObserverList(ObsList);
 
 	GLuint& getVoxelTexture(VoxelContainer&);	
 
 	void tick(KeyboardHandler *);
 private:
 	// MEMBER VARIABLES
+	DrawableModel *simpleModel;
+	Shader simpleShader;
 
 	// MEMBER OBJECTS
-	//Observer observer; // just 1 for now
 	ObsList obsList;
 
 	// MEMBER METHODS

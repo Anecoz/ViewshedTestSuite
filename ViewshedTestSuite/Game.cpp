@@ -100,6 +100,9 @@ void Game::tick() {
 	camera->update(keyHandler);
 
 	// Update the viewshed (steerable position)
+	// Update the observer list, get it from road
+	voxelViewshed.setObserverList(roadSelector->getObservers());
+
 	//shadowViewshed.tick(keyHandler);
 	voxelViewshed.tick(keyHandler);
 	printError("after voxel tick");
@@ -112,7 +115,7 @@ void Game::tick() {
 	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
-	voxelViewshed.render(projMatrix, camera);
+	voxelViewshed.render(projMatrix, camera->getCameraMatrix());
 	printError("after voxel draw");
 
 	// Draw terrain

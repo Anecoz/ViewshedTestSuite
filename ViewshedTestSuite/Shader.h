@@ -30,6 +30,7 @@ public:
 	void uploadVecArr(VecList, std::string) const;
 
 	void uploadFloat(GLfloat, std::string) const;
+	void uploadInt(GLint, std::string) const;
 
 	void setAndEnableVertexAttrib(const std::string);
 	void setAndEnableNormalAttrib(const std::string);

@@ -9,13 +9,12 @@ in vec3 visibility;
 out vec4 outColor;
 
 uniform mat4 camMatrix;
-uniform vec3 lightArr[5]; // World coordinates
+uniform vec3 lightArr[100]; // World coordinates
 uniform float maxDist; // Max distance for the viewshed
+uniform int numObs;
 
 const vec3 lightDir = vec3(0.0, 30.0, 256.0);
 const vec3 lightCol = vec3(1.0, 1.0, 1.0);
-
-const int NUM_OBS = 5;
 
 vec3 calcLight() {
 	vec3 total = vec3(0.0);
@@ -43,10 +42,15 @@ void main(void) {
 	// Calculate lighting
 	vec3 light = calcLight();
 
-	if (distance(fragPosition, lightArr[NUM_OBS/2]) < maxDist) {
-		outColor = vec4(visibility, 1.0);
+	if (numObs > 0) {
+		if (distance(fragPosition, lightArr[numObs/2]) < maxDist) {
+			outColor = vec4(visibility, 1.0);
+		}
+		else {
+			outColor = vec4(light*0.3, 1.0);
+		}
 	}
 	else {
 		outColor = vec4(light*0.3, 1.0);
-	}
+	}	
 }

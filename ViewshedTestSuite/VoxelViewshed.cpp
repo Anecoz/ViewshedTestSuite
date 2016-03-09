@@ -12,25 +12,25 @@ VoxelViewshed::~VoxelViewshed()
 
 void VoxelViewshed::init(DrawableModel *simpleModel, Shader &simpleShader) {
 
-	// Fill the observer list with observers
-	int n = 5;
-	glm::vec3 startPos = { 256, 20, 256 };
-	int counter = 0;
-	for (int i = 0; i < n; i++) {
-		Observer currObs(startPos + glm::vec3(counter, 0, 0), simpleModel, simpleShader);
-		obsList.push_back(currObs);
-		counter += 10;
-	}
+	this->simpleModel = simpleModel;
+	this->simpleShader = simpleShader;
 }
 
-void VoxelViewshed::render(glm::mat4 projMatrix, Camera* camera) {
+void VoxelViewshed::addObserver(Point point) {
+	obsList.push_back(Observer(point, simpleModel, simpleShader));
+}
+
+void VoxelViewshed::setObserverList(ObsList obsList) {
+	this->obsList = obsList;
+}
+
+void VoxelViewshed::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	for (Observer &obs : obsList) {
-		obs.render(projMatrix, camera);
+		obs.render(projMatrix, camMatrix);
 	}
 }
 
 VecList VoxelViewshed::getPos() {
-	//return observer.getPos();
 	VecList output;
 	for (Observer &obs : obsList) {
 		output.push_back(obs.getPos());
@@ -57,8 +57,7 @@ GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8UI, WIDTH, HEIGHT, DEPTH, 0, GL_RED_INTEGER,
-		GL_UNSIGNED_BYTE, arr);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8UI, WIDTH, HEIGHT, DEPTH, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, arr);
 
 	// DEBUG
 	/*GLubyte *testArr = (GLubyte *)malloc(sizeof(GLubyte) * WIDTH * DEPTH * HEIGHT);

@@ -69,7 +69,7 @@ void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix
 	terrainModel->render();
 
 	// Loop over all the road points, to get them encoded aswell
-	PointList pointList = roadSelector->getList();
+	PointList pointList = roadSelector->getPointList();
 
 	glDisable(GL_CULL_FACE);
 	for (glm::vec3 &point : pointList) {
@@ -124,6 +124,8 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	voxelShader.uploadMatrix(projMatrix, "projMatrix");
 	voxelShader.uploadVecArr(lightArr, "lightArr");
 	voxelShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
+	voxelShader.uploadInt(lightArr.size(), "numObs");
+	//printf("numObs: %d\n", lightArr.size());
 
 	// Draw
 	terrainModel->render();

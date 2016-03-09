@@ -50,13 +50,13 @@ void Observer::tick(KeyboardHandler *handler) {
 		this->pos.y -= velocity;
 }
 
-void Observer::render(glm::mat4 projMatrix, Camera *camera) {
+void Observer::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	model->prepare();
 	glEnable(GL_DEPTH_TEST);
 	shader.activate();
 
 	shader.uploadMatrix(projMatrix, "projMatrix");
-	shader.uploadMatrix(camera->getCameraMatrix(), "camMatrix");
+	shader.uploadMatrix(camMatrix, "camMatrix");
 	// Transformation matrix
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), this->pos);
 	shader.uploadMatrix(translationMatrix, "modelMatrix");
