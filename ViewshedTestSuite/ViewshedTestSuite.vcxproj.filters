@@ -66,6 +66,9 @@
     <ClCompile Include="Road.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Voxelizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GL_utilities.h">
@@ -113,6 +116,9 @@
     <ClInclude Include="Road.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Voxelizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shadowmapOrtho.frag">
@@ -158,6 +164,15 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="encodePosition.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="voxelizer.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="voxelizer.geom">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="voxelizer.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

@@ -7,6 +7,7 @@
 #include "RoadSelector.h"
 #include "DrawableModel.h"
 #include "Shader.h"
+#include "Voxelizer.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <string>
@@ -35,6 +36,7 @@ private:
 	RoadSelector *roadSelector;
 	DrawableModel *simpleModel;
 	Shader simpleShader;
+	Voxelizer voxelizer;
 
 	// Terrain object
 	Terrain terrain;

@@ -77,13 +77,20 @@ void Game::init(int& argc, char **argv) {
 	initSimpleModel();
 
 	terrain.init(simpleModel);
+
+	voxelizer.init(terrain.getTerrainModel());
+	printError("after init voxelize");
+
+	//voxTex = voxelizer.voxelize();
+	printError("after voxelize");
+
 	roadSelector->init(&terrain, simpleModel, simpleShader);
 	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector));
 	//shadowViewshed.initOrtho(&terrain);
 	//shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
 	voxelViewshed.init(simpleModel, simpleShader);
 	printError("after voxel init");
-	voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
+	//voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
 	printError("after voxel get text");
 
 	glutMainLoop();
@@ -111,17 +118,20 @@ void Game::tick() {
 	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
 	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
 
+	// DEBUG
+	voxTex = voxelizer.voxelize(projMatrix, camera->getCameraMatrix());
+
 	// Get the encoded position texture to be used in the roadselector
-	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
+	//GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
-	voxelViewshed.render(projMatrix, camera->getCameraMatrix());
+	//voxelViewshed.render(projMatrix, camera->getCameraMatrix());
 	printError("after voxel draw");
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, shadowViewshed.getOrthoLightSpaceMatrix(), depthMap);
 	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, shadowViewshed.getPos(), shadowViewshed.getTargetHeight());
-	terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
+	//terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
 
 	// Render roads
 	roadSelector->render(projMatrix, camera->getCameraMatrix());

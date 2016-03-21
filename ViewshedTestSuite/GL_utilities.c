@@ -163,6 +163,8 @@ GLuint loadShadersGT(const char *vertFileName, const char *fragFileName, const c
 	vs = readFile((char *)vertFileName);
 	fs = readFile((char *)fragFileName);
 	gs = NULL;
+	if (geomFileName != NULL)
+		gs = readFile((char *)geomFileName);
 	tcs = NULL;
 	tes = NULL;
 	//gs = readFile((char *)geomFileName);

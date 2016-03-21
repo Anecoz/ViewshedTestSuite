@@ -1,5 +1,9 @@
 #include "DrawableModel.h"
 
+extern "C" {
+#include "GL_utilities.h"
+}
+
 
 DrawableModel::DrawableModel()
 {
@@ -52,10 +56,12 @@ void DrawableModel::addShader(Shader &shader) {
 	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
 	
 	shader.setAndEnableVertexAttrib(VERTEX_IN_NAME);
+	printError("after setandenablevertex");
 	
 	if (normalArray != nullptr) {
 		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
 		shader.setAndEnableNormalAttrib(NORMAL_IN_NAME);
+		printError("after setnormals");
 	}
 	
 	shader.deactivate();

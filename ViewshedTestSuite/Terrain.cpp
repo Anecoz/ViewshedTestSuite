@@ -122,7 +122,8 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	// Matrix uploads
 	voxelShader.uploadMatrix(camMatrix, "camMatrix");
 	voxelShader.uploadMatrix(projMatrix, "projMatrix");
-	voxelShader.uploadVecArr(lightArr, "lightArr");
+	if (!lightArr.empty())
+		voxelShader.uploadVecArr(lightArr, "lightArr");
 	voxelShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
 	voxelShader.uploadInt(lightArr.size(), "numObs");
 	//printf("numObs: %d\n", lightArr.size());

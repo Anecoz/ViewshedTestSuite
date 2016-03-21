@@ -16,12 +16,19 @@ Shader::Shader()
 
 Shader::Shader(const std::string vertexFileName, const std::string fragFileName) {
 	// Simply load it directly from file
-	loadFromFile(vertexFileName, fragFileName);
+	loadFromFile(vertexFileName, fragFileName, "");
 }
 
-void Shader::loadFromFile(const std::string vs, const std::string fs) {
+Shader::Shader(const std::string vertexFileName, const std::string fragFileName, const std::string geomFileName) {
+	loadFromFile(vertexFileName, fragFileName, geomFileName);
+}
+
+void Shader::loadFromFile(const std::string vs, const std::string fs, const std::string gs) {
 	// Use Ingemars loadshader, returns an id 
-	id = loadShaders(vs.c_str(), fs.c_str());
+	if (gs.empty())
+		id = loadShaders(vs.c_str(), fs.c_str());
+	else
+		id = loadShadersG(vs.c_str(), fs.c_str(), gs.c_str());
 }
 
 void Shader::activate() const {

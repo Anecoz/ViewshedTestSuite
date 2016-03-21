@@ -13,9 +13,10 @@ class Shader
 public:
 	Shader();
 	Shader(const std::string VS, const std::string FS); // Constructor that directly takes vs + fs strings
+	Shader(const std::string VS, const std::string FS, const std::string GS); // Ditto but also takes geometry shader
 	~Shader() = default; // Nothing worth overriding the compiler-generated destructor for
 
-	void loadFromFile(const std::string, const std::string); // Load vertex + frag shader from a string and sets it
+	void loadFromFile(const std::string, const std::string, const std::string); // Load vertex + frag shader from a string and sets it
 	void activate() const; // Sets this particular shader as the current active one
 	void deactivate() const; // Unsets this as the current shader
 
