@@ -84,11 +84,11 @@ void Game::init(int& argc, char **argv) {
 	//voxTex = voxelizer.voxelize();
 	printError("after voxelize");
 
-	roadSelector->init(&terrain, simpleModel, simpleShader);
-	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector));
+	//roadSelector->init(&terrain, simpleModel, simpleShader);
+	//roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector));
 	//shadowViewshed.initOrtho(&terrain);
 	//shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
-	voxelViewshed.init(simpleModel, simpleShader);
+	//voxelViewshed.init(simpleModel, simpleShader);
 	printError("after voxel init");
 	//voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
 	printError("after voxel get text");
@@ -101,32 +101,30 @@ void Game::tick() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Do keyboard checks
-	keyHandler->tick();
+	//keyHandler->tick();
 
 	// Update camera
-	camera->update(keyHandler);
+	//camera->update(keyHandler);
 
 	// Update the viewshed (steerable position)
 	// Update the observer list, get it from road
-	voxelViewshed.setObserverList(roadSelector->getObservers());
+	//voxelViewshed.setObserverList(roadSelector->getObservers());
 
 	//shadowViewshed.tick(keyHandler);
-	voxelViewshed.tick(keyHandler);
-	printError("after voxel tick");
+	//voxelViewshed.tick(keyHandler);
 
 	// Get the shadow map
 	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
 	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
 
 	// DEBUG
-	voxTex = voxelizer.voxelize(projMatrix, camera->getCameraMatrix());
+	voxTex = voxelizer.voxelize();
 
 	// Get the encoded position texture to be used in the roadselector
 	//GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
 	//voxelViewshed.render(projMatrix, camera->getCameraMatrix());
-	printError("after voxel draw");
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, shadowViewshed.getOrthoLightSpaceMatrix(), depthMap);
@@ -134,7 +132,7 @@ void Game::tick() {
 	//terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
 
 	// Render roads
-	roadSelector->render(projMatrix, camera->getCameraMatrix());
+	//roadSelector->render(projMatrix, camera->getCameraMatrix());
 
 	// Swap buffers
 	glutSwapBuffers();

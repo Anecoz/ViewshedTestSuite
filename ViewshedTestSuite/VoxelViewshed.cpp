@@ -61,13 +61,20 @@ GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
 
 	// DEBUG
 	/*GLubyte *testArr = (GLubyte *)malloc(sizeof(GLubyte) * WIDTH * DEPTH * HEIGHT);
-	glGetTextureImage(voxTex, 0, GL_RED, GL_UNSIGNED_BYTE, WIDTH*HEIGHT*DEPTH*sizeof(GLubyte), testArr);
+	glGetTextureImage(voxTex, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, WIDTH*HEIGHT*DEPTH*sizeof(GLubyte), testArr);
 	printf("texture at 7, 11, 178 is: %d\n", testArr[HEIGHT*WIDTH * 178 + DEPTH * 11 + 7]);
 
-	/*for (int x = 0; x < 512; x++)
+	int currmax = 0;
+	for (int x = 0; x < 512; x++)
 		for (int y = 0; y < 128; y++)
 			for (int z = 0; z < 512; z++) {
-				printf("texture at %d, %d, %d is %d\n", x, y, z, testArr[HEIGHT*WIDTH*z + DEPTH*y + x]);
+				int val = testArr[HEIGHT*WIDTH*z + DEPTH*y + x];
+				if (val > currmax) {
+					currmax = val;
+					printf("new max is %d\n", currmax);
+				}
+					
+				//printf("texture at %d, %d, %d is %d\n", x, y, z, testArr[HEIGHT*WIDTH*z + DEPTH*y + x]);
 			}*/
 
 	return voxTex;

@@ -256,7 +256,8 @@ void Terrain::setupFBO() {
 		printf("FB error, status: 0x%x\n", Status);
 	}
 
-	// Unbind FBO
+	// Unbind FBO and texture
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

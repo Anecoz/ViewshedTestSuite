@@ -12,6 +12,7 @@ uniform mat4 camMatrix;
 uniform vec3 lightArr[100]; // World coordinates
 uniform float maxDist; // Max distance for the viewshed
 uniform int numObs;
+uniform sampler3D voxTex; // 3D-texture of the voxels
 
 const vec3 lightDir = vec3(0.0, 30.0, 256.0);
 const vec3 lightCol = vec3(1.0, 1.0, 1.0);
@@ -49,6 +50,8 @@ void main(void) {
 		else {
 			outColor = vec4(light*0.3, 1.0);
 		}
+		/*float voxel = textureLod(voxTex, vec3(fragPosition.x,15,fragPosition.z), 0.0).r;
+		outColor = vec4(voxel);*/
 	}
 	else {
 		outColor = vec4(light*0.3, 1.0);

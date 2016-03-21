@@ -18,7 +18,7 @@ public:
 
 	void init(DrawableModel* terrainModel);
 
-	GLuint voxelize(glm::mat4& projMatrix, glm::mat4& camMatrix);	// Voxelizes the scene and returns the associated 3D texture
+	GLuint voxelize();	// Voxelizes the scene and returns the associated 3D texture
 
 private:
 	// MEMBER OBJECTS
@@ -34,9 +34,12 @@ private:
 	const GLuint HEIGHT = 128;
 	const GLuint DEPTH = 512;
 
-	const glm::mat4 ortho = glm::ortho(-1, 1, -1, 1, 1, 3);	// The orthographic projection matrices
-	const glm::mat4 mvpX = ortho * glm::lookAt(glm::vec3(2, 0, 0), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	const glm::mat4 mvpY = ortho * glm::lookAt(glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, -1));
-	const glm::mat4 mvpZ = ortho * glm::lookAt(glm::vec3(0, 0, 2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	const glm::mat4 ortho = glm::ortho(-256.0f, 256.0f, -1.0f, 128.0f, 1.0f, 512.0f);	// The orthographic projection matrices
+	const glm::mat4 mvpX = ortho * glm::lookAt(glm::vec3(-2, 0, 256), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));
+	const glm::mat4 mvpZ = ortho * glm::lookAt(glm::vec3(256, 0, -2), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));
+
+	const glm::mat4 orthoY = glm::ortho(-256.0f, 256.0f, -256.0f, 256.0f, 1.0f, 128.0f);
+	const glm::mat4 mvpY = orthoY * glm::lookAt(glm::vec3(256, -2, 256), glm::vec3(256, 0, 256), glm::vec3(0, 0, -1));
+	
 };
 

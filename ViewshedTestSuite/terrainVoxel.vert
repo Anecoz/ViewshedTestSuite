@@ -58,7 +58,7 @@ int rayMarch(vec3 lightPos) {
 		float z = currPos.z/512.0;
 		float voxel = textureLod(voxTex, vec3(x,y,z), 0.0).r;	// Actual voxel at position, either 0 or 1
 
-		if (voxel > 0.f) { // float precision...
+		if (voxel > 0.0f) { // float precision...
 			// We hit terrain, invisible
 			return 0;
 			break;
