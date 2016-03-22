@@ -8,6 +8,7 @@
 #include "DrawableModel.h"
 #include "Shader.h"
 #include "Voxelizer.h"
+#include "VoxelTester.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <string>
@@ -37,6 +38,7 @@ private:
 	DrawableModel *simpleModel;
 	Shader simpleShader;
 	Voxelizer voxelizer;
+	VoxelTester voxelTester;
 
 	// Terrain object
 	Terrain terrain;

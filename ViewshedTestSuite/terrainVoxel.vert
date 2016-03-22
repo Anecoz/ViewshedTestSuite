@@ -10,7 +10,7 @@ out vec3 visibility;
 
 uniform mat4 projMatrix;
 uniform mat4 camMatrix;
-uniform sampler3D voxTex; // 3D-texture of the voxels
+uniform usampler3D voxTex; // 3D-texture of the voxels
 uniform vec3 lightArr[100]; // Observer positions in world coordinates
 uniform float maxDist; // Max distance for the viewshed
 uniform int numObs;
@@ -56,9 +56,9 @@ int rayMarch(vec3 lightPos) {
 		float x = currPos.x/512.0;
 		float y = currPos.y/128.0;
 		float z = currPos.z/512.0;
-		float voxel = textureLod(voxTex, vec3(x,y,z), 0.0).r;	// Actual voxel at position, either 0 or 1
+		uint voxel = textureLod(voxTex, vec3(x,y,z), 0.0).r;	// Actual voxel at position, either 0 or 1
 
-		if (voxel > 0.0f) { // float precision...
+		if (voxel > 0u) { // float precision...
 			// We hit terrain, invisible
 			return 0;
 			break;

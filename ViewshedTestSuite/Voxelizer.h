@@ -18,7 +18,7 @@ public:
 
 	void init(DrawableModel* terrainModel);
 
-	GLuint voxelize();	// Voxelizes the scene and returns the associated 3D texture
+	GLuint& voxelize();	// Voxelizes the scene and returns the associated 3D texture
 
 private:
 	// MEMBER OBJECTS
@@ -38,8 +38,7 @@ private:
 	const glm::mat4 mvpX = ortho * glm::lookAt(glm::vec3(-2, 0, 256), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));
 	const glm::mat4 mvpZ = ortho * glm::lookAt(glm::vec3(256, 0, -2), glm::vec3(256, 0, 256), glm::vec3(0, 1, 0));
 
-	const glm::mat4 orthoY = glm::ortho(-256.0f, 256.0f, -256.0f, 256.0f, 1.0f, 128.0f);
+	const glm::mat4 orthoY = glm::ortho(-256.0f, 256.0f, -256.0f, 256.0f, 0.0f, 128.0f);
 	const glm::mat4 mvpY = orthoY * glm::lookAt(glm::vec3(256, -2, 256), glm::vec3(256, 0, 256), glm::vec3(0, 0, -1));
-	
 };
 

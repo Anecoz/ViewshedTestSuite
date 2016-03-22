@@ -22,7 +22,7 @@ void Voxelizer::init(DrawableModel* terrainModel) {
 	printError("after addShader");
 }
 
-GLuint Voxelizer::voxelize() {
+GLuint& Voxelizer::voxelize() {
 	// We want to pass through our voxelizing shaders, which will write to the voxeltexture. The texture will then contain what we need
 
 	// Clear buffers
@@ -34,46 +34,47 @@ GLuint Voxelizer::voxelize() {
 	// Disable this stuff
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
-	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 	shader.activate();
 	terrainModel->prepare();
 
 	// Uploads
+	//glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_3D, voxelTex);
+	glBindImageTexture(0, voxelTex, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_R8UI);
+	shader.uploadTexture(0, "voxTex");
 	shader.uploadMatrix(mvpX, "MVPx");
 	shader.uploadMatrix(mvpY, "MVPy");
 	shader.uploadMatrix(mvpZ, "MVPz");
-	shader.uploadInt(WIDTH, "voxelDim");
-	shader.uploadInt(DEPTH, "voxelDepth");
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_3D, voxelTex);
-	glBindImageTexture(0, voxelTex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
-	shader.uploadTexture(0, "voxTex");
+	shader.uploadInt(WIDTH, "voxelWidth");
+	shader.uploadInt(HEIGHT, "voxelHeight");
+	shader.uploadInt(DEPTH, "voxelDepth");	
 
 	// Render
 	terrainModel->render();
 	// Immediately call memory barrier to ensure that the texture is written to
-	//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 	// DEBUG
 	//glBindTexture(GL_TEXTURE_3D, voxelTex);
 	//GLfloat *testArr = (GLfloat *)malloc(sizeof(GLfloat) * WIDTH * DEPTH * HEIGHT*4);
-	/*
-	GLfloat *testArr = new GLfloat[WIDTH*HEIGHT*DEPTH];
+	
+	/*GLubyte *testArr = new GLubyte[WIDTH*HEIGHT*DEPTH];
 	printError("Before get text image");
-	glGetTextureImage(voxelTex, 0, GL_RED, GL_FLOAT, WIDTH*HEIGHT*DEPTH*sizeof(GLfloat), testArr);
+	glGetTextureImage(voxelTex, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, WIDTH*HEIGHT*DEPTH*sizeof(GLubyte), testArr);
 
 	printError("gettext image");
-	printf("texture at 100, 50, 100 is: %d\n", testArr[0/*HEIGHT*WIDTH * 100 + WIDTH * 50 + 100]);
+	printf("texture at 100, 50, 100 is: %d\n", testArr[0]);
 
-	float max = 0.0;
+	GLubyte max = 0;
 	for (int x = 0; x < 512; x++)
 	for (int y = 0; y < 128; y++)
 	for (int z = 0; z < 512; z++) {
-		float val = testArr[HEIGHT*WIDTH*z + WIDTH*y + x];
+		GLubyte val = testArr[HEIGHT*WIDTH*z + WIDTH*y + x];
 		if (val > max) {
 			max = val;
-			printf("curr max is %f\n", max);
+			printf("curr max is %d\n", max);
 		}		
 	}
 	delete[](testArr);*/
@@ -98,11 +99,12 @@ void Voxelizer::setupTexture() {
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	GLfloat *testArr = new GLfloat[WIDTH*HEIGHT*DEPTH * 4];
-	std::fill(testArr, testArr + WIDTH*HEIGHT*DEPTH * 4, 0.0);
+	GLubyte *testArr = new GLubyte[WIDTH*HEIGHT*DEPTH];
+	std::fill(testArr, testArr + WIDTH*HEIGHT*DEPTH, 0);
 
-	glTexStorage3D(GL_TEXTURE_3D, 1, GL_R32F, WIDTH, HEIGHT, DEPTH);// , 0, GL_RED, GL_FLOAT, NULL);
-	//glBindImageTexture(0, voxelTex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+	//glTexStorage3D(GL_TEXTURE_3D, 1, GL_R32F, WIDTH, HEIGHT, DEPTH);// , 0, GL_RED, GL_FLOAT, NULL);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R8UI, WIDTH, HEIGHT, DEPTH, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, testArr);
+	//glBindImageTexture(0, voxelTex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
 
 	delete[](testArr);
 

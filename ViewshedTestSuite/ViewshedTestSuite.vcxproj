@@ -164,8 +164,10 @@
     <ClCompile Include="SphericShadowmapViewshed.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
+    <ClCompile Include="Voxel.cpp" />
     <ClCompile Include="VoxelContainer.cpp" />
     <ClCompile Include="Voxelizer.cpp" />
+    <ClCompile Include="VoxelTester.cpp" />
     <ClCompile Include="VoxelViewshed.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,8 +184,10 @@
     <ClInclude Include="SphericShadowmapViewshed.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainGenerator.h" />
+    <ClInclude Include="Voxel.h" />
     <ClInclude Include="VoxelContainer.h" />
     <ClInclude Include="Voxelizer.h" />
+    <ClInclude Include="VoxelTester.h" />
     <ClInclude Include="VoxelViewshed.h" />
   </ItemGroup>
   <ItemGroup>

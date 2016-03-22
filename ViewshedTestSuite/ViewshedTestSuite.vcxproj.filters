@@ -69,6 +69,12 @@
     <ClCompile Include="Voxelizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VoxelTester.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Voxel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GL_utilities.h">
@@ -117,6 +123,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Voxelizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VoxelTester.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Voxel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
