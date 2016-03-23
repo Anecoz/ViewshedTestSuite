@@ -187,5 +187,8 @@
     <None Include="voxelizer.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="shadowmapSpherical.geom">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

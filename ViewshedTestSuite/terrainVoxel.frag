@@ -13,6 +13,7 @@ uniform vec3 lightArr[100]; // World coordinates
 uniform float maxDist; // Max distance for the viewshed
 uniform int numObs;
 uniform usampler3D voxTex; // 3D-texture of the voxels
+uniform int voxelDim;
 
 const vec3 lightDir = vec3(0.0, 30.0, 256.0);
 const vec3 lightCol = vec3(1.0, 1.0, 1.0);
@@ -44,14 +45,14 @@ void main(void) {
 	vec3 light = calcLight();
 
 	if (numObs > 0) {
-		if (distance(fragPosition, lightArr[numObs/2]) < maxDist) {
+		/*if (distance(fragPosition, lightArr[numObs/2]) < maxDist) {
 			outColor = vec4(visibility, 1.0);
 		}
 		else {
 			outColor = vec4(light*0.3, 1.0);
-		}
-		/*uint voxel = textureLod(voxTex, vec3(fragPosition.x/512.0,fragPosition.y/128.0,fragPosition.z/512.0), 0.0).r;
-		outColor = vec4(voxel);*/
+		}*/
+		uint voxel = textureLod(voxTex, vec3(fragPosition.x/float(voxelDim),fragPosition.y/float(voxelDim),fragPosition.z/float(voxelDim)), 0.0).r;
+		outColor = vec4(voxel);
 	}
 	else {
 		outColor = vec4(light*0.3, 1.0);

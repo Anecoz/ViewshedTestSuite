@@ -1,4 +1,5 @@
 #include "VoxelTester.h"
+#include "Voxelizer.h"
 #include <glm\gtc\matrix_transform.hpp>
 
 VoxelTester::VoxelTester()
@@ -19,9 +20,9 @@ void VoxelTester::init() {
 
 void VoxelTester::createVoxelsFromTexture(GLuint& voxTex) {
 	// Loop through the texture and set voxels in the list to appropriate positions
-	int WIDTH = 512;
-	int HEIGHT = 128;
-	int DEPTH = 512;
+	int WIDTH = Voxelizer::WIDTH;
+	int HEIGHT = Voxelizer::HEIGHT;
+	int DEPTH = Voxelizer::DEPTH;
 
 	GLubyte *testArr = new GLubyte[WIDTH*HEIGHT*DEPTH];
 	glGetTextureImage(voxTex, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, WIDTH*HEIGHT*DEPTH*sizeof(GLubyte), testArr);

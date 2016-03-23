@@ -5,8 +5,12 @@
 #include "Camera.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include <vector>
 #include "Observer.h"
 #include "DrawableModel.h"
+
+typedef std::vector<Observer> ObsList;
+typedef std::vector<glm::vec3> VecList;
 
 // Handles everything to do with viewshed implemented using spherical shadow mapping
 // Also features an implementation of using orthographic shadow mapping (directional)
@@ -19,10 +23,11 @@ public:
 	void initOrtho(Terrain* terrain);
 	void initSpherical(Terrain* terrain, DrawableModel*, Shader&);
 
-	glm::vec3 getPos();
+	VecList getPos();
 
 	GLuint& getDepthMapOrtho();
 	GLuint& getDepthMapSpherical(glm::mat4, Camera*);
+	GLuint& get3DDepthMap(glm::mat4, Camera*);
 
 	const glm::mat4 getOrthoLightSpaceMatrix();
 
@@ -30,15 +35,19 @@ public:
 
 	GLfloat getTargetHeight() const;
 
+	void setObserverList(ObsList);
+
 	// Maximum "view" distance for the viewshed
 	static const GLint VIEWSHED_MAX_DIST = 256;
+	// Maximum number of points in road
+	static const GLint VIEWSHED_MAX_POINTS = 50;
 
 private:
 	// MEMBER VARIABLES
 	GLuint vao;
-	const GLuint SHADOW_WIDTH = 4096;
-	const GLuint SHADOW_HEIGHT = 4096;
-	GLuint depthMap, depthMapFBO;
+	const GLuint SHADOW_WIDTH = 800;
+	const GLuint SHADOW_HEIGHT = 800;
+	GLuint depthMap, depthMapFBO, depthMap3DTexture;
 
 	GLfloat targetHeight;
 
@@ -48,14 +57,15 @@ private:
 	const glm::mat4 orthoLightSpaceMatrix = orthoProjMatrix * orthoLightView;
 
 	// MEMBER OBJECTS
-	Shader shader; // Special shader for getting depth map etc
+	Shader shader, simpleShader; // Special shader for getting depth map etc
 	Terrain* terrain;
-	Observer observer;
-	DrawableModel *terrainModel;
+	ObsList obsList;
+	DrawableModel *terrainModel, *simpleModel;
 
 	// MEMBER METHODS
 	void setupModel();
 	void setupFBO();
+	void setup3DDepthmapTexture();
 
 	void renderOrtho(); // Make this private, because only getDepthMap is needed from outside
 	void renderSpherical(glm::mat4, Camera*); // ditto, also needs proj and cam matrix for rendering the model

@@ -195,6 +195,7 @@
     <None Include="encodePosition.vert" />
     <None Include="shadowmapOrtho.frag" />
     <None Include="shadowmapOrtho.vert" />
+    <None Include="shadowmapSpherical.geom" />
     <None Include="shadowmapSpherical.vert" />
     <None Include="observer.frag" />
     <None Include="observer.vert" />

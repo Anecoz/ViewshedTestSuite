@@ -14,6 +14,7 @@ uniform usampler3D voxTex; // 3D-texture of the voxels
 uniform vec3 lightArr[100]; // Observer positions in world coordinates
 uniform float maxDist; // Max distance for the viewshed
 uniform int numObs;
+uniform int voxelDim;
 
 // For mapping from grayscale to a jet colorspace
 float interpolate( float val, float y0, float x0, float y1, float x1 ) {
@@ -53,9 +54,9 @@ int rayMarch(vec3 lightPos) {
 		//float x = floor(currPos.x)/512.0;			// Get the normalized sampling coords
 		//float y = floor(currPos.y)/128.0;			// Ditto
 		//float z = floor(currPos.z)/512.0;			// Ditto
-		float x = currPos.x/512.0;
-		float y = currPos.y/128.0;
-		float z = currPos.z/512.0;
+		float x = currPos.x/float(voxelDim);
+		float y = currPos.y/float(voxelDim);
+		float z = currPos.z/float(voxelDim);
 		uint voxel = textureLod(voxTex, vec3(x,y,z), 0.0).r;	// Actual voxel at position, either 0 or 1
 
 		if (voxel > 0u) { // float precision...

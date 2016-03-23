@@ -2,8 +2,13 @@
 #include "FileHandler.h"
 #include "SphericShadowmapViewshed.h"
 #include "Game.h"
+#include "Voxelizer.h"
 #include <vector>
 #include <glm/gtc/matrix_transform.hpp>
+
+extern "C" {
+#include "GL_utilities.h" 
+}
 
 using namespace std;
 
@@ -126,6 +131,7 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 		voxelShader.uploadVecArr(lightArr, "lightArr");
 	voxelShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
 	voxelShader.uploadInt(lightArr.size(), "numObs");
+	voxelShader.uploadInt(Voxelizer::WIDTH, "voxelDim");
 	//printf("numObs: %d\n", lightArr.size());
 
 	// Draw
@@ -168,30 +174,47 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	doPostRenderBoilerplate();
 }
 
-void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap, glm::vec3 lightPos, GLfloat obsHeight) {
+void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap3DTexture, VecList lightArr, GLfloat targetHeight) {
 	sphericalShader.activate();
 	terrainModel->prepare();
 	doRenderBoilerplate();
 
 	// Bind texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	orthoShader.uploadTexture(0, "depthMap");
+	printError("before bind tex");
+	glBindTexture(GL_TEXTURE_3D, depthMap3DTexture);
+	printError("before uploadtex");
+	sphericalShader.uploadTexture(0, "depthMap");
+	printError("After uploadtex");
 
 	// Matrix uploads
 	sphericalShader.uploadMatrix(camMatrix, "camMatrix");
 	sphericalShader.uploadMatrix(projMatrix, "projMatrix");
-	sphericalShader.uploadVec(lightPos, "lightPos");
+	sphericalShader.uploadInt(lightArr.size(), "numObs");
+	if (!lightArr.empty())
+		sphericalShader.uploadVecArr(lightArr, "lightArr");
+		//sphericalShader.uploadVec(lightArr.at(0), "lightPos");
+	
 	sphericalShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
-	sphericalShader.uploadFloat(obsHeight, "observerHeight");
+	sphericalShader.uploadFloat(targetHeight, "targetHeight");
 	
 	terrainModel->render();
+	printError("After terrain render");
 
 	sphericalShader.deactivate();
+	printError("before clearteximage");
+	// Clear the texture
+	int level = 0;
+	for (glm::vec3 &point : lightArr) {
+		glClearTexImage(depthMap3DTexture, level, GL_RED, GL_FLOAT, 0);
+		level++;
+	}
+	printError("after clearteximage");
+	//glBindTexture(GL_TEXTURE_2D, 0);
 	doPostRenderBoilerplate();
 
 	// After this, render only the depth map to top right of the screen
-	GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
+	/*GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
 	GLint hpos = Game::WINDOW_SIZE_Y - Game::WINDOW_SIZE_Y / 3.0;
 	glViewport(wpos, hpos, Game::WINDOW_SIZE_X / 3.0, Game::WINDOW_SIZE_Y / 3.0);
 	minimapModel->prepare();
@@ -206,7 +229,7 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	glBindVertexArray(0);
 	modelShader.deactivate();
 	// Reset viewport
-	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
+	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);*/
 }
 
 void Terrain::doRenderBoilerplate() {

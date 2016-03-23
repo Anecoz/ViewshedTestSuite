@@ -1,11 +1,11 @@
 // shadertype=glsl
 
-#version 330
+#version 430
 
 #define PI 3.1415926535897932384626433832795
 
 in vec3 inPosition;
-out vec3 outPos;
+out vec3 v_vertex;
 
 uniform vec3 lightPos; // World coordinates
 uniform float maxDist; // max distance for the viewshed;
@@ -45,7 +45,7 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 void main() {
 	vec3 vertPos = vec3( modelMatrix * vec4(inPosition, 1.0));
 	vec3 sphericalCoords = normalize(vertPos - lightPos);
-	outPos = vec3(StereographicProjectionSimple(sphericalCoords), distance(vertPos, lightPos)/maxDist);
+	v_vertex = vec3(StereographicProjectionSimple(sphericalCoords), distance(vertPos, lightPos)/maxDist);
 
-	gl_Position = vec4(outPos, 1.0);
+	gl_Position = vec4(v_vertex, 1.0);
 }

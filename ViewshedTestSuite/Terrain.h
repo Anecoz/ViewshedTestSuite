@@ -22,7 +22,7 @@ public:
 	~Terrain(); // Destructor needs to take care of freeing all VBOs
 
 	void renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap);
-	void renderSpherical(glm::mat4, glm::mat4, GLuint&, glm::vec3, GLfloat);
+	void renderSpherical(glm::mat4, glm::mat4, GLuint&, VecList, GLfloat);
 	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr);
 
 	void init(DrawableModel*); // Sets up shaders etc

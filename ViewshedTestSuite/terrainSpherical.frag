@@ -5,16 +5,17 @@
 
 in vec3 fragPosition;
 in vec3 fragNormal;
-in vec4 fragPositionLightSpace;
+//in vec4 fragPositionLightSpace;
 //flat in float depth;
 
 out vec4 outColor;
 
 uniform mat4 camMatrix;
-uniform sampler2D depthMap;
-uniform vec3 lightPos; // World coordinates
+uniform sampler3D depthMap;
+uniform vec3[50] lightArr; // World coordinates
+uniform int numObs;
 uniform float maxDist; // Max distance for the viewshed
-uniform float observerHeight; // The height of the observer above ground
+uniform float targetHeight; // The height of the observer above ground
 
 const vec3 lightDir = vec3(0.0, 30.0, 256.0);
 const vec3 lightCol = vec3(1.0, 1.0, 1.0);
@@ -23,6 +24,29 @@ const vec3 lightCol = vec3(1.0, 1.0, 1.0);
 float atan2(in float y, in float x)
 {
     return x == 0.0 ? sign(y)*PI/2 : atan(y, x);
+}
+
+// For mapping from grayscale to a jet colorspace
+float interpolate( float val, float y0, float x0, float y1, float x1 ) {
+    return (val-x0)*(y1-y0)/(x1-x0) + y0;
+}
+
+float base( float val ) {
+    if ( val <= -0.75 ) return 0;
+    else if ( val <= -0.25 ) return interpolate( val, 0.0, -0.75, 1.0, -0.25 );
+    else if ( val <= 0.25 ) return 1.0;
+    else if ( val <= 0.75 ) return interpolate( val, 1.0, 0.25, 0.0, 0.75 );
+    else return 0.0;
+}
+
+float red( float gray ) {
+    return base( gray - 0.5 );
+}
+float green( float gray ) {
+    return base( gray );
+}
+float blue( float gray ) {
+    return base( gray + 0.5 );
 }
 
 // Performs a very simple spherical projection (simply maps the two parameters to x and y)
@@ -50,13 +74,16 @@ vec2 StereographicProjectionCon(vec3 sphericalCoords) {
 	return vec2(sphericalCoords.x/oneSubZ, sphericalCoords.y/oneSubZ) * 0.05f;
 }
 
-float shadowCalculation(vec3 fragPosLightSpace) {
+float shadowCalculation(vec3 fragPosLightSpace, int slice, vec3 lightPos) {
 	vec2 projCoords = StereographicProjectionSimple(fragPosLightSpace);
-	float closestDepth = texture(depthMap, projCoords*0.5 + 0.5).r; 
+	//uint closestDepth = textureLod(depthMap, vec3(projCoords*0.5 + 0.5, slice), 0.0).r;
+	//float f_closestDepth = float(closestDepth)/255.0;
+	projCoords = projCoords*0.5 + 0.5;
+	float f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, slice), 0.0).r;
 	float currentDepth = distance(fragPosition, lightPos)/maxDist;
 	float bias = 0.005; // To get rid of shadow acne
 	
-	float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+	float shadow = currentDepth - bias > f_closestDepth  ? 1.0 : 0.0;
 	return shadow;
 }
 
@@ -80,19 +107,30 @@ vec3 calcLight() {
 	vec3 specular = clamp(specInt*lightCol, 0.0, 1.0);
 
 	// Calculate the shadow, but only if we are within the maximum distance of it
-	float shadow;
-	if (distance(fragPosition, lightPos) < maxDist) {
-		shadow = shadowCalculation(normalize(fragPositionLightSpace.xyz + vec3(0.0, observerHeight, 0.0)));
-	}
-	else {
-		shadow = 0.0;
-	}
+	float shadow = 0.0;
 
-	if (shadow == 1.0) {
-		total = vec3(1.0, 0.0, 0.0);
+	for (int slice = 0; slice < numObs; slice++) {
+		vec3 currLightPos = lightArr[slice];		
+		if (distance(fragPosition, currLightPos) < maxDist) {
+			vec3 fragPosLightSpace = fragPosition - currLightPos;
+			shadow += shadowCalculation(normalize(fragPosLightSpace + vec3(0.0, targetHeight, 0.0)), slice, currLightPos);
+		}
+	}	
+
+	if (shadow > 0.0) {
+		total = 1.0 - vec3(shadow/float(numObs));
+
+		// map to -1,1
+		/*total = total*2.0 -1.0;
+		float r = red(total.x);
+		float g = green(total.x);
+		float b = blue(total.x);
+		total = vec3(r, g, b);*/
+
+		//total = vec3(1.0, 0.0, 0.0);
 	}
 	else {
-		total = (specular*0.5 + diffuse) + ambient;
+		total = 0.3*((specular*0.5 + diffuse) + ambient);
 	}
 	
 	return total;
@@ -101,14 +139,14 @@ vec3 calcLight() {
 void main(void) {
 	// Calculate lighting
 	vec3 light = calcLight();
-	outColor = vec4(light*0.3, 1.0);
-	//outColor = vec4(vec3(depth), 1.0);
+	outColor = vec4(light, 1.0);
 
-	//outColor = vec4(vec3(distance(fragPosition, lightPos)/maxDist), 1.0);
-	//outColor = vec4( vec3(fragPosition.x/512.0), 1.0);
-
-	//vec3 projCoords = fragPositionLightSpace.xyz / fragPositionLightSpace.w;
-	//projCoords = projCoords*0.5 + 0.5;
-	//float test = texture(depthMap, fragPosition.xz/512.0).r;	
-	//outColor = vec4(vec3(test), 1.0);
+	/*if (numObs > 0) {
+		float depth = textureLod(depthMap, vec3(fragPosition.x/512.0, fragPosition.z/512.0, 0), 0.0).r;
+		outColor = vec4(vec3(depth), 1.0);
+	}
+	else {
+		vec3 light = calcLight();
+		outColor = vec4(light*0.3, 1.0);
+	}*/
 }

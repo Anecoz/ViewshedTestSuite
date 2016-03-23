@@ -6,12 +6,15 @@
 
 SphericShadowmapViewshed::SphericShadowmapViewshed()
 {	
-	this->observer.setPos(glm::vec3(256, 20, 256));
-	this->targetHeight = 0.0;
+	this->targetHeight = .0;
 }
 
-glm::vec3 SphericShadowmapViewshed::getPos() {
-	return observer.getPos();
+VecList SphericShadowmapViewshed::getPos() {
+	VecList output;
+	for (Observer &obs : obsList) {
+		output.push_back(obs.getPos());
+	}
+	return output;
 }
 
 GLfloat SphericShadowmapViewshed::getTargetHeight() const {
@@ -32,11 +35,17 @@ void SphericShadowmapViewshed::initOrtho(Terrain* terrain) {
 }
 
 void SphericShadowmapViewshed::initSpherical(Terrain* terrain, DrawableModel *simpleModel, Shader &simpleShader) {
-	shader = Shader("shadowmapSpherical.vert", "shadowmapOrtho.frag");
+	shader = Shader("shadowmapSpherical.vert", "shadowmapOrtho.frag", "shadowmapSpherical.geom");
+	this->simpleModel = simpleModel;
+	this->simpleShader = simpleShader;
 	this->terrain = terrain;
-	observer = Observer(glm::vec3(0, 0, 0), simpleModel, simpleShader);
 	setupModel();
 	setupFBO();
+	setup3DDepthmapTexture();
+}
+
+void SphericShadowmapViewshed::setObserverList(ObsList obsListIn) {
+	this->obsList = obsListIn;
 }
 
 const glm::mat4 SphericShadowmapViewshed::getOrthoLightSpaceMatrix() {
@@ -57,6 +66,11 @@ GLuint& SphericShadowmapViewshed::getDepthMapSpherical(glm::mat4 projMatrix, Cam
 	return depthMap;
 }
 
+GLuint& SphericShadowmapViewshed::get3DDepthMap(glm::mat4 projMatrix, Camera* camera) {
+	renderSpherical(projMatrix, camera);
+	return depthMap3DTexture;
+}
+
 void SphericShadowmapViewshed::renderOrtho() {
 	doRenderBoilerplate();
 	glBindVertexArray(vao);
@@ -71,31 +85,50 @@ void SphericShadowmapViewshed::renderOrtho() {
 }
 
 void SphericShadowmapViewshed::renderSpherical(glm::mat4 projMatrix, Camera* camera) {
-	doRenderBoilerplate();
-	terrainModel->prepare();
-	shader.activate();
+	if (!this->obsList.empty()) {
+		doRenderBoilerplate();
+		//terrainModel->prepare();
+		shader.activate();
 
-	shader.uploadVec(this->observer.getPos(), "lightPos");
-	shader.uploadFloat((GLfloat)VIEWSHED_MAX_DIST, "maxDist");
-	shader.uploadMatrix(glm::mat4(1.0f), "modelMatrix");
-	terrainModel->render();
+		// Bind the 3D texture that we imageStore to
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_3D, depthMap3DTexture);
+		glBindImageTexture(0, depthMap3DTexture, 0, GL_TRUE, 0, GL_WRITE_ONLY, GL_R32F);
+		GLint counter = 0;
+		for (Observer &obs : obsList) {
+			terrainModel->prepare();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			shader.uploadVec(obs.getPos(), "lightPos");
+			shader.uploadInt(counter, "slice");
+			shader.uploadFloat((GLfloat)VIEWSHED_MAX_DIST, "maxDist");
+			shader.uploadMatrix(glm::mat4(1.0f), "modelMatrix");
+			terrainModel->render();
+			counter++;
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		}
+		// To make sure that changes are written before sampling the 3D texture elsewhere
+		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	shader.deactivate();
-	doPostRenderBoilerplate();
+		shader.deactivate();
+		doPostRenderBoilerplate();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Also render observer
-	observer.render(projMatrix, camera->getCameraMatrix());
+		// Also render observer
+		for (Observer &obs : obsList) {
+			obs.render(projMatrix, camera->getCameraMatrix());
+		}
+	}	
 }
 
 void SphericShadowmapViewshed::doRenderBoilerplate() {
 	// Do some boilerplate
-	// Start with setting the viewport (since shadow map is not necessarily same resolution as window)
-	// After that, bind FBO
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	//glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_DEPTH_BUFFER_BIT);
 
 	// Now we can do the render
-	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -104,11 +137,12 @@ void SphericShadowmapViewshed::doRenderBoilerplate() {
 void SphericShadowmapViewshed::doPostRenderBoilerplate() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// reset the viewport out of courtesy. 
 	// And also because it will otherwise lead to ridiculously strange things outside of this class
 	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
 
 void SphericShadowmapViewshed::setupFBO() {
@@ -143,14 +177,31 @@ void SphericShadowmapViewshed::setupFBO() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void SphericShadowmapViewshed::setup3DDepthmapTexture() {
+	glGenTextures(1, &depthMap3DTexture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_3D, depthMap3DTexture);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_R32F, SHADOW_WIDTH, SHADOW_HEIGHT, VIEWSHED_MAX_POINTS, 0, GL_RED, GL_FLOAT, NULL);
+
+	glBindTexture(GL_TEXTURE_3D, 0);
+}
+
 void SphericShadowmapViewshed::setupModel() {
 	terrainModel = terrain->getTerrainModel();
 	terrainModel->addShader(shader);
 }
 
 void SphericShadowmapViewshed::tick(KeyboardHandler* handler) {
-	// Update the observer
-	observer.tick(handler);
+	// Update the observers
+	for (Observer &obs : obsList) {
+		obs.tick(handler);
+	}
 
 	if (handler->keyStates['m'])
 		this->targetHeight += 0.2;

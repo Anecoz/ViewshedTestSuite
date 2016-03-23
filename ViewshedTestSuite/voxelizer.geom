@@ -15,7 +15,7 @@ flat out vec4 f_AABB;
 uniform mat4 MVPx;
 uniform mat4 MVPy;
 uniform mat4 MVPz;
-uniform int voxelWidth;
+uniform int voxelDim;
 
 void main()
 {
@@ -43,8 +43,8 @@ void main()
 	}
 
 	vec4 pos[3];
-	proj = MVPy;
-	f_axis = 2;
+	//proj = MVPz;
+	//f_axis = 3;
 	//transform vertices to clip space
 	pos[0] = proj * gl_in[0].gl_Position;
 	pos[1] = proj * gl_in[1].gl_Position;
@@ -52,8 +52,8 @@ void main()
 
 	//Next we enlarge the triangle to enable conservative rasterization
 	/*vec4 AABB;
-	vec2 hPixel = vec2( 1.0/voxelWidth, 1.0/voxelWidth );
-	float pl = 1.4142135637309 / voxelWidth ;
+	vec2 hPixel = vec2( 1.0/voxelDim, 1.0/voxelDim );
+	float pl = 1.4142135637309 / voxelDim ;
 	
 	//calculate AABB of this triangle
 	AABB.xy = pos[0].xy;

@@ -78,18 +78,17 @@ void Game::init(int& argc, char **argv) {
 
 	terrain.init(simpleModel);
 
-	voxelizer.init(terrain.getTerrainModel());
+	//voxelizer.init(terrain.getTerrainModel());
+	//voxTex = voxelizer.voxelize();
 
-	voxTex = voxelizer.voxelize();
-
-	voxelTester.init();
-	voxelTester.createVoxelsFromTexture(voxTex);
+	//voxelTester.init();
+	//voxelTester.createVoxelsFromTexture(voxTex);
 
 	roadSelector->init(&terrain, simpleModel, simpleShader);
 	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector));
 	//shadowViewshed.initOrtho(&terrain);
-	//shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
-	voxelViewshed.init(simpleModel, simpleShader);
+	shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
+	//voxelViewshed.init(simpleModel, simpleShader);
 	//voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
 
 	glutMainLoop();
@@ -105,34 +104,39 @@ void Game::tick() {
 	// Update camera
 	camera->update(keyHandler);
 
-	// Update the viewshed (steerable position)
 	// Update the observer list, get it from road
 	//voxelViewshed.setObserverList(roadSelector->getObservers());
+	shadowViewshed.setObserverList(roadSelector->getObservers());
+	printError("After set observer list");
 
-	//shadowViewshed.tick(keyHandler);
+	shadowViewshed.tick(keyHandler);
 	//voxelViewshed.tick(keyHandler);
 
 	// Get the shadow map
 	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
 	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
+	GLuint& depthMap3DTexture = shadowViewshed.get3DDepthMap(projMatrix, camera);
+	printError("After set get 3D depth map");
 
 	// DEBUG
 	//voxTex = voxelizer.voxelize();
-	voxelTester.render(projMatrix, camera->getCameraMatrix());
+	//voxelTester.render(projMatrix, camera->getCameraMatrix());
 
 	// Get the encoded position texture to be used in the roadselector
-	//GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
+	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
 	//voxelViewshed.render(projMatrix, camera->getCameraMatrix());
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, shadowViewshed.getOrthoLightSpaceMatrix(), depthMap);
-	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap, shadowViewshed.getPos(), shadowViewshed.getTargetHeight());
-	terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
+	printError("before renderSpherical");
+	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap3DTexture, shadowViewshed.getPos(), shadowViewshed.getTargetHeight());
+	printError("After renderSpherical");
+	//terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos());
 
 	// Render roads
-	//roadSelector->render(projMatrix, camera->getCameraMatrix());
+	roadSelector->render(projMatrix, camera->getCameraMatrix());
 
 	// Swap buffers
 	glutSwapBuffers();

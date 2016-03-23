@@ -29,7 +29,7 @@ GLuint& Voxelizer::voxelize() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Set the viewport to match the texture
-	glViewport(0, 0, WIDTH, HEIGHT);
+	glViewport(0, 0, WIDTH, DEPTH);
 
 	// Disable this stuff
 	glDisable(GL_CULL_FACE);
@@ -47,9 +47,7 @@ GLuint& Voxelizer::voxelize() {
 	shader.uploadMatrix(mvpX, "MVPx");
 	shader.uploadMatrix(mvpY, "MVPy");
 	shader.uploadMatrix(mvpZ, "MVPz");
-	shader.uploadInt(WIDTH, "voxelWidth");
-	shader.uploadInt(HEIGHT, "voxelHeight");
-	shader.uploadInt(DEPTH, "voxelDepth");	
+	shader.uploadInt(WIDTH, "voxelDim");	// width, height and depth are the same, so choose one	
 
 	// Render
 	terrainModel->render();
@@ -85,6 +83,8 @@ GLuint& Voxelizer::voxelize() {
 	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
+	printf("Voxelisation done!\n");
+
 	// Lastly return the texture
 	return voxelTex;
 }
@@ -93,8 +93,8 @@ void Voxelizer::setupTexture() {
 	glGenTextures(1, &voxelTex);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_3D, voxelTex);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);

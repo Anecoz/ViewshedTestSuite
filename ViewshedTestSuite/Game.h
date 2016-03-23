@@ -44,9 +44,9 @@ private:
 	Terrain terrain;
 
 	// VIEWSHED
-	//SphericShadowmapViewshed shadowViewshed;
-	VoxelViewshed voxelViewshed;
-	GLuint voxTex; // Get this once, and not every frame
+	SphericShadowmapViewshed shadowViewshed;
+	//VoxelViewshed voxelViewshed;
+	//GLuint voxTex; // Get this once, and not every frame
 
 	// Projection matrix
 	glm::mat4 projMatrix = glm::perspective(45.0f, 1.0f / 1.0f, 0.1f, 2000.0f);
