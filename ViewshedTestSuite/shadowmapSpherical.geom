@@ -5,6 +5,8 @@
 layout ( triangles ) in;
 layout ( triangle_strip, max_vertices = 3 ) out;
 
+uniform int slice;
+
 in vec3 v_vertex[];
 
 out vec3 outPos;
@@ -17,35 +19,20 @@ void main() {
 	float ph3 = v_vertex[2].x;
 
 	// Phi is scaled between -1,1 in vert stage
-	float limit = 1.95;
+	float limit = 1.7;
 	if (abs(ph1-ph2) > limit || abs(ph1-ph3) > limit || abs(ph2-ph3) > limit) {
-		// Translate the primitive far off
-		gl_Position = vec4(20*v_vertex[0], 1.0);
-		outPos = 20*v_vertex[0];
-		EmitVertex();
-
-		gl_Position = vec4(20*v_vertex[1], 1.0);
-		outPos = 20*v_vertex[1];
-		EmitVertex();
-
-		gl_Position = vec4(20*v_vertex[2], 1.0);
-		outPos = 20*v_vertex[2];
-		EmitVertex();
-
+		// Just don't output anything, effectively removing the primitive
 		EndPrimitive();
 	}
 	else {
-		gl_Position = gl_in[0].gl_Position;
-		outPos = gl_in[0].gl_Position.xyz;
-		EmitVertex();
 
-		gl_Position = gl_in[1].gl_Position;
-		outPos = gl_in[1].gl_Position.xyz;
-		EmitVertex();
-
-		gl_Position = gl_in[2].gl_Position;
-		outPos = gl_in[2].gl_Position.xyz;
-		EmitVertex();
+		// Set which layer of the depth attachment 2D arr texture to write to, and output vertices (basically pass-through)
+		for (int i = 0; i < 3; i++) {
+			gl_Layer = slice;
+			gl_Position = gl_in[i].gl_Position;
+			outPos = gl_in[i].gl_Position.xyz;
+			EmitVertex();
+		}
 
 		EndPrimitive();
 	}

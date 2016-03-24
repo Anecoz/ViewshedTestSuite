@@ -23,10 +23,13 @@ public:
 
 	void tick(KeyboardHandler*);
 
+	void setColor(glm::vec3);
+
 private:
 	// MEMBER VARIABLES
 	glm::vec3 pos;
 	Shader shader;
+	glm::vec3 color = glm::vec3(1.0, 0.0, 0.0);
 
 	// MEMBER OBJECTS
 	DrawableModel *model;

@@ -3,6 +3,7 @@
 #include "Terrain.h"
 #include "KeyboardHandler.h"
 #include "Camera.h"
+#include "ViewshedProgressKeeper.h"
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <vector>
@@ -24,18 +25,23 @@ public:
 	void initSpherical(Terrain* terrain, DrawableModel*, Shader&);
 
 	VecList getPos();
+	VecList getCompletedObsPosArr();
 
 	GLuint& getDepthMapOrtho();
 	GLuint& getDepthMapSpherical(glm::mat4, Camera*);
-	GLuint& get3DDepthMap(glm::mat4, Camera*);
+	GLuint& get3DDepthMap();
 
 	const glm::mat4 getOrthoLightSpaceMatrix();
 
-	void tick(KeyboardHandler*);
+	void tick(KeyboardHandler*, GLfloat elapsedFrameTime);
 
 	GLfloat getTargetHeight() const;
 
 	void setObserverList(ObsList);
+
+	void renderObservers(glm::mat4&, glm::mat4&);
+
+	void startCalc(ObsList);
 
 	// Maximum "view" distance for the viewshed
 	static const GLint VIEWSHED_MAX_DIST = 256;
@@ -45,9 +51,9 @@ public:
 private:
 	// MEMBER VARIABLES
 	GLuint vao;
-	const GLuint SHADOW_WIDTH = 800;
-	const GLuint SHADOW_HEIGHT = 800;
-	GLuint depthMap, depthMapFBO, depthMap3DTexture;
+	const GLuint SHADOW_WIDTH = 2048;
+	const GLuint SHADOW_HEIGHT = 2048;
+	GLuint depthMap, depthMapFBO, depthMap3DTexture, depthMap2DArr;
 
 	GLfloat targetHeight;
 
@@ -60,7 +66,9 @@ private:
 	Shader shader, simpleShader; // Special shader for getting depth map etc
 	Terrain* terrain;
 	ObsList obsList;
+	ObsList completedObservers;	// Observers that have had their viewshed calculated
 	DrawableModel *terrainModel, *simpleModel;
+	ViewshedProgressKeeper progressKeeper;
 
 	// MEMBER METHODS
 	void setupModel();
@@ -68,7 +76,7 @@ private:
 	void setup3DDepthmapTexture();
 
 	void renderOrtho(); // Make this private, because only getDepthMap is needed from outside
-	void renderSpherical(glm::mat4, Camera*); // ditto, also needs proj and cam matrix for rendering the model
+	void renderSpherical(GLint num); // ditto
 	void doRenderBoilerplate(); // Some generic code that must be done either way
 	void doPostRenderBoilerplate(); // ditto but post-render
 };

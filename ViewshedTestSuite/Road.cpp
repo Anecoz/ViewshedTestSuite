@@ -73,7 +73,7 @@ void Road::tessellate() {
 }
 
 void Road::buildNewModel() {
-	// Free old stuff first (in case there is somethign, else we lose the handle)
+	// Free old stuff first (in case there is something, else we lose the handle)
 	free(vertexArray);
 	free(indexArray);
 

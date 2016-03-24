@@ -181,11 +181,9 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 
 	// Bind texture
 	glActiveTexture(GL_TEXTURE0);
-	printError("before bind tex");
-	glBindTexture(GL_TEXTURE_3D, depthMap3DTexture);
-	printError("before uploadtex");
+	//glBindTexture(GL_TEXTURE_3D, depthMap3DTexture);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, depthMap3DTexture);
 	sphericalShader.uploadTexture(0, "depthMap");
-	printError("After uploadtex");
 
 	// Matrix uploads
 	sphericalShader.uploadMatrix(camMatrix, "camMatrix");
@@ -199,17 +197,14 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	sphericalShader.uploadFloat(targetHeight, "targetHeight");
 	
 	terrainModel->render();
-	printError("After terrain render");
 
 	sphericalShader.deactivate();
-	printError("before clearteximage");
 	// Clear the texture
 	int level = 0;
-	for (glm::vec3 &point : lightArr) {
-		glClearTexImage(depthMap3DTexture, level, GL_RED, GL_FLOAT, 0);
-		level++;
-	}
-	printError("after clearteximage");
+	//for (glm::vec3 &point : lightArr) {
+		//glClearTexImage(depthMap3DTexture, level, GL_RED, GL_FLOAT, 0);
+		//level++;
+	//}
 	//glBindTexture(GL_TEXTURE_2D, 0);
 	doPostRenderBoilerplate();
 

@@ -3,6 +3,7 @@
 #include "DrawableModel.h"
 #include "Road.h"
 #include "Observer.h"
+#include "SphericShadowmapViewshed.h"
 #include <GL\glew.h>
 #include <GL\freeglut.h>
 #include <vector>
@@ -21,11 +22,11 @@ Maybe this class should then hold the viewshed? makes sense...
 class RoadSelector
 {
 public:
-	RoadSelector(Terrain*, DrawableModel*, Shader& shader);
+	RoadSelector(Terrain*, SphericShadowmapViewshed*, DrawableModel*, Shader& shader);
 	RoadSelector();
 	~RoadSelector();
 
-	void init(Terrain*, DrawableModel*, Shader&);
+	void init(Terrain*, SphericShadowmapViewshed*, DrawableModel*, Shader&);
 
 	void mouseDown(GLint button, GLint x, GLint y);
 	void mouseUp(GLint button, GLint x, GLint y);
@@ -39,8 +40,9 @@ public:
 
 private:
 	// MEMBER OBJECTS
-	PointList pointList;	// Container for the user selected road points (different from observers)
-	Terrain *terrain;		// So that we can get the height at the mouse click
+	PointList pointList;						// Container for the user selected road points (different from observers)
+	Terrain *terrain;							// So that we can get the height at the mouse click
+	SphericShadowmapViewshed *shadowViewshed;	// To tell the viewshed to start calculating when we're building a road
 	Road road;
 
 	GLuint posTex = -1;		// Texture that holds positional encoding in its RGB-values

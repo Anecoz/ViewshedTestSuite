@@ -164,6 +164,7 @@
     <ClCompile Include="SphericShadowmapViewshed.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
+    <ClCompile Include="ViewshedProgressKeeper.cpp" />
     <ClCompile Include="Voxel.cpp" />
     <ClCompile Include="VoxelContainer.cpp" />
     <ClCompile Include="Voxelizer.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="SphericShadowmapViewshed.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainGenerator.h" />
+    <ClInclude Include="ViewshedProgressKeeper.h" />
     <ClInclude Include="Voxel.h" />
     <ClInclude Include="VoxelContainer.h" />
     <ClInclude Include="Voxelizer.h" />

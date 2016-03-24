@@ -21,8 +21,8 @@ RoadSelector::RoadSelector()
 	terrain = nullptr;
 }
 
-RoadSelector::RoadSelector(Terrain* terrain, DrawableModel *simpleModel, Shader &shader) {	
-	init(terrain, simpleModel, shader);
+RoadSelector::RoadSelector(Terrain* terrain, SphericShadowmapViewshed* shadowViewshed, DrawableModel *simpleModel, Shader &shader) {
+	init(terrain, shadowViewshed, simpleModel, shader);
 }
 
 RoadSelector::~RoadSelector() {
@@ -36,10 +36,11 @@ void RoadSelector::setPosTex(GLuint& tex) {
 	posTex = tex;
 }
 
-void RoadSelector::init(Terrain* terrain, DrawableModel *simpleModel, Shader &shader) {
+void RoadSelector::init(Terrain* terrain, SphericShadowmapViewshed* shadowViewshed, DrawableModel *simpleModel, Shader &shader) {
 	::instance = this;
 	glutMouseFunc(::mouseFunc);
 	this->terrain = terrain;
+	this->shadowViewshed = shadowViewshed;
 	this->pointModel = simpleModel;
 	this->shader = shader;
 	posPixels = (GLfloat*)malloc(sizeof(GLfloat) * 4 * Game::WINDOW_SIZE_X * Game::WINDOW_SIZE_Y);
@@ -95,15 +96,15 @@ void RoadSelector::mouseDown(GLint button, GLint x, GLint y) {
 	GLfloat g = posPixels[3 * (x + Game::WINDOW_SIZE_X*y) + 1];
 	GLfloat b = posPixels[3 * (x + Game::WINDOW_SIZE_X*y) + 2];
 
-	GLfloat posX = r*512.0;
-	GLfloat posY = g*128.0;
-	GLfloat posZ = b*512.0;
+	GLfloat posX = r*(GLfloat)Terrain::TILE_SIZE;
+	GLfloat posY = g*(GLfloat)Terrain::TERRAIN_HEIGHT;
+	GLfloat posZ = b*(GLfloat)Terrain::TILE_SIZE;
 
 	Point worldPoint = { posX, posY, posZ };
 
 	switch (button) {
 	case 0:
-		pointList.push_back(Point(posX, posY + 3.0, posZ));
+		pointList.push_back(Point(posX, posY + 5.0, posZ));
 		break;
 	case 1:
 		break;
@@ -132,6 +133,8 @@ void RoadSelector::startBuildRoad() {
 	// Check if we have at least one point, else do nothing
 	if (pointList.size() > 0) {
 		road.build(pointList);
+		// Notify viewshed that it should start calculating
+		shadowViewshed->startCalc(road.getObservers());
 
 		// The above method makes a copy of the list, so discard the list here
 		PointList().swap(pointList); // effectively deallocates memory. Looks ugly as hell, blame the language and not me

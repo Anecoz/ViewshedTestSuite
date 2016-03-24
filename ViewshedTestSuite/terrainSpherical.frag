@@ -11,7 +11,7 @@ in vec3 fragNormal;
 out vec4 outColor;
 
 uniform mat4 camMatrix;
-uniform sampler3D depthMap;
+uniform sampler2DArray depthMap;
 uniform vec3[50] lightArr; // World coordinates
 uniform int numObs;
 uniform float maxDist; // Max distance for the viewshed
@@ -74,12 +74,12 @@ vec2 StereographicProjectionCon(vec3 sphericalCoords) {
 	return vec2(sphericalCoords.x/oneSubZ, sphericalCoords.y/oneSubZ) * 0.05f;
 }
 
-float shadowCalculation(vec3 fragPosLightSpace, int slice, vec3 lightPos) {
+float shadowCalculation(vec3 fragPosLightSpace, int ind, vec3 lightPos) {
 	vec2 projCoords = StereographicProjectionSimple(fragPosLightSpace);
 	//uint closestDepth = textureLod(depthMap, vec3(projCoords*0.5 + 0.5, slice), 0.0).r;
 	//float f_closestDepth = float(closestDepth)/255.0;
 	projCoords = projCoords*0.5 + 0.5;
-	float f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, slice), 0.0).r;
+	float f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, ind), 0.0).r;
 	float currentDepth = distance(fragPosition, lightPos)/maxDist;
 	float bias = 0.005; // To get rid of shadow acne
 	
@@ -109,13 +109,13 @@ vec3 calcLight() {
 	// Calculate the shadow, but only if we are within the maximum distance of it
 	float shadow = 0.0;
 
-	for (int slice = 0; slice < numObs; slice++) {
-		vec3 currLightPos = lightArr[slice];		
+	for (int ind = 0; ind < numObs; ind++) {
+		vec3 currLightPos = lightArr[ind];			
 		if (distance(fragPosition, currLightPos) < maxDist) {
 			vec3 fragPosLightSpace = fragPosition - currLightPos;
-			shadow += shadowCalculation(normalize(fragPosLightSpace + vec3(0.0, targetHeight, 0.0)), slice, currLightPos);
+			shadow += shadowCalculation(normalize(fragPosLightSpace + vec3(0.0, targetHeight, 0.0)), ind, currLightPos);
 		}
-	}	
+	}
 
 	if (shadow > 0.0) {
 		total = 1.0 - vec3(shadow/float(numObs));
@@ -130,7 +130,12 @@ vec3 calcLight() {
 		//total = vec3(1.0, 0.0, 0.0);
 	}
 	else {
-		total = 0.3*((specular*0.5 + diffuse) + ambient);
+		if (numObs > 0 && distance(fragPosition, lightArr[numObs/2]) < maxDist) {
+			total = vec3(1.0, 1.0, 1.0);
+		}
+		else {
+			total = 0.3*((specular*0.5 + diffuse) + ambient);
+		}		
 	}
 	
 	return total;
@@ -141,12 +146,12 @@ void main(void) {
 	vec3 light = calcLight();
 	outColor = vec4(light, 1.0);
 
-	/*if (numObs > 0) {
-		float depth = textureLod(depthMap, vec3(fragPosition.x/512.0, fragPosition.z/512.0, 0), 0.0).r;
+	/*if (numObs > 1) {
+		float depth = textureLod(depthMap, vec3(fragPosition.x/512.0, fragPosition.z/512.0, 1), 0.0).r;
 		outColor = vec4(vec3(depth), 1.0);
 	}
 	else {
 		vec3 light = calcLight();
-		outColor = vec4(light*0.3, 1.0);
+		outColor = vec4(light, 1.0);
 	}*/
 }

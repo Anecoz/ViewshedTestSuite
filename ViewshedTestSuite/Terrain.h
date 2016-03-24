@@ -34,6 +34,10 @@ public:
 	const GLuint getTriangleCount();
 	VoxelContainer& getVoxels();
 
+	// MEMBER CONSTANTS
+	static const GLint TILE_SIZE = 512;
+	static const GLint TERRAIN_HEIGHT = 128;
+
 private:
 	// MEMBER VARIABLES
 	Shader orthoShader, sphericalShader, modelShader, voxelShader, encodePosShader;
@@ -42,7 +46,6 @@ private:
 
 	VoxelContainer voxels;
 
-	const GLfloat TILE_SIZE = 512.0;
 	const GLint VERTEX_COUNT = TILE_SIZE * TILE_SIZE;
 	const GLuint TRIANGLE_COUNT = 2 * (TILE_SIZE - 1) * (TILE_SIZE - 1);
 
