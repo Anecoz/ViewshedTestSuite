@@ -66,8 +66,8 @@ void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix
 	terrainModel->prepare();
 	encodePosShader.activate();
 
-	encodePosShader.uploadMatrix(camMatrix, "camMatrix");
 	encodePosShader.uploadMatrix(projMatrix, "projMatrix");
+	encodePosShader.uploadMatrix(camMatrix, "camMatrix");	
 	encodePosShader.uploadMatrix(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)), "modelMatrix");
 
 	// Do the draw call, will render to the texture posTex
@@ -76,7 +76,7 @@ void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix
 	// Loop over all the road points, to get them encoded aswell
 	PointList pointList = roadSelector->getPointList();
 
-	glDisable(GL_CULL_FACE);
+	/*glDisable(GL_CULL_FACE);
 	for (glm::vec3 &point : pointList) {
 		simpleModel->prepare();
 
@@ -86,7 +86,7 @@ void Terrain::renderPositionEncoding(glm::mat4& camMatrix, glm::mat4& projMatrix
 		encodePosShader.uploadMatrix(translationMatrix, "modelMatrix");
 
 		simpleModel->render();
-	}
+	}*/
 
 	doPostRenderBoilerplate();
 	encodePosShader.deactivate();

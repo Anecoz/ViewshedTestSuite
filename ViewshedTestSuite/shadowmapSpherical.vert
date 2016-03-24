@@ -21,8 +21,8 @@ float atan2(in float y, in float x)
 vec2 StereographicProjectionCon(vec3 sphericalCoords) {
 
 	//float eps = 0.00000005;
-	float oneSubZ = 1.0f - sphericalCoords.z;// + eps;
-	return vec2(sphericalCoords.x/oneSubZ, sphericalCoords.y/oneSubZ) * 0.05f;
+	float oneSubY = 1.0f - sphericalCoords.y;// + eps;
+	return vec2(sphericalCoords.x/oneSubY, sphericalCoords.z/oneSubY);
 }
 
 // Performs a very simple spherical projection (simply maps the two parameters to x and y)
@@ -45,7 +45,7 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 void main() {
 	vec3 vertPos = vec3( modelMatrix * vec4(inPosition, 1.0));
 	vec3 sphericalCoords = normalize(vertPos - lightPos);
-	v_vertex = vec3(StereographicProjectionSimple(sphericalCoords), distance(vertPos, lightPos)/maxDist);
+	v_vertex = vec3(StereographicProjectionCon(sphericalCoords), distance(vertPos, lightPos)/maxDist);
 
 	gl_Position = vec4(v_vertex, 1.0);
 }

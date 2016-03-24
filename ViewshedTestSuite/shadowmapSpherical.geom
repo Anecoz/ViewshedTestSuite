@@ -14,7 +14,7 @@ out vec3 outPos;
 void main() {
 	// Check whether the triangle is too long (in theta-phi-space)
 	// Phi is the one needed to be checked, corresponds to x-value of the vertex
-	float ph1 = v_vertex[0].x;
+	/*float ph1 = v_vertex[0].x;
 	float ph2 = v_vertex[1].x;
 	float ph3 = v_vertex[2].x;
 
@@ -24,7 +24,7 @@ void main() {
 		// Just don't output anything, effectively removing the primitive
 		EndPrimitive();
 	}
-	else {
+	else {*/
 
 		// Set which layer of the depth attachment 2D arr texture to write to, and output vertices (basically pass-through)
 		for (int i = 0; i < 3; i++) {
@@ -35,5 +35,5 @@ void main() {
 		}
 
 		EndPrimitive();
-	}
+	//}
 }

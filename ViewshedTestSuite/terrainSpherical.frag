@@ -70,12 +70,12 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 vec2 StereographicProjectionCon(vec3 sphericalCoords) {
 
 	//float eps = 0.00000005;
-	float oneSubZ = 1.0f - sphericalCoords.z;// + eps;
-	return vec2(sphericalCoords.x/oneSubZ, sphericalCoords.y/oneSubZ) * 0.05f;
+	float oneSubY = 1.0f - sphericalCoords.y;// + eps;
+	return vec2(sphericalCoords.x/oneSubY, sphericalCoords.z/oneSubY);
 }
 
 float shadowCalculation(vec3 fragPosLightSpace, int ind, vec3 lightPos) {
-	vec2 projCoords = StereographicProjectionSimple(fragPosLightSpace);
+	vec2 projCoords = StereographicProjectionCon(fragPosLightSpace);
 	//uint closestDepth = textureLod(depthMap, vec3(projCoords*0.5 + 0.5, slice), 0.0).r;
 	//float f_closestDepth = float(closestDepth)/255.0;
 	projCoords = projCoords*0.5 + 0.5;
@@ -146,8 +146,8 @@ void main(void) {
 	vec3 light = calcLight();
 	outColor = vec4(light, 1.0);
 
-	/*if (numObs > 1) {
-		float depth = textureLod(depthMap, vec3(fragPosition.x/512.0, fragPosition.z/512.0, 1), 0.0).r;
+	/*if (numObs > 0) {
+		float depth = textureLod(depthMap, vec3(fragPosition.x/512.0, fragPosition.z/512.0, 0), 0.0).r;
 		outColor = vec4(vec3(depth), 1.0);
 	}
 	else {
