@@ -79,15 +79,6 @@ int signum(float val) {
 	else {return 1;}
 }
 
-float calcMaxT(float dir, int i_coord, float f_coord) {
-	if (dir < 0.0) {
-		return (float(i_coord) - f_coord)/dir;
-	}
-	else {
-		return (float(voxelDim) + float(i_coord) - f_coord)/dir;
-	}
-}
-
 float intbounds(float s, float ds) 
 { 
 	return (ds > 0? ceil(s)-s: s-floor(s)) / abs(ds); 
@@ -115,10 +106,6 @@ int amanatideTraverse(vec3 lightPos) {
 	int StepX = signum(dx);
 	int StepY = signum(dy);
 	int StepZ = signum(dz);
-
-	//float tMaxX = calcMaxT(dx, X, Ox);
-	//float tMaxY = calcMaxT(dy, Y, Oy);
-	//float tMaxZ = calcMaxT(dz, Z, Oz);
 
 	float tMaxX = intbounds(Ox, dx);
 	float tMaxY = intbounds(Oy, dy);

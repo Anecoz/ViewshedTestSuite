@@ -3,6 +3,10 @@
 #include <GL\freeglut.h>
 #include <iostream>
 
+// Extension enums for getting available VRAM
+#define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX    0x9048
+#define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
+
 // GLOBALS, they are needed in order for OpenGL to play nicely with us
 Game *gameInstance;
 
@@ -98,6 +102,13 @@ void Game::init(int& argc, char **argv) {
 }
 
 void Game::tick() {
+	//int answer[4];
+	//glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, answer);
+	//printf("Total mem avail: %d\n", answer[0]);
+
+	//glGetIntegerv(GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, answer);
+	//printf("Curr mem avail: %d\n", answer[0]);
+
 	GLfloat frameStart = (GLfloat)glutGet(GLUT_ELAPSED_TIME);
 	// Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
