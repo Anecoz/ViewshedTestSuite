@@ -16,8 +16,8 @@ uniform int voxelDim;
 
 void main()
 {
-    /*if( f_pos.x < f_AABB.x || f_pos.y < f_AABB.y || f_pos.x > f_AABB.z || f_pos.y > f_AABB.w )
-	   discard ;*/
+    if( f_pos.x < f_AABB.x || f_pos.y < f_AABB.y || f_pos.x > f_AABB.z || f_pos.y > f_AABB.w )
+	   discard ;
 
     uvec4 data = uvec4(6);	// Something positive and != 0
 	ivec4 temp = ivec4( gl_FragCoord.x, gl_FragCoord.y, voxelDim * gl_FragCoord.z, 0 ) ;
@@ -26,13 +26,13 @@ void main()
 	{
 	    texcoord.x = temp.z;
 		texcoord.y = temp.y;
-		texcoord.z = voxelDim - (voxelDim - temp.x);
+		texcoord.z = temp.x;
 	}
 	else if( f_axis == 2 )
     {
-		texcoord.x = voxelDim - temp.x;
+		texcoord.x = temp.x;
 		texcoord.y = temp.z;
-	    texcoord.z = voxelDim - temp.y;
+	    texcoord.z = temp.y;
 	}
 	else
 	{

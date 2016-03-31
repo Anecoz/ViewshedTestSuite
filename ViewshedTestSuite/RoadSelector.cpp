@@ -25,6 +25,10 @@ RoadSelector::RoadSelector(Terrain* terrain, SphericShadowmapViewshed* shadowVie
 	init(terrain, shadowViewshed, simpleModel, shader);
 }
 
+RoadSelector::RoadSelector(Terrain* terrain, DrawableModel *simpleModel, Shader &shader) {
+	init(terrain, simpleModel, shader);
+}
+
 RoadSelector::~RoadSelector() {
 	delete instance;
 	instance = nullptr;
@@ -41,6 +45,16 @@ void RoadSelector::init(Terrain* terrain, SphericShadowmapViewshed* shadowViewsh
 	glutMouseFunc(::mouseFunc);
 	this->terrain = terrain;
 	this->shadowViewshed = shadowViewshed;
+	this->pointModel = simpleModel;
+	this->shader = shader;
+	posPixels = (GLfloat*)malloc(sizeof(GLfloat) * 4 * Game::WINDOW_SIZE_X * Game::WINDOW_SIZE_Y);
+	road.init(simpleModel, shader);
+}
+
+void RoadSelector::init(Terrain* terrain, DrawableModel *simpleModel, Shader &shader) {
+	::instance = this;
+	glutMouseFunc(::mouseFunc);
+	this->terrain = terrain;
 	this->pointModel = simpleModel;
 	this->shader = shader;
 	posPixels = (GLfloat*)malloc(sizeof(GLfloat) * 4 * Game::WINDOW_SIZE_X * Game::WINDOW_SIZE_Y);
@@ -134,7 +148,8 @@ void RoadSelector::startBuildRoad() {
 	if (pointList.size() > 0) {
 		road.build(pointList);
 		// Notify viewshed that it should start calculating
-		shadowViewshed->startCalc(road.getObservers());
+		if (shadowViewshed != nullptr)
+			shadowViewshed->startCalc(road.getObservers());
 
 		// The above method makes a copy of the list, so discard the list here
 		PointList().swap(pointList); // effectively deallocates memory. Looks ugly as hell, blame the language and not me

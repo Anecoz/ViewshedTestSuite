@@ -23,10 +23,12 @@ class RoadSelector
 {
 public:
 	RoadSelector(Terrain*, SphericShadowmapViewshed*, DrawableModel*, Shader& shader);
+	RoadSelector(Terrain*, DrawableModel*, Shader&);
 	RoadSelector();
 	~RoadSelector();
 
 	void init(Terrain*, SphericShadowmapViewshed*, DrawableModel*, Shader&);
+	void init(Terrain*, DrawableModel*, Shader&);
 
 	void mouseDown(GLint button, GLint x, GLint y);
 	void mouseUp(GLint button, GLint x, GLint y);
@@ -42,7 +44,7 @@ private:
 	// MEMBER OBJECTS
 	PointList pointList;						// Container for the user selected road points (different from observers)
 	Terrain *terrain;							// So that we can get the height at the mouse click
-	SphericShadowmapViewshed *shadowViewshed;	// To tell the viewshed to start calculating when we're building a road
+	SphericShadowmapViewshed *shadowViewshed = nullptr;	// To tell the viewshed to start calculating when we're building a road
 	Road road;
 
 	GLuint posTex = -1;		// Texture that holds positional encoding in its RGB-values

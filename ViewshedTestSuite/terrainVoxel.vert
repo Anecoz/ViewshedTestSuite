@@ -6,7 +6,7 @@ in vec3 inPosition;
 in vec3 inNormal;
 out vec3 fragPosition;
 out vec3 fragNormal;
-out vec3 visibility;
+//out vec3 visibility;
 
 uniform mat4 projMatrix;
 uniform mat4 camMatrix;
@@ -42,7 +42,7 @@ float blue( float gray ) {
 // returns 1 if we are visible and 0 if we are invisible
 int rayMarch(vec3 lightPos) {	
 	// Calculate if this particular terrain fragment is visible from the observer
-	float increment = 2.;
+	float increment = 1.5;
 	vec3 direction = normalize(lightPos - inPosition);
 	vec3 currPos = inPosition;
 	float minDist = 3.0;
@@ -76,7 +76,7 @@ void main(void) {
 	fragPosition = inPosition;
 	fragNormal = inNormal;
 
-	if (numObs > 0) {
+	/*if (numObs > 0) {
 		// Do a clipping check
 		if (any(lessThan(gl_Position.xyz, vec3(-gl_Position.w))) ||
 		any(greaterThan(gl_Position.xyz, vec3(gl_Position.w))))
@@ -95,15 +95,16 @@ void main(void) {
 				float value = float(totalVis) / float(numObs);
 
 				// map to -1,1
-				value = value*2.0 -1.0;
-				float r = red(value);
-				float g = green(value);
-				float b = blue(value);
-				visibility = vec3(r, g, b);
+				//value = value*2.0 -1.0;
+				//float r = red(value);
+				//float g = green(value);
+				//float b = blue(value);
+				//visibility = vec3(r, g, b);
+				visibility = vec3(value, value, value);
 			}
 			else {
 				visibility = vec3(0, 0, 0);
 			}
 		}	
-	}	
+	}	*/
 }

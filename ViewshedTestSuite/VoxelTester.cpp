@@ -18,6 +18,21 @@ void VoxelTester::init() {
 	setupModel();
 }
 
+void VoxelTester::createVoxelsFromContainer(VoxelContainer &voxels) {
+	int WIDTH = voxels.getDim();
+	int HEIGHT = voxels.getHeight();
+	int DEPTH = voxels.getDim();
+
+	for (int x = 0; x < WIDTH; x++)
+	for (int y = 0; y < HEIGHT; y++)
+	for (int z = 0; z < DEPTH; z++) {
+		GLfloat val = voxels.getValue(x, y, z);
+		if (val > 0.0) {
+			voxelList.push_back(Voxel(glm::vec3(x, y, z)));
+		}
+	}
+}
+
 void VoxelTester::createVoxelsFromTexture(GLuint& voxTex) {
 	// Loop through the texture and set voxels in the list to appropriate positions
 	int WIDTH = Voxelizer::WIDTH;
@@ -46,9 +61,11 @@ void VoxelTester::createVoxelsFromTexture(GLuint& voxTex) {
 void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	// Loop through all voxel objects and draw em
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 	shader.activate();
+	glm::vec3 white = {1.0, 1.0, 1.0};
 
 	for (Voxel &voxel : voxelList) {
 		voxelModel->prepare();
@@ -56,6 +73,7 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 		// Uploads
 		shader.uploadMatrix(projMatrix, "projMatrix");
 		shader.uploadMatrix(camMatrix, "camMatrix");
+		shader.uploadVec(white, "color");
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());
 		shader.uploadMatrix(translationMatrix, "modelMatrix");
 

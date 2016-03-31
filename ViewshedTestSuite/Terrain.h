@@ -23,7 +23,7 @@ public:
 
 	void renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 lightSpaceMatrix, GLuint& depthmap);
 	void renderSpherical(glm::mat4, glm::mat4, GLuint&, VecList, GLfloat);
-	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr);
+	void renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr, GLfloat height);
 
 	void init(DrawableModel*); // Sets up shaders etc
 

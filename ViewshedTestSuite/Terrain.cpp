@@ -114,7 +114,7 @@ void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 l
 	doPostRenderBoilerplate();
 }
 
-void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr) {
+void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr, GLfloat targetHeight) {
 	doRenderBoilerplate();
 	terrainModel->prepare();
 	voxelShader.activate();
@@ -125,6 +125,7 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	voxelShader.uploadTexture(0, "voxTex");	
 
 	// Matrix uploads
+	voxelShader.uploadFloat(targetHeight, "targetHeight");
 	voxelShader.uploadMatrix(camMatrix, "camMatrix");
 	voxelShader.uploadMatrix(projMatrix, "projMatrix");
 	if (!lightArr.empty())

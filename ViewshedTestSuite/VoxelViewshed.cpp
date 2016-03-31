@@ -38,6 +38,10 @@ VecList VoxelViewshed::getPos() {
 	return output;
 }
 
+GLfloat VoxelViewshed::getTargetHeight() {
+	return this->targetHeight;
+}
+
 GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
 	GLubyte *arr = voxels.getArray();
 
@@ -83,5 +87,14 @@ GLuint& VoxelViewshed::getVoxelTexture(VoxelContainer& voxels) {
 void VoxelViewshed::tick(KeyboardHandler* handler) {
 	for (Observer &obs : obsList) {
 		obs.tick(handler);
+	}
+
+	if (handler->keyStates['m']) {
+		this->targetHeight += 0.2;
+		printf("Target height is now %f\n", this->targetHeight);
+	}
+	else if (handler->keyStates['n']) {
+		this->targetHeight -= 0.2;
+		printf("Target height is now %f\n", this->targetHeight);
 	}
 }

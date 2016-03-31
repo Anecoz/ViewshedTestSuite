@@ -3,6 +3,7 @@
 #include "DrawableModel.h"
 #include "Shader.h"
 #include "Voxel.h"
+#include "VoxelContainer.h"
 #include <GL\glew.h>
 #include <vector>
 #include <GL\freeglut.h>
@@ -19,6 +20,7 @@ public:
 	void init(); // Initializes the model and shader
 
 	void createVoxelsFromTexture(GLuint&);
+	void createVoxelsFromContainer(VoxelContainer&);
 
 	void render(glm::mat4& projMatrix, glm::mat4& camMatrix);
 

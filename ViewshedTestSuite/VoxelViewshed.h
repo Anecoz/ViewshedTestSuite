@@ -22,6 +22,7 @@ public:
 	void init(DrawableModel *simpleModel, Shader &simpleShader);
 	void render(glm::mat4& projMatrix, glm::mat4 &camMatrix);
 	VecList getPos();
+	GLfloat getTargetHeight();
 
 	void addObserver(Point);
 	void setObserverList(ObsList);
@@ -33,6 +34,7 @@ private:
 	// MEMBER VARIABLES
 	DrawableModel *simpleModel;
 	Shader simpleShader;
+	GLfloat targetHeight = 1.0;
 
 	// MEMBER OBJECTS
 	ObsList obsList;
