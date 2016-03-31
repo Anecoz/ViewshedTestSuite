@@ -45,8 +45,8 @@ vec3 calcLight() {
 int rayMarch(vec3 lightPos) {	
 	// Calculate if this particular terrain fragment is visible from the observer
 	float increment = 2.0;
-	vec3 direction = normalize(lightPos - fragPosition);
 	vec3 currPos = fragPosition + vec3(0, targetHeight, 0);
+	vec3 direction = normalize(lightPos - currPos);	
 	float minDist = 3.0;
 
 	// Do the ray-marching
@@ -73,6 +73,105 @@ int rayMarch(vec3 lightPos) {
 	return 1;
 }
 
+// Helpers for amanatide
+int signum(float val) {
+	if (val < 0.0) {return -1;}
+	else {return 1;}
+}
+
+float calcMaxT(float dir, int i_coord, float f_coord) {
+	if (dir < 0.0) {
+		return (float(i_coord) - f_coord)/dir;
+	}
+	else {
+		return (float(voxelDim) + float(i_coord) - f_coord)/dir;
+	}
+}
+
+float intbounds(float s, float ds) 
+{ 
+	return (ds > 0? ceil(s)-s: s-floor(s)) / abs(ds); 
+}
+
+// Smarter ray traversal algorithm
+int amanatideTraverse(vec3 lightPos) {
+	vec3 currPos = fragPosition + vec3(0, targetHeight, 0);
+
+	// Init phase
+	int X = int(floor(currPos.x));
+	int Y = int(floor(currPos.y));
+	int Z = int(floor(currPos.z));
+
+	// Origin (floats)
+	float Ox = currPos.x;
+	float Oy = currPos.y;
+	float Oz = currPos.z;
+
+	vec3 dir = normalize(lightPos - currPos); 
+	float dx = dir.x;
+	float dy = dir.y;
+	float dz = dir.z;
+
+	int StepX = signum(dx);
+	int StepY = signum(dy);
+	int StepZ = signum(dz);
+
+	//float tMaxX = calcMaxT(dx, X, Ox);
+	//float tMaxY = calcMaxT(dy, Y, Oy);
+	//float tMaxZ = calcMaxT(dz, Z, Oz);
+
+	float tMaxX = intbounds(Ox, dx);
+	float tMaxY = intbounds(Oy, dy);
+	float tMaxZ = intbounds(Oz, dz);
+
+	float tDeltaX = float(StepX)/dx;
+	float tDeltaY = float(StepY)/dy;
+	float tDeltaZ = float(StepZ)/dz;
+
+	// Loop phase
+	float dist = distance(currPos, lightPos);
+	float minDist = 3.0;
+
+	while (dist > minDist) {
+		if(tMaxX < tMaxY) {
+			if(tMaxX < tMaxZ) {
+				X= X + StepX;
+				tMaxX= tMaxX + tDeltaX;
+			} 
+			else {
+				Z= Z + StepZ;
+				tMaxZ= tMaxZ + tDeltaZ;
+			}
+		} 
+		else {
+			if(tMaxY < tMaxZ) {
+				Y= Y + StepY;
+				tMaxY= tMaxY + tDeltaY;
+			} 
+			else {
+				Z= Z + StepZ;
+				tMaxZ= tMaxZ + tDeltaZ;
+			}
+		}
+
+		// Do what you gotta do
+		uint voxel = texture(voxTex, vec3(
+		float(X)/float(voxelDim),
+		float(Y)/float(voxelDim),
+		float(Z)/float(voxelDim))).r;
+
+		if (voxel > 0u) {
+			// We hit terrain, invisible
+			return 0;
+			break;	// Safety harness
+		}
+		dist = distance(vec3(X, Y, Z), lightPos);
+	}
+
+	// We made it through the loop, so there was nothing in the way, return 1
+	return 1;
+}
+
 void main(void) {
 	// Calculate lighting
 	vec3 light = calcLight();
@@ -82,7 +181,8 @@ void main(void) {
 			//outColor = vec4(visibility, 1.0);
 			int totalVis = 0;
 			for (int i = 0; i < numObs; i++) {
-				totalVis += rayMarch(lightArr[i]);
+				//totalVis += rayMarch(lightArr[i]);
+				totalVis += amanatideTraverse(lightArr[i]);
 			}
 
 			float value = float(totalVis) / float(numObs);

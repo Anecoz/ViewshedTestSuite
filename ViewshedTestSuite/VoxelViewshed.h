@@ -34,7 +34,7 @@ private:
 	// MEMBER VARIABLES
 	DrawableModel *simpleModel;
 	Shader simpleShader;
-	GLfloat targetHeight = 1.0;
+	GLfloat targetHeight = 2.0;
 
 	// MEMBER OBJECTS
 	ObsList obsList;
