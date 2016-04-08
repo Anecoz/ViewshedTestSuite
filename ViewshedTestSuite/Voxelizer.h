@@ -29,12 +29,20 @@ private:
 	Shader shader;
 	GLuint voxelTex;
 	DrawableModel *terrainModel;
+	GLuint voxelCounterAtomicBuffer;
+
+	GLuint voxelPosTex; // Texture that will hold (linearly) information about voxel positions
+	GLuint voxelPosTBO; // Texture buffer object for voxel fragment list
 
 	// MEMBER METHODS
 	void setupTexture();
+	void calcVoxelList(GLboolean shouldStoreVoxels);
+	GLuint getVoxelListSize();
+	void genAtomicBuffer(GLuint&);
+	void genLinearBuffer(GLint, GLenum, GLuint*, GLuint*);
+	void buildSVO(GLubyte*, GLuint);
 
 	// MEMBER CONSTANTS
-
 	// Some helpers for the orthographic projection matrices
 	const GLfloat f_hWidth = (GLfloat)WIDTH / (GLfloat)2.0;
 	const GLfloat f_Width = (GLfloat)WIDTH + 1.0f;
@@ -43,14 +51,27 @@ private:
 	const glm::mat4 mvpX = ortho * glm::lookAt(glm::vec3(-1, i_hWidth, i_hWidth), glm::vec3(i_hWidth, i_hWidth, i_hWidth), glm::vec3(0, 1, 0));
 	const glm::mat4 mvpZ = ortho * glm::lookAt(glm::vec3(i_hWidth, i_hWidth, -1), glm::vec3(i_hWidth, i_hWidth, i_hWidth), glm::vec3(0, 1, 0));
 	const glm::mat4 mvpY = ortho * glm::lookAt(glm::vec3(i_hWidth, -1, i_hWidth), glm::vec3(i_hWidth, i_hWidth, i_hWidth), glm::vec3(0, 0, 1));
-
-	// TESTING
-	/*const GLfloat f_hWidth = (GLfloat)128 / (GLfloat)2.0;
-	const GLfloat f_Width = (GLfloat)128 + 1.0f;
-	const GLuint i_hWidth = 128 / 2;
-	const glm::mat4 ortho = glm::ortho(-f_hWidth, f_hWidth, -f_hWidth, f_hWidth, 1.0f, f_Width);	// The orthographic projection matrices
-	const glm::mat4 mvpX = ortho * glm::lookAt(glm::vec3(-1, i_hWidth, i_hWidth), glm::vec3(i_hWidth, i_hWidth, i_hWidth), glm::vec3(0, 1, 0));
-	const glm::mat4 mvpZ = ortho * glm::lookAt(glm::vec3(i_hWidth, i_hWidth, -1), glm::vec3(i_hWidth, i_hWidth, i_hWidth), glm::vec3(0, 1, 0));
-	const glm::mat4 mvpY = ortho * glm::lookAt(glm::vec3(i_hWidth, -1, i_hWidth), glm::vec3(i_hWidth, i_hWidth, i_hWidth), glm::vec3(0, 0, 1));*/
 };
 
+// DEBUG
+//glBindTexture(GL_TEXTURE_3D, voxelTex);
+//GLfloat *testArr = (GLfloat *)malloc(sizeof(GLfloat) * WIDTH * DEPTH * HEIGHT*4);
+
+/*GLubyte *testArr = new GLubyte[WIDTH*HEIGHT*DEPTH];
+printError("Before get text image");
+glGetTextureImage(voxelTex, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, WIDTH*HEIGHT*DEPTH*sizeof(GLubyte), testArr);
+
+printError("gettext image");
+printf("texture at 100, 50, 100 is: %d\n", testArr[0]);
+
+GLubyte max = 0;
+for (int x = 0; x < 512; x++)
+for (int y = 0; y < 128; y++)
+for (int z = 0; z < 512; z++) {
+GLubyte val = testArr[HEIGHT*WIDTH*z + WIDTH*y + x];
+if (val > max) {
+max = val;
+printf("curr max is %d\n", max);
+}
+}
+delete[](testArr);*/
