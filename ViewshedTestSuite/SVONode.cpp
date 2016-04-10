@@ -9,13 +9,13 @@ SVONode::SVONode(GLint initSize, glm::vec3 initPos)
 	this->size = initSize;
 	this->pos = initPos;
 
-	minX = pos.x - size / 2;
-	minY = pos.y - size / 2;
-	minZ = pos.z - size / 2;
+	minX = pos.x - (GLfloat)size / 2.0;
+	minY = pos.y - (GLfloat)size / 2.0;
+	minZ = pos.z - (GLfloat)size / 2.0;
 
-	maxX = pos.x + size / 2;
-	maxY = pos.y + size / 2;
-	maxZ = pos.z + size / 2;
+	maxX = pos.x + (GLfloat)size / 2.0;
+	maxY = pos.y + (GLfloat)size / 2.0;
+	maxZ = pos.z + (GLfloat)size / 2.0;
 }
 
 SVONode::~SVONode() {
@@ -37,30 +37,35 @@ void SVONode::split() {
 }
 
 glm::vec3 SVONode::calcChildPos(GLint octant) {
+	// Some helpers	
+	GLfloat xHelp = (pos.x - (GLfloat)minX) / 2.0;
+	GLfloat yHelp = (pos.y - (GLfloat)minY) / 2.0;
+	GLfloat zHelp = (pos.z - (GLfloat)minZ) / 2.0;
+
 	switch (octant) {
 	case 1:
-		return glm::vec3(pos.x / 2, pos.y / 2, pos.z + pos.z / 2);
+		return glm::vec3((GLfloat)minX + xHelp, (GLfloat)minY + yHelp, pos.z + zHelp);
 		break;
 	case 2:
-		return glm::vec3(pos.x + pos.x / 2, pos.y / 2, pos.z + pos.z / 2);
+		return glm::vec3(pos.x + xHelp, (GLfloat)minY + yHelp, pos.z + zHelp);
 		break;
 	case 3:
-		return glm::vec3(pos.x / 2, pos.y / 2, pos.z / 2);
+		return glm::vec3((GLfloat)minX + xHelp, (GLfloat)minY + yHelp, (GLfloat)minZ + zHelp);
 		break;
 	case 4:
-		return glm::vec3(pos.x + pos.x / 2, pos.y / 2, pos.z / 2);
+		return glm::vec3(pos.x + xHelp, (GLfloat)minY + yHelp, (GLfloat)minZ + zHelp);
 		break;
 	case 5:
-		return glm::vec3(pos.x / 2, pos.y + pos.y / 2, pos.z + pos.z / 2);
+		return glm::vec3((GLfloat)minX + xHelp, pos.y + yHelp, pos.z + zHelp);
 		break;
 	case 6:
-		return glm::vec3(pos.x + pos.x / 2, pos.y + pos.y / 2, pos.z + pos.z / 2);
+		return glm::vec3(pos.x + xHelp, pos.y + yHelp, pos.z + zHelp);
 		break;
 	case 7:
-		return glm::vec3(pos.x / 2, pos.y + pos.y / 2, pos.z / 2);
+		return glm::vec3((GLfloat)minX + xHelp, pos.y + yHelp, (GLfloat)minZ + zHelp);
 		break;
 	case 8:
-		return glm::vec3(pos.x + pos.x / 2, pos.y + pos.y / 2, pos.z / 2);
+		return glm::vec3(pos.x + xHelp, pos.y + yHelp, (GLfloat)minZ + zHelp);
 		break;
 	default:
 		break;
@@ -81,25 +86,25 @@ GLboolean SVONode::isInside(glm::vec3& inPos) {
 GLuint SVONode::getOctant(glm::vec3& inPos) {
 	// Already checked if inPos is inside the node volume
 	// Big effin if
-	if (inPos.x < pos.x && inPos.y < pos.y && inPos.z > pos.z) {
+	if (inPos.x <= pos.x && inPos.y <= pos.y && inPos.z >= pos.z) {
 		return 1;
 	} 
-	else if (inPos.x > pos.x && inPos.y < pos.y && inPos.z > pos.z) {
+	else if (inPos.x >= pos.x && inPos.y <= pos.y && inPos.z >= pos.z) {
 		return 2;
 	}
-	else if (inPos.x < pos.x && inPos.y < pos.y && inPos.z < pos.z) {
+	else if (inPos.x <= pos.x && inPos.y <= pos.y && inPos.z <= pos.z) {
 		return 3;
 	}
-	else if (inPos.x > pos.x && inPos.y < pos.y && inPos.z < pos.z) {
+	else if (inPos.x >= pos.x && inPos.y <= pos.y && inPos.z <= pos.z) {
 		return 4;
 	}
-	else if (inPos.x < pos.x && inPos.y > pos.y && inPos.z > pos.z) {
+	else if (inPos.x <= pos.x && inPos.y >= pos.y && inPos.z >= pos.z) {
 		return 5;
 	}
-	else if (inPos.x > pos.x && inPos.y > pos.y && inPos.z > pos.z) {
+	else if (inPos.x >= pos.x && inPos.y >= pos.y && inPos.z >= pos.z) {
 		return 6;
 	}
-	else if (inPos.x < pos.x && inPos.y > pos.y && inPos.z < pos.z) {
+	else if (inPos.x <= pos.x && inPos.y >= pos.y && inPos.z <= pos.z) {
 		return 7;
 	}
 	else {

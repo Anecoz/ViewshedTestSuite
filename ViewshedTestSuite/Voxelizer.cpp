@@ -115,6 +115,7 @@ GLuint& Voxelizer::voxelize() {
 void Voxelizer::buildSVO(GLubyte* voxelBufferList, GLuint size) {
 	printf("Starting SVO build...\n");
 
+	GLint numOfSplits = 0;
 	SVO svo(WIDTH, glm::vec3(WIDTH/2, HEIGHT/2, DEPTH/2));
 	// Loop through the buffer list and build upon SVO
 	for (int i = 0; i < size; i++) {
@@ -123,9 +124,11 @@ void Voxelizer::buildSVO(GLubyte* voxelBufferList, GLuint size) {
 		currVoxelPos.y = voxelBufferList[i * 4 + 1];
 		currVoxelPos.z = voxelBufferList[i * 4 + 2];
 
-		svo.insert(currVoxelPos);
+		numOfSplits += svo.insert(currVoxelPos);
 	}
+	GLint numOfNodes = numOfSplits * 8 + 1;
 	printf("SVO build complete!\n");
+	printf("SVO needed %d nodes\n", numOfNodes);
 	
 	delete[](voxelBufferList);
 }

@@ -18,7 +18,7 @@ public:
 	~SVO() = default;
 
 	// METHODS
-	void insert(glm::vec3& voxelPos);	// Inserts a voxel at the correct place in the octree
+	GLint insert(glm::vec3& voxelPos);	// Inserts a voxel at the correct place in the octree
 
 private:
 	// CONSTANTS
