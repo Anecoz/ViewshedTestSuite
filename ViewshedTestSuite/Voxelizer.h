@@ -4,6 +4,7 @@
 #include <GL\freeglut.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
+#include "SVO.h"
 
 #pragma once
 
@@ -14,16 +15,18 @@ class Voxelizer
 {
 public:
 	Voxelizer();
-	~Voxelizer() = default;
+	~Voxelizer();
 
 	void init(DrawableModel* terrainModel);
 
 	GLuint& voxelize();	// Voxelizes the scene and returns the associated 3D texture
+	GLint getVoxDim() { return voxDim; }
+	SVO* getSVO() { return svo; }
 
 	// MEMBER CONSTANTS
-	static const GLuint WIDTH = 256;	// These need to be the same in order for the 3 orthographic projections...
-	static const GLuint HEIGHT = 256;	// ... to work properly with the viewport
-	static const GLuint DEPTH = 256;
+	static const GLuint WIDTH = 128;	// These need to be the same in order for the 3 orthographic projections...
+	static const GLuint HEIGHT = 128;	// ... to work properly with the viewport
+	static const GLuint DEPTH = 128;
 private:
 	// MEMBER OBJECTS
 	Shader shader;
@@ -34,13 +37,16 @@ private:
 	GLuint voxelPosTex; // Texture that will hold (linearly) information about voxel positions
 	GLuint voxelPosTBO; // Texture buffer object for voxel fragment list
 
+	GLint voxDim;
+	SVO* svo;
+
 	// MEMBER METHODS
 	void setupTexture();
 	void calcVoxelList(GLboolean shouldStoreVoxels);
 	GLuint getVoxelListSize();
 	void genAtomicBuffer(GLuint&);
 	void genLinearBuffer(GLint, GLenum, GLuint*, GLuint*);
-	void buildSVO(GLubyte*, GLuint);
+	void buildSVO(GLuint*, GLuint);
 
 	// MEMBER CONSTANTS
 	// Some helpers for the orthographic projection matrices

@@ -19,6 +19,7 @@ public:
 
 	// METHODS
 	GLint insert(glm::vec3& voxelPos);	// Inserts a voxel at the correct place in the octree
+	SVONode* getTopNode();
 
 private:
 	// CONSTANTS

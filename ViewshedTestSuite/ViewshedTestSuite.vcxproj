@@ -163,6 +163,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SphericShadowmapViewshed.cpp" />
     <ClCompile Include="SVO.cpp" />
+    <ClCompile Include="SVOConverter.cpp" />
     <ClCompile Include="SVONode.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGenerator.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SphericShadowmapViewshed.h" />
     <ClInclude Include="SVO.h" />
+    <ClInclude Include="SVOConverter.h" />
     <ClInclude Include="SVONode.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainGenerator.h" />

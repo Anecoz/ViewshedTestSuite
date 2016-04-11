@@ -20,6 +20,8 @@ public:
 	GLuint getOctant(glm::vec3&);					// Returns what octant a position falls into
 	GLboolean isInside(glm::vec3&);
 
+	glm::vec3 getPos() { return pos; }
+
 	void split();
 
 	GLboolean isLeaf = true;

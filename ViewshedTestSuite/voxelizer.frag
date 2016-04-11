@@ -10,7 +10,7 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 in vec3 f_pos;
 
 //layout(binding = 0, r8ui) writeonly restrict uniform uimage3D voxTex;
-uniform layout(binding = 0, rgb10_a2ui) uimageBuffer voxelPos;
+uniform layout(binding = 0, rgba32ui) uimageBuffer voxelPos;
 layout ( binding = 0, offset = 0 ) uniform atomic_uint voxelFragCount;
 
 uniform int voxelDim;
@@ -23,7 +23,7 @@ void main()
 
     //uvec4 data = uvec4(6);	// Something positive and != 0
 	ivec4 temp = ivec4( gl_FragCoord.x, gl_FragCoord.y, voxelDim * gl_FragCoord.z, 0 ) ;
-	uvec4 texcoord = uvec4(0);
+	uvec4 texcoord = uvec4(1);
 	if( f_axis == 1 )
 	{
 	    texcoord.x = temp.z;

@@ -1,6 +1,8 @@
 #include "VoxelTester.h"
 #include "Voxelizer.h"
+#include "SVONode.h"
 #include <glm\gtc\matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 
 VoxelTester::VoxelTester()
 {
@@ -28,27 +30,60 @@ void VoxelTester::createVoxelsFromContainer(VoxelContainer &voxels) {
 	for (int z = 0; z < DEPTH; z++) {
 		GLfloat val = voxels.getValue(x, y, z);
 		if (val > 0.0) {
-			voxelList.push_back(Voxel(glm::vec3(x, y, z)));
+			voxelList.push_back(Voxel(glm::vec3(x, y, z), 1, false));
 		}
 	}
 }
 
-void VoxelTester::createVoxelsFromTexture(GLuint& voxTex) {
-	// Loop through the texture and set voxels in the list to appropriate positions
-	int WIDTH = Voxelizer::WIDTH;
-	int HEIGHT = Voxelizer::HEIGHT;
-	int DEPTH = Voxelizer::DEPTH;
+void VoxelTester::updateSVOChildren(SVONode* node) {
+	// Loop through all children, check if they are leaves/empty and do same thing for their children
+	for (int i = 0; i < 8; i++) {
+		SVONode* currChildNode = node->children.at(i);
 
-	GLubyte *testArr = new GLubyte[WIDTH*HEIGHT*DEPTH];
-	glGetTextureImage(voxTex, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, WIDTH*HEIGHT*DEPTH*sizeof(GLubyte), testArr);
+		if (currChildNode->isLeaf && currChildNode->containsVoxel) {
+			voxelList.push_back(Voxel(currChildNode->getPos(), currChildNode->size, false));
+		}
+		else if (currChildNode->isLeaf) {
+			voxelList.push_back(Voxel(currChildNode->getPos(), currChildNode->size, true));
+		}
+		else {
+			updateSVOChildren(currChildNode);
+		}
+	}
+}
+
+void VoxelTester::createVoxelsFromSVO(SVO* svo) {
+	SVONode* topNode = svo->getTopNode();
+	updateSVOChildren(topNode);
+}
+
+void VoxelTester::createVoxelsFromTexture(GLuint& voxTex, GLint voxTexDim) {
+	// Loop through the texture and set voxels in the list to appropriate positions
+	int WIDTH = voxTexDim;
+	int HEIGHT = voxTexDim;
+	int DEPTH = 8;
+
+	GLuint *testArr = new GLuint[WIDTH*HEIGHT*DEPTH*4];
+	glGetTextureImage(voxTex, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, 4*WIDTH*HEIGHT*DEPTH*sizeof(GLuint), testArr);
 
 	for (int x = 0; x < WIDTH; x++)
 	for (int y = 0; y < HEIGHT; y++)
 	for (int z = 0; z < DEPTH; z++) {
-		GLubyte val = testArr[HEIGHT*WIDTH*z + WIDTH*y + x];
-		if (val > 0) {
+		//GLuint childX = testArr[(HEIGHT*WIDTH*z + WIDTH*y + x) * 4 + 0];
+		//GLuint childY = testArr[(HEIGHT*WIDTH*z + WIDTH*y + x) * 4 + 1];
+		GLuint size = testArr[(HEIGHT*WIDTH*z + WIDTH*y + x) * 4 + 2];
+		GLuint leafStatus = testArr[(HEIGHT*WIDTH*z + WIDTH*y + x) * 4 + 3];
+		
+		glm::vec3 nodePos;
+
+		if (leafStatus > 0) {
 			// Means we have something here
-			voxelList.push_back(Voxel(glm::vec3(x, y, z)));
+			if (leafStatus == 1) {
+				voxelList.push_back(Voxel(glm::vec3(x, y, z), size, true));	// "empty" voxel
+			}
+			else {
+				voxelList.push_back(Voxel(glm::vec3(x, y, z), size, false));	// not "empty"
+			}			
 		}
 	}
 
@@ -66,15 +101,27 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	//glCullFace(GL_BACK);
 	shader.activate();
 	glm::vec3 white = {1.0, 1.0, 1.0};
+	glm::vec3 red = { 1.0, 0.0, 0.0 };
 
 	for (Voxel &voxel : voxelList) {
+		if (voxel.getEmpty())
+			continue;
 		voxelModel->prepare();
+
+		GLint size = voxel.getSize();
 
 		// Uploads
 		shader.uploadMatrix(projMatrix, "projMatrix");
 		shader.uploadMatrix(camMatrix, "camMatrix");
-		shader.uploadVec(white, "color");
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());
+		if (voxel.getEmpty()) {
+			shader.uploadVec(glm::vec3((GLfloat) size/256.0), "color");
+		}
+		else {
+			shader.uploadVec(red, "color");
+		}
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());		
+		glm::mat4 scaleMatrix = glm::scale(glm::vec3( size, size, size));
+		glm::mat4 modelMatrix = scaleMatrix*translationMatrix;
 		shader.uploadMatrix(translationMatrix, "modelMatrix");
 
 		voxelModel->render();

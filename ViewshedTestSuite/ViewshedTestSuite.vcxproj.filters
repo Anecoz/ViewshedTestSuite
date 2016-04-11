@@ -84,6 +84,9 @@
     <ClCompile Include="SVONode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SVOConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GL_utilities.h">
@@ -147,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SVONode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SVOConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

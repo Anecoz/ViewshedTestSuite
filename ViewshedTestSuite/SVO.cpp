@@ -9,6 +9,10 @@ SVO::SVO(GLint startSize, glm::vec3 startPos)
 	topNode.split();
 }
 
+SVONode* SVO::getTopNode() {
+	return &topNode;
+}
+
 GLint SVO::insert(glm::vec3& voxelPos) {
 	GLuint splitCounter = 0;
 	// Go down the tree until the target size is reached and insert leaf node there

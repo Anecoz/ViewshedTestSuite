@@ -51,9 +51,6 @@ int rayMarch(vec3 lightPos) {
 	float dist = distance(currPos, lightPos);
 	while (dist > minDist) {
 		currPos += direction*increment;					// Increment 1 step
-		//float x = floor(currPos.x)/512.0;			// Get the normalized sampling coords
-		//float y = floor(currPos.y)/128.0;			// Ditto
-		//float z = floor(currPos.z)/512.0;			// Ditto
 		float x = currPos.x/float(voxelDim);
 		float y = currPos.y/float(voxelDim);
 		float z = currPos.z/float(voxelDim);

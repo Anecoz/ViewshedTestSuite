@@ -114,7 +114,7 @@ void Terrain::renderOrtho(glm::mat4 camMatrix, glm::mat4 projMatrix, glm::mat4 l
 	doPostRenderBoilerplate();
 }
 
-void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr, GLfloat targetHeight) {
+void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& voxTex, VecList lightArr, GLfloat targetHeight, GLint voxTexDim) {
 	doRenderBoilerplate();
 	terrainModel->prepare();
 	voxelShader.activate();
@@ -133,6 +133,9 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	voxelShader.uploadFloat((GLfloat)SphericShadowmapViewshed::VIEWSHED_MAX_DIST, "maxDist");
 	voxelShader.uploadInt(lightArr.size(), "numObs");
 	voxelShader.uploadInt(Voxelizer::WIDTH, "voxelDim");
+	voxelShader.uploadInt(voxTexDim, "voxTexDim");
+	voxelShader.uploadVec(glm::vec3(Voxelizer::WIDTH / 2.0, Voxelizer::HEIGHT / 2.0, Voxelizer::DEPTH / 2.0), "topNodePos");
+	voxelShader.uploadInt(Voxelizer::WIDTH, "topNodeSize");
 	//printf("numObs: %d\n", lightArr.size());
 
 	// Draw

@@ -1,6 +1,7 @@
 #include "Voxelizer.h"
 #include "Game.h"
 #include "SVO.h"
+#include "SVOConverter.h"
 
 extern "C" {
 #include "GL_utilities.h"
@@ -10,6 +11,10 @@ extern "C" {
 Voxelizer::Voxelizer()
 {
 	// Dangerous to set shader immediately here, since we are not guaranteed to have an OpenGL context yet
+}
+
+Voxelizer::~Voxelizer() {
+	delete svo;
 }
 
 void Voxelizer::init(DrawableModel* terrainModel) {
@@ -54,7 +59,7 @@ void Voxelizer::calcVoxelList(GLboolean shouldStoreVoxels) {
 	terrainModel->prepare();
 
 	if (shouldStoreVoxels) {
-		glBindImageTexture(0, voxelPosTex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGB10_A2UI);
+		glBindImageTexture(0, voxelPosTex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32UI);
 		shader.uploadTexture(0, "voxelPos");
 	}
 
@@ -92,31 +97,36 @@ GLuint& Voxelizer::voxelize() {
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 
 	// Generate buffer that will hold the voxel list
-	genLinearBuffer(sizeof(GLuint) * size, GL_R32UI, &voxelPosTex, &voxelPosTBO);
+	printError("before gen buffer");
+	genLinearBuffer(sizeof(GLuint) * size*4, GL_RGBA32UI, &voxelPosTex, &voxelPosTBO);
+	printError("After gen buffer");
 
 	// Voxelize again but this time store the voxels in the list
 	calcVoxelList(true);
 
 	// Copy buffer to CPU memory
-	GLubyte *voxelBufferList = new GLubyte[4*size];	// RGBA values
+	GLuint *voxelBufferList = new GLuint[4*size];	// RGBA values
 	glBindBuffer(GL_TEXTURE_BUFFER, voxelPosTBO);
-	glGetBufferSubData(GL_TEXTURE_BUFFER, 0, 4*size*sizeof(GLubyte), voxelBufferList);
+	printError("Before get buffer data");
+	glGetBufferSubData(GL_TEXTURE_BUFFER, 0, 4*size*sizeof(GLuint), voxelBufferList);
+	printError("After get buffer data");
 	glBindBuffer(GL_TEXTURE_BUFFER, 0);
 
 	// We now have a list of every voxel world position in the linear buffer voxelPosTex
 	// Build SVO out of this information
 	buildSVO(voxelBufferList, size);
-	
+
 	// Lastly return the texture
 	printf("Voxelisation done!\n");
 	return voxelTex;
 }
 
-void Voxelizer::buildSVO(GLubyte* voxelBufferList, GLuint size) {
+void Voxelizer::buildSVO(GLuint* voxelBufferList, GLuint size) {
 	printf("Starting SVO build...\n");
 
 	GLint numOfSplits = 0;
-	SVO svo(WIDTH, glm::vec3(WIDTH/2, HEIGHT/2, DEPTH/2));
+	svo = new SVO(WIDTH, glm::vec3(WIDTH / 2, HEIGHT / 2, DEPTH / 2));
+	//SVO svo(WIDTH, glm::vec3(WIDTH/2, HEIGHT/2, DEPTH/2));
 	// Loop through the buffer list and build upon SVO
 	for (int i = 0; i < size; i++) {
 		glm::vec3 currVoxelPos;
@@ -124,11 +134,21 @@ void Voxelizer::buildSVO(GLubyte* voxelBufferList, GLuint size) {
 		currVoxelPos.y = voxelBufferList[i * 4 + 1];
 		currVoxelPos.z = voxelBufferList[i * 4 + 2];
 
-		numOfSplits += svo.insert(currVoxelPos);
+		//GLuint tmp = voxelBufferList[i * 4 + 3];
+		//printf("tmp is: %d\n", tmp);
+
+		numOfSplits += svo->insert(currVoxelPos);
 	}
-	GLint numOfNodes = numOfSplits * 8 + 1;
+	GLint numOfNodes = numOfSplits * 8 + 9; // Topnode is already split, so topnode + children = 9 nodes
 	printf("SVO build complete!\n");
 	printf("SVO needed %d nodes\n", numOfNodes);
+
+	// Convert the CPU representation into a 3D texture
+	printf("Converting SVO to 3D texture...\n");
+	SVOConverter converter;
+	voxelTex = converter.buildTexture(svo, numOfNodes);
+	voxDim = ceil(sqrt(numOfNodes));
+	printf("Conversion done, 3D texture returned\n");
 	
 	delete[](voxelBufferList);
 }
