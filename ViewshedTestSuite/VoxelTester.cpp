@@ -105,25 +105,25 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	glm::vec3 red = { 0.4, 0.0, 0.0 };
 
 	for (Voxel &voxel : voxelList) {
-		if (!voxel.getEmpty())
-			continue;
-		voxelModel->prepare();
-
 		GLint size = voxel.getSize();
+
+		if (voxel.getEmpty())// || size <= 2)
+			continue;
+
+		voxelModel->prepare();		
 
 		// Uploads
 		shader.uploadMatrix(projMatrix, "projMatrix");
 		shader.uploadMatrix(camMatrix, "camMatrix");
 		if (voxel.getEmpty()) {
 			shader.uploadVec(glm::vec3((GLfloat) size/128.0), "color");
+			//shader.uploadVec(white, "color");
 		}
 		else {
 			shader.uploadVec(red, "color");
 		}
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());
 		shader.uploadInt(size, "scale");
-		//glm::mat4 scaleMatrix = glm::scale(glm::vec3( size, size, size));
-		//glm::mat4 modelMatrix = scaleMatrix*translationMatrix;
 		shader.uploadMatrix(translationMatrix, "modelMatrix");
 
 		voxelModel->render();
