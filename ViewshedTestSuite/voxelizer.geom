@@ -43,15 +43,15 @@ void main()
 	}
 
 	vec4 pos[3];
-	//proj = MVPy;
-	//f_axis = 2;
+	//proj = MVPx;
+	//f_axis = 1;
 	//transform vertices to clip space
 	pos[0] = proj * gl_in[0].gl_Position;
 	pos[1] = proj * gl_in[1].gl_Position;
 	pos[2] = proj * gl_in[2].gl_Position;
 
 	//Next we enlarge the triangle to enable conservative rasterization
-	vec4 AABB;
+	/*vec4 AABB;
 	vec2 hPixel = vec2( 1.0/voxelDim, 1.0/voxelDim );
 	float pl = 1.4142135637309 / voxelDim ;
 	
@@ -82,7 +82,7 @@ void main()
 	//dilate the triangle
 	pos[0].xy = pos[0].xy + pl*( (e2.xy/dot(e2.xy,n0.xy)) + (e0.xy/dot(e0.xy,n2.xy)) );
 	pos[1].xy = pos[1].xy + pl*( (e0.xy/dot(e0.xy,n1.xy)) + (e1.xy/dot(e1.xy,n0.xy)) );
-	pos[2].xy = pos[2].xy + pl*( (e1.xy/dot(e1.xy,n2.xy)) + (e2.xy/dot(e2.xy,n1.xy)) );
+	pos[2].xy = pos[2].xy + pl*( (e1.xy/dot(e1.xy,n2.xy)) + (e2.xy/dot(e2.xy,n1.xy)) );*/
 
     //gl_Position = proj * gl_in[0].gl_Position;
 	gl_Position = pos[0];

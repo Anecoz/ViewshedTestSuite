@@ -50,7 +50,9 @@ void Game::init(int& argc, char **argv) {
 
 	// Loads of boilerplate
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH);
+	glutSetOption(GLUT_MULTISAMPLE, 16);	// For multisampling in the voxelization
+	//printError("16x multisample");
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);	// Ditto
 	glutInitWindowPosition(INIT_WINDOW_POS_X, INIT_WINDOW_POS_Y);
 	glutInitWindowSize(WINDOW_SIZE_X, WINDOW_SIZE_Y);
 	glutCreateWindow(WINDOW_TITLE.c_str());
@@ -69,6 +71,7 @@ void Game::init(int& argc, char **argv) {
 	// GL inits
 	dumpInfo(); // From ingemar, prints vendor and version number etc
 	glClearColor(0.2, 0.2, 0.5, 0);
+	glDisable(GL_MULTISAMPLE);	// Only use this in the voxelisation, massive performance hit
 	printError("GL inits");
 
 	// Set the objects
@@ -122,10 +125,10 @@ void Game::tick() {
 	camera->update(keyHandler);
 
 	// Update the observer list, get it from road
-	//voxelViewshed.setObserverList(roadSelector->getObservers());
+	voxelViewshed.setObserverList(roadSelector->getObservers());
 	//shadowViewshed.setObserverList(roadSelector->getObservers());	// Done inside roadselector now
 	
-	//voxelViewshed.tick(keyHandler);
+	voxelViewshed.tick(keyHandler);
 
 	// Get the shadow map
 	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
@@ -140,12 +143,12 @@ void Game::tick() {
 	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
-	//voxelViewshed.render(projMatrix, camera->getCameraMatrix());
+	voxelViewshed.render(projMatrix, camera->getCameraMatrix());
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, shadowViewshed.getOrthoLightSpaceMatrix(), depthMap);
 	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap3DTexture, shadowViewshed.getCompletedObsPosArr(), shadowViewshed.getTargetHeight());
-	//terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos(), voxelViewshed.getTargetHeight(), voxTexDim);
+	terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos(), voxelViewshed.getTargetHeight(), voxTexDim);
 	//shadowViewshed.renderObservers(projMatrix, camera->getCameraMatrix());
 
 	// Render roads

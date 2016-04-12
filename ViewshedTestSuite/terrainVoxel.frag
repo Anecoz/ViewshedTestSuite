@@ -290,7 +290,7 @@ void main(void) {
 			outColor = vec4(light*0.3, 1.0);
 		}*/
 		// Try to color each fragment according to closest voxel
-		int posInside = posInsideVoxel(fragPosition.xyz);
+		int posInside = posInsideVoxel(fragPosition.xyz+vec3(0, targetHeight, 0));
 		outColor = vec4(posInside);
 
 		//uint voxel = texture(voxTex, vec3(54.0f/float(voxTexDim-1.0f), 61.0f/float(voxTexDim-1.0f), 1.0f/7.0f) ).r;

@@ -24,9 +24,9 @@ public:
 	SVO* getSVO() { return svo; }
 
 	// MEMBER CONSTANTS
-	static const GLuint WIDTH = 128;	// These need to be the same in order for the 3 orthographic projections...
-	static const GLuint HEIGHT = 128;	// ... to work properly with the viewport
-	static const GLuint DEPTH = 128;
+	static const GLuint WIDTH = 512;	// These need to be the same in order for the 3 orthographic projections...
+	static const GLuint HEIGHT = 512;	// ... to work properly with the viewport
+	static const GLuint DEPTH = 512;
 private:
 	// MEMBER OBJECTS
 	Shader shader;

@@ -3,6 +3,8 @@
 #include "SVO.h"
 #include "SVOConverter.h"
 
+//#define CONSERVATIVE_RASTERIZATION_NV                   0x9346
+
 extern "C" {
 #include "GL_utilities.h"
 }
@@ -53,6 +55,7 @@ void Voxelizer::calcVoxelList(GLboolean shouldStoreVoxels) {
 	// Disable this stuff
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_MULTISAMPLE);	// To get voxel fragments not covered in middle
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 	shader.activate();
@@ -80,6 +83,7 @@ void Voxelizer::calcVoxelList(GLboolean shouldStoreVoxels) {
 	// Reset viewport
 	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glDisable(GL_MULTISAMPLE);
 
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }

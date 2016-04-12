@@ -96,15 +96,16 @@ void VoxelTester::createVoxelsFromTexture(GLuint& voxTex, GLint voxTexDim) {
 void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	// Loop through all voxel objects and draw em
 	glEnable(GL_DEPTH_TEST);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 	shader.activate();
 	glm::vec3 white = {1.0, 1.0, 1.0};
-	glm::vec3 red = { 1.0, 0.0, 0.0 };
+	glm::vec3 red = { 0.4, 0.0, 0.0 };
 
 	for (Voxel &voxel : voxelList) {
-		if (voxel.getEmpty())
+		if (!voxel.getEmpty())
 			continue;
 		voxelModel->prepare();
 
@@ -114,20 +115,22 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 		shader.uploadMatrix(projMatrix, "projMatrix");
 		shader.uploadMatrix(camMatrix, "camMatrix");
 		if (voxel.getEmpty()) {
-			shader.uploadVec(glm::vec3((GLfloat) size/256.0), "color");
+			shader.uploadVec(glm::vec3((GLfloat) size/128.0), "color");
 		}
 		else {
 			shader.uploadVec(red, "color");
 		}
-		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());		
-		glm::mat4 scaleMatrix = glm::scale(glm::vec3( size, size, size));
-		glm::mat4 modelMatrix = scaleMatrix*translationMatrix;
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());
+		shader.uploadInt(size, "scale");
+		//glm::mat4 scaleMatrix = glm::scale(glm::vec3( size, size, size));
+		//glm::mat4 modelMatrix = scaleMatrix*translationMatrix;
 		shader.uploadMatrix(translationMatrix, "modelMatrix");
 
 		voxelModel->render();
 	}
 
 	shader.deactivate();
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 }
