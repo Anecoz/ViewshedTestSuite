@@ -5,9 +5,10 @@
 layout ( triangles ) in;
 layout ( triangle_strip, max_vertices = 3 ) out;
 
-uniform int slice;
-
 in vec3 v_vertex[];
+flat in int north[];
+
+uniform int slice;
 
 out vec3 outPos;
 
@@ -28,7 +29,12 @@ void main() {
 
 		// Set which layer of the depth attachment 2D arr texture to write to, and output vertices (basically pass-through)
 		for (int i = 0; i < 3; i++) {
-			gl_Layer = slice;
+			if (north[i] > 0.5) {
+				gl_Layer = slice;
+			}
+			else {
+				gl_Layer = slice + 1;
+			}
 			gl_Position = gl_in[i].gl_Position;
 			outPos = gl_in[i].gl_Position.xyz;
 			EmitVertex();

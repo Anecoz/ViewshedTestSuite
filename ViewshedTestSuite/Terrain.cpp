@@ -158,7 +158,7 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	}*/
 
 	// After this, render only the color encoded map to top right of the screen
-	GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
+	/*GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
 	GLint hpos = Game::WINDOW_SIZE_Y - Game::WINDOW_SIZE_Y / 3.0;
  	glViewport(wpos, hpos, Game::WINDOW_SIZE_X / 3.0, Game::WINDOW_SIZE_Y / 3.0);
 	minimapModel->prepare();
@@ -175,7 +175,7 @@ void Terrain::renderVoxelized(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	modelShader.deactivate();
 	// Reset viewport
 	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
-	doPostRenderBoilerplate();
+	doPostRenderBoilerplate();*/
 }
 
 void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint& depthMap3DTexture, VecList lightArr, GLfloat targetHeight) {
@@ -213,7 +213,7 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	doPostRenderBoilerplate();
 
 	// After this, render only the depth map to top right of the screen
-	/*GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
+	GLint wpos = Game::WINDOW_SIZE_X - Game::WINDOW_SIZE_X / 3.0;
 	GLint hpos = Game::WINDOW_SIZE_Y - Game::WINDOW_SIZE_Y / 3.0;
 	glViewport(wpos, hpos, Game::WINDOW_SIZE_X / 3.0, Game::WINDOW_SIZE_Y / 3.0);
 	minimapModel->prepare();
@@ -228,7 +228,7 @@ void Terrain::renderSpherical(glm::mat4 camMatrix, glm::mat4 projMatrix, GLuint&
 	glBindVertexArray(0);
 	modelShader.deactivate();
 	// Reset viewport
-	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);*/
+	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
 }
 
 void Terrain::doRenderBoilerplate() {

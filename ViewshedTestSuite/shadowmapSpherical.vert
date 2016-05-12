@@ -7,6 +7,8 @@
 in vec3 inPosition;
 out vec3 v_vertex;
 
+flat out int north;		// Tell geom shader whether we used north or south as origin
+
 uniform vec3 lightPos; // World coordinates
 uniform float maxDist; // max distance for the viewshed;
 uniform mat4 modelMatrix; // identity for terrain, but not for camera quad
@@ -18,9 +20,11 @@ float atan2(in float y, in float x)
 }
 
 // Performs conformal conic projection, i.e. maps spherical coords to a 2D surface
-vec2 StereographicProjectionCon(vec3 sphericalCoords) {
-
-	//float eps = 0.00000005;
+vec2 StereographicProjectionSouth(vec3 sphericalCoords) {
+	float onePlusY = 1.0f + sphericalCoords.y;// + eps;
+	return vec2(sphericalCoords.x/onePlusY, sphericalCoords.z/onePlusY);
+}
+vec2 StereographicProjectionNorth(vec3 sphericalCoords) {
 	float oneSubY = 1.0f - sphericalCoords.y;// + eps;
 	return vec2(sphericalCoords.x/oneSubY, sphericalCoords.z/oneSubY);
 }
@@ -45,7 +49,28 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 void main() {
 	vec3 vertPos = vec3( modelMatrix * vec4(inPosition, 1.0));
 	vec3 sphericalCoords = normalize(vertPos - lightPos);
-	v_vertex = vec3(StereographicProjectionCon(sphericalCoords), distance(vertPos, lightPos)/maxDist);
+
+	// Depending on y, use either north or south pole as projection origin
+	if (sphericalCoords.y >= 0) {
+		// Check for special case where we are exactly above observer
+		if (sphericalCoords.y == 1.0) {
+			v_vertex = vec3(vec2(0, 0), distance(vertPos, lightPos)/maxDist);
+		}
+		else {
+			v_vertex = vec3(StereographicProjectionSouth(sphericalCoords), distance(vertPos, lightPos)/maxDist);
+		}
+		north = 0;		
+	}
+	else {
+		// Check for special case where we are exactly above observer
+		if (sphericalCoords.y == 0.0) {
+			v_vertex = vec3(vec2(0, 0), distance(vertPos, lightPos)/maxDist);
+		}
+		else {
+			v_vertex = vec3(StereographicProjectionNorth(sphericalCoords), distance(vertPos, lightPos)/maxDist);
+		}
+		north = 1;
+	}
 
 	gl_Position = vec4(v_vertex, 1.0);
 }

@@ -134,7 +134,7 @@ void SphericShadowmapViewshed::renderSpherical(GLint num) {
 
 			shader.uploadVec(obs.getPos(), "lightPos");
 			// The slice corresponds to the elements already completed
-			shader.uploadInt(completedObservers.size(), "slice");
+			shader.uploadInt(completedObservers.size() * 2, "slice");
 			shader.uploadFloat((GLfloat)VIEWSHED_MAX_DIST, "maxDist");
 			shader.uploadMatrix(glm::mat4(1.0f), "modelMatrix");
 			terrainModel->render();
@@ -171,9 +171,9 @@ void SphericShadowmapViewshed::renderSpherical(GLint num) {
 void SphericShadowmapViewshed::doRenderBoilerplate() {
 	// Do some boilerplate
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Now we can do the render
 	//glClear(GL_DEPTH_BUFFER_BIT);
@@ -191,7 +191,7 @@ void SphericShadowmapViewshed::doPostRenderBoilerplate() {
 	// reset the viewport out of courtesy. 
 	// And also because it will otherwise lead to ridiculously strange things outside of this class
 	glViewport(0, 0, Game::WINDOW_SIZE_X, Game::WINDOW_SIZE_Y);
-	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
 
 void SphericShadowmapViewshed::setupFBO() {

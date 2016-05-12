@@ -21,6 +21,7 @@ public:
 
 	void prepare();
 	void render();
+	void renderPoints();
 	void addShader(Shader& shader);
 
 	// MEMBER OBJECTS

@@ -67,19 +67,47 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 }
 
 // Performs conformal conic projection, i.e. maps spherical coords to a 2D surface
-vec2 StereographicProjectionCon(vec3 sphericalCoords) {
-
-	//float eps = 0.00000005;
+vec2 StereographicProjectionSouth(vec3 sphericalCoords) {
+	float onePlusY = 1.0f + sphericalCoords.y;// + eps;
+	return vec2(sphericalCoords.x/onePlusY, sphericalCoords.z/onePlusY);
+}
+vec2 StereographicProjectionNorth(vec3 sphericalCoords) {
 	float oneSubY = 1.0f - sphericalCoords.y;// + eps;
 	return vec2(sphericalCoords.x/oneSubY, sphericalCoords.z/oneSubY);
 }
 
 float shadowCalculation(vec3 fragPosLightSpace, int ind, vec3 lightPos) {
-	vec2 projCoords = StereographicProjectionCon(fragPosLightSpace);
+	vec2 projCoords;
+	int north;
+	// Check if we're using the north or south origin point
+	if (fragPosLightSpace.y >= 0) {
+		north = 0;
+		if (fragPosLightSpace.y == 1.0) {
+			projCoords = vec2(0, 0);
+		}
+		else {
+			projCoords = StereographicProjectionSouth(fragPosLightSpace);
+		}		
+	}
+	else {
+		north = 1;
+		if (fragPosLightSpace.y == 0.0) {
+			projCoords = vec2(0, 0);
+		}
+		else {
+			projCoords = StereographicProjectionNorth(fragPosLightSpace);
+		}		
+	}
 	//uint closestDepth = textureLod(depthMap, vec3(projCoords*0.5 + 0.5, slice), 0.0).r;
 	//float f_closestDepth = float(closestDepth)/255.0;
 	projCoords = projCoords*0.5 + 0.5;
-	float f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, ind), 0.0).r;
+	float f_closestDepth;
+	if (north > 0.5) {
+		f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, ind*2), 0.0).r;
+	}
+	else {
+		f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, ind*2 + 1), 0.0).r;
+	}
 	float currentDepth = distance(fragPosition, lightPos)/maxDist;
 	float bias = 0.005; // To get rid of shadow acne
 	

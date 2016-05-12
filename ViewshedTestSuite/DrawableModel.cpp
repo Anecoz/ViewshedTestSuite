@@ -51,6 +51,11 @@ void DrawableModel::render() {
 	glBindVertexArray(0);
 }
 
+void DrawableModel::renderPoints() {
+	glDrawElements(GL_POINTS, triangleCount * 3, GL_UNSIGNED_INT, 0L);
+	glBindVertexArray(0);
+}
+
 void DrawableModel::addShader(Shader &shader) {
 	shader.activate();
 	glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);

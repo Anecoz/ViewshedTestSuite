@@ -273,7 +273,7 @@ void main(void) {
 	vec3 light = calcLight();
 
 	if (numObs > 0) {
-		/*if (distance(fragPosition, lightArr[numObs/2]) < maxDist) {
+		if (distance(fragPosition, lightArr[numObs/2]) < maxDist) {
 			//outColor = vec4(visibility, 1.0);
 			int totalVis = 0;
 			for (int i = 0; i < numObs; i++) {
@@ -288,10 +288,10 @@ void main(void) {
 		}
 		else {
 			outColor = vec4(light*0.3, 1.0);
-		}*/
+		}
 		// Try to color each fragment according to closest voxel
-		int posInside = posInsideVoxel(fragPosition.xyz+vec3(0, targetHeight, 0));
-		outColor = vec4(posInside);
+		//int posInside = posInsideVoxel(fragPosition.xyz+vec3(0, targetHeight, 0));
+		//outColor = vec4(posInside);
 
 		//uint voxel = texture(voxTex, vec3(54.0f/float(voxTexDim-1.0f), 61.0f/float(voxTexDim-1.0f), 1.0f/7.0f) ).r;
 		//uint voxel = texture(voxTex, vec3(0, 0, 0.45) ).r;

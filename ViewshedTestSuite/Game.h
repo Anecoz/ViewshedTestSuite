@@ -44,8 +44,8 @@ private:
 	Terrain terrain;
 
 	// VIEWSHED
-	//SphericShadowmapViewshed shadowViewshed;
-	VoxelViewshed voxelViewshed;
+	SphericShadowmapViewshed shadowViewshed;
+	//VoxelViewshed voxelViewshed;
 	GLuint voxTex; // Get this once, and not every frame
 	GLint voxTexDim;
 

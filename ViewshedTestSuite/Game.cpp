@@ -85,21 +85,21 @@ void Game::init(int& argc, char **argv) {
 
 	terrain.init(simpleModel);
 
-	voxelizer.init(terrain.getTerrainModel());
-	voxTex = voxelizer.voxelize();
-	voxTexDim = voxelizer.getVoxDim();
+	//voxelizer.init(terrain.getTerrainModel());
+	//voxTex = voxelizer.voxelize();
+	//voxTexDim = voxelizer.getVoxDim();
 
-	voxelViewshed.init(simpleModel, simpleShader);
+	//voxelViewshed.init(simpleModel, simpleShader);
 	//voxTex = voxelViewshed.getVoxelTexture(terrain.getVoxels());
 
-	voxelTester.init();
-	voxelTester.createVoxelsFromSVO(voxelizer.getSVO());
+	//voxelTester.init();
+	//voxelTester.createVoxelsFromSVO(voxelizer.getSVO());
 	//voxelTester.createVoxelsFromTexture(voxTex, voxTexDim);
 	//voxelTester.createVoxelsFromContainer(terrain.getVoxels());
 
-	//shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
-	//roadSelector->init(&terrain, &shadowViewshed, simpleModel, simpleShader);
-	roadSelector->init(&terrain, simpleModel, simpleShader);
+	shadowViewshed.initSpherical(&terrain, simpleModel, simpleShader);
+	roadSelector->init(&terrain, &shadowViewshed, simpleModel, simpleShader);
+	//roadSelector->init(&terrain, simpleModel, simpleShader);
 	roadSelector->setPosTex(terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector));
 	//shadowViewshed.initOrtho(&terrain);
 
@@ -125,38 +125,38 @@ void Game::tick() {
 	camera->update(keyHandler);
 
 	// Update the observer list, get it from road
-	voxelViewshed.setObserverList(roadSelector->getObservers());
+	//voxelViewshed.setObserverList(roadSelector->getObservers());
 	//shadowViewshed.setObserverList(roadSelector->getObservers());	// Done inside roadselector now
 	
-	voxelViewshed.tick(keyHandler);
+	//voxelViewshed.tick(keyHandler);
 
 	// Get the shadow map
 	//GLuint depthMap = shadowViewshed.getDepthMapOrtho();
 	//GLuint depthMap = shadowViewshed.getDepthMapSpherical(projMatrix, camera);
-	//GLuint& depthMap3DTexture = shadowViewshed.get3DDepthMap();
+	GLuint& depthMap3DTexture = shadowViewshed.get3DDepthMap();
 
 	// DEBUG
 	//voxTex = voxelizer.voxelize();
-	voxelTester.render(projMatrix, camera->getCameraMatrix());
+	//voxelTester.render(projMatrix, camera->getCameraMatrix());
 
 	// Get the encoded position texture to be used in the roadselector
 	GLuint posTex = terrain.getEncodedPosTex(camera->getCameraMatrix(), projMatrix, roadSelector);
 	
 	// Render observers
-	voxelViewshed.render(projMatrix, camera->getCameraMatrix());
+	//voxelViewshed.render(projMatrix, camera->getCameraMatrix());
 
 	// Draw terrain
 	//terrain.renderOrtho(camera->getCameraMatrix(), projMatrix, shadowViewshed.getOrthoLightSpaceMatrix(), depthMap);
-	//terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap3DTexture, shadowViewshed.getCompletedObsPosArr(), shadowViewshed.getTargetHeight());
-	terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos(), voxelViewshed.getTargetHeight(), voxTexDim);
-	//shadowViewshed.renderObservers(projMatrix, camera->getCameraMatrix());
+	terrain.renderSpherical(camera->getCameraMatrix(), projMatrix, depthMap3DTexture, shadowViewshed.getCompletedObsPosArr(), shadowViewshed.getTargetHeight());
+	//terrain.renderVoxelized(camera->getCameraMatrix(), projMatrix, voxTex, voxelViewshed.getPos(), voxelViewshed.getTargetHeight(), voxTexDim);
+	shadowViewshed.renderObservers(projMatrix, camera->getCameraMatrix());
 
 	// Render roads
 	roadSelector->render(projMatrix, camera->getCameraMatrix());
 
 	// Get how much time has elapsed since start of this game tick
-	//GLfloat elapsedFrameTime = (GLfloat)glutGet(GLUT_ELAPSED_TIME) - frameStart;
-	//shadowViewshed.tick(keyHandler, elapsedFrameTime);
+	GLfloat elapsedFrameTime = (GLfloat)glutGet(GLUT_ELAPSED_TIME) - frameStart;
+	shadowViewshed.tick(keyHandler, elapsedFrameTime);
 
 	// Swap buffers
 	glutSwapBuffers();
