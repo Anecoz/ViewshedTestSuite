@@ -96,7 +96,7 @@ void VoxelTester::createVoxelsFromTexture(GLuint& voxTex, GLint voxTexDim) {
 void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	// Loop through all voxel objects and draw em
 	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glEnable(GL_CULL_FACE);
 	glDisable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
@@ -120,7 +120,7 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 			//shader.uploadVec(white, "color");
 		}
 		else {
-			shader.uploadVec(red, "color");
+			shader.uploadVec(white, "color");
 		}
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), voxel.getPos());
 		shader.uploadInt(size, "scale");

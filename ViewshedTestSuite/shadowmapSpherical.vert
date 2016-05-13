@@ -48,29 +48,18 @@ vec2 StereographicProjectionSimple(vec3 sphericalCoords) {
 
 void main() {
 	vec3 vertPos = vec3( modelMatrix * vec4(inPosition, 1.0));
+	v_vertex = vertPos;
 	vec3 sphericalCoords = normalize(vertPos - lightPos);
 
 	// Depending on y, use either north or south pole as projection origin
 	if (sphericalCoords.y >= 0) {
-		// Check for special case where we are exactly above observer
-		if (sphericalCoords.y == 1.0) {
-			v_vertex = vec3(vec2(0, 0), distance(vertPos, lightPos)/maxDist);
-		}
-		else {
-			v_vertex = vec3(StereographicProjectionSouth(sphericalCoords), distance(vertPos, lightPos)/maxDist);
-		}
+		//v_vertex = vec3(StereographicProjectionSouth(sphericalCoords), distance(vertPos, lightPos)/maxDist);
 		north = 0;		
 	}
 	else {
-		// Check for special case where we are exactly above observer
-		if (sphericalCoords.y == 0.0) {
-			v_vertex = vec3(vec2(0, 0), distance(vertPos, lightPos)/maxDist);
-		}
-		else {
-			v_vertex = vec3(StereographicProjectionNorth(sphericalCoords), distance(vertPos, lightPos)/maxDist);
-		}
+		//v_vertex = vec3(StereographicProjectionNorth(sphericalCoords), distance(vertPos, lightPos)/maxDist);
 		north = 1;
 	}
 
-	gl_Position = vec4(v_vertex, 1.0);
+	gl_Position = vec4(vertPos, 1.0);
 }

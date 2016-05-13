@@ -82,21 +82,11 @@ float shadowCalculation(vec3 fragPosLightSpace, int ind, vec3 lightPos) {
 	// Check if we're using the north or south origin point
 	if (fragPosLightSpace.y >= 0) {
 		north = 0;
-		if (fragPosLightSpace.y == 1.0) {
-			projCoords = vec2(0, 0);
-		}
-		else {
-			projCoords = StereographicProjectionSouth(fragPosLightSpace);
-		}		
+		projCoords = StereographicProjectionSouth(fragPosLightSpace);
 	}
 	else {
 		north = 1;
-		if (fragPosLightSpace.y == 0.0) {
-			projCoords = vec2(0, 0);
-		}
-		else {
-			projCoords = StereographicProjectionNorth(fragPosLightSpace);
-		}		
+		projCoords = StereographicProjectionNorth(fragPosLightSpace);
 	}
 	//uint closestDepth = textureLod(depthMap, vec3(projCoords*0.5 + 0.5, slice), 0.0).r;
 	//float f_closestDepth = float(closestDepth)/255.0;

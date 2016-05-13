@@ -25,8 +25,8 @@ extern "C" {
 // end GLOBALS
 
 Camera::Camera() {
-	this->pos = { 288, 68, 534 };
-	this->look = { 290, 66, 525 };
+	this->pos = { 141, 132, 422 };
+	this->look = { 148, 128, 416 };
 
 	init();
 }
