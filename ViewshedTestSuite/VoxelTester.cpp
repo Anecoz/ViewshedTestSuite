@@ -16,7 +16,7 @@ VoxelTester::~VoxelTester()
 }
 
 void VoxelTester::init() {
-	shader = Shader("observer.vert", "observer.frag");
+	shader = Shader("observer.vert", "observer.frag", "observer.geom");
 	setupModel();
 }
 
@@ -97,9 +97,9 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 	// Loop through all voxel objects and draw em
 	glEnable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//glEnable(GL_CULL_FACE);
-	glDisable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	//glDisable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	shader.activate();
 	glm::vec3 white = {1.0, 1.0, 1.0};
 	glm::vec3 red = { 0.4, 0.0, 0.0 };
@@ -116,8 +116,8 @@ void VoxelTester::render(glm::mat4& projMatrix, glm::mat4& camMatrix) {
 		shader.uploadMatrix(projMatrix, "projMatrix");
 		shader.uploadMatrix(camMatrix, "camMatrix");
 		if (voxel.getEmpty()) {
-			shader.uploadVec(glm::vec3((GLfloat) size/128.0), "color");
-			//shader.uploadVec(white, "color");
+			//shader.uploadVec(glm::vec3((GLfloat) size/128.0), "color");
+			shader.uploadVec(white, "color");
 		}
 		else {
 			shader.uploadVec(white, "color");

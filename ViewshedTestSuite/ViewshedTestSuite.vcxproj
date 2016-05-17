@@ -201,6 +201,7 @@
   <ItemGroup>
     <None Include="encodePosition.frag" />
     <None Include="encodePosition.vert" />
+    <None Include="observer.geom" />
     <None Include="shadowmapOrtho.frag" />
     <None Include="shadowmapOrtho.vert" />
     <None Include="shadowmapSpherical.geom" />

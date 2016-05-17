@@ -55,7 +55,7 @@ void Voxelizer::calcVoxelList(GLboolean shouldStoreVoxels) {
 	// Disable this stuff
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_MULTISAMPLE);	// To get voxel fragments not covered in middle
+	glDisable(GL_MULTISAMPLE);	// To get voxel fragments not covered in middle
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
 	shader.activate();
@@ -95,7 +95,10 @@ GLuint& Voxelizer::voxelize() {
 
 	// Generate the atomic counter that will get the number of voxels
 	genAtomicBuffer(voxelCounterAtomicBuffer);
+	GLfloat frameStart = (GLfloat)glutGet(GLUT_ELAPSED_TIME);
 	GLuint size = getVoxelListSize();
+	GLfloat elapsedFrameTime = (GLfloat)glutGet(GLUT_ELAPSED_TIME) - frameStart;
+	printf("elapsed time voxelize once: %.6f \n", elapsedFrameTime);
 	printf("Number of voxels in list: %d\n", size);
 	glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
@@ -119,7 +122,8 @@ GLuint& Voxelizer::voxelize() {
 	// We now have a list of every voxel world position in the linear buffer voxelPosTex
 	// Build SVO out of this information
 	buildSVO(voxelBufferList, size);
-
+	elapsedFrameTime = (GLfloat)glutGet(GLUT_ELAPSED_TIME) - frameStart;
+	printf("elapsed time SVO build: %.6f \n", elapsedFrameTime);
 	// Lastly return the texture
 	printf("Voxelisation done!\n");
 	return voxelTex;

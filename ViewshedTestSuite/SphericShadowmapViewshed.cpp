@@ -279,6 +279,10 @@ void SphericShadowmapViewshed::tick(KeyboardHandler* handler, GLfloat elapsedFra
 	if (!progressKeeper.isDone()) {
 		GLint num = progressKeeper.getNumberOfCallsForFrame(elapsedFrameTime);
 		printf("Doing %d draw calls this frame\n", num);
+		GLfloat frameStart = (GLfloat)glutGet(GLUT_ELAPSED_TIME);
 		renderSpherical(num);
+		glFinish();
+		GLfloat elapsedFrameTime = (GLfloat)glutGet(GLUT_ELAPSED_TIME) - frameStart;
+		printf("elapsedTime: %.6f \n", elapsedFrameTime);
 	}
 }

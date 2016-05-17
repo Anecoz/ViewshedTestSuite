@@ -25,8 +25,8 @@ extern "C" {
 // end GLOBALS
 
 Camera::Camera() {
-	this->pos = { 141, 132, 422 };
-	this->look = { 148, 128, 416 };
+	this->pos = { 45, 185, 531};
+	this->look = { 51, 180, 525};
 
 	init();
 }
@@ -172,8 +172,7 @@ void Camera::update(const KeyboardHandler* handler)
 		if (shouldMoveCamera)
 			printf("Camera control is now %d\n", 0);
 		shouldMoveCamera = false;
-	}
-		
+	}		
 	
 	//printf("We are now at: %f, %f, %f\n", pos.x, pos.y, pos.z);
 	//printf("Now looking towards: %f %f %f\n", look.x, look.y, look.z);

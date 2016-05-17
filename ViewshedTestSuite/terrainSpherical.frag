@@ -93,10 +93,10 @@ float shadowCalculation(vec3 fragPosLightSpace, int ind, vec3 lightPos) {
 	projCoords = projCoords*0.5 + 0.5;
 	float f_closestDepth;
 	if (north > 0.5) {
-		f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, ind*2), 0.0).r;
+		f_closestDepth = texture(depthMap, vec3(projCoords.x, projCoords.y, ind*2)).r;
 	}
 	else {
-		f_closestDepth = textureLod(depthMap, vec3(projCoords.x, projCoords.y, ind*2 + 1), 0.0).r;
+		f_closestDepth = texture(depthMap, vec3(projCoords.x, projCoords.y, ind*2 + 1)).r;
 	}
 	float currentDepth = distance(fragPosition, lightPos)/maxDist;
 	float bias = 0.005; // To get rid of shadow acne
